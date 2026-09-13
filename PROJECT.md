@@ -89,69 +89,44 @@ The four members have a similar number of modules and each member owns both
 implementation and verification for their assigned area. Integration rules
 and interfaces are shared so that no module is delivered without its header.
 
-### Member 1 - Sama Rizk El Saeed Azzam
+### Member 1: Aya Mohamed Refaat Naguib (System Integrator, FSM & Actuators)
+* **MCAL Layer:** `i2c.c`
+* **APP Layer:** `tank_fsm.c`, `scheduler` (`main.c`)
+* **HAL Layer:** `pump.c`, `valve.c`
+* **Responsibilities:**
+  * Implements the 10 ms non-blocking tick scheduler in `main.c`.
+  * Manages executive FSM transitions (`ST_INIT`, `ST_IDLE`, `ST_FILLING`, `ST_SETTLING`, `ST_RESERVOIR_WAIT`, `ST_TRIPPED`, `ST_MANUAL`, `ST_SERVICE`).
+  * Drives output pins (`PB0` for pump contactor, `PB2` for inlet solenoid valve).
 
-#### MCAL and timing owner
+### Member 2: Doaa Shaker Mohamed Aziz Awad (Safety Interlocks & Hardware Guards)
+* **MCAL Layer:** `usart.c`
+* **APP Layer:** `interlocks.c`
+* **HAL Layer:** `floats.c`, `buttons.c`
+* **LIB Layer:** `STD_TYPES.h`, `BIT_MATH.h`
+* **Responsibilities:**
+  * Defines common types, data structures, bit macros, and safety enums.
+  * Implements `ILK_Evaluate()` prioritizing safety over demand logic.
+  * Configures `INT0` falling-edge interrupt for physical high float switch overflow override (direct hardware register shutdown $\le 1\text{ ms}$).
+  * Handles software debouncing for Mode (`PD4`), Acknowledge (`PD3`/`INT1`), and Manual Start (`PD5`) buttons.
 
-- `dio.c/.h`
-- `adc.c/.h`
-- `timer.c/.h`
-- `counter.c/.h`
-- `scheduler.c/.h`
-- `STD_TYPES.h`, `BIT_MATH.h`, and shared register definitions
-- Verify ADC scaling, Timer0 10 ms tick, Timer1 wrap-around, and safe startup
-
-**Integration deliverable:** stable hardware initialization and timing services
-that all other modules can call without direct register access.
-
-### Member 2 - Samah Ahmed Mahmoud Ahmed
-
-#### Communication and display owner
-
-- `usart.c/.h`
-- `spi.c/.h`
-- `i2c.c/.h`
-- `lcd_i2c.c/.h`
-- `shiftreg.c/.h`
-- `console.c/.h`
-- Verify UART commands/telemetry, LCD refresh, SPI status bits, and I2C errors
-
-**Integration deliverable:** the operator can see level, flow, state, and fault
-history on the LCD and can use UART commands including `ACK` and `FAULTS?`.
-
-### Member 3 - Doaa Shaker Mohamed Aziz Awad
-
-#### Sensors and actuator HAL owner
-
-- `level.c/.h`
-- `reservoir.c/.h`
-- `current.c/.h`
-- `floats.c/.h`
-- `buttons.c/.h`
-- `pump.c/.h`
-- `valve.c/.h`
-- Verify filtering, debounce, sensor plausibility, relay outputs, and runtime
-  accounting
-
-**Integration deliverable:** clean `TankData_t` input values and safe actuator
-functions for the application layer.
-
-### Member 4 - Aya Mohamed Refaat Naguib
-
-#### Control logic and protection owner
-
-- `interlocks.c/.h`
-- `demand.c/.h`
-- `flowmeter.c/.h`
-- `tank_fsm.c/.h`
-- `faultlog.c/.h`
-- `bargraph.c/.h`
-- `ring_buffer.c/.h`
-- Verify trip priority, latching/acknowledgement, hysteresis, flow maths, and
-  the 16-entry fault history
-
-**Integration deliverable:** complete safe control behavior using the HAL APIs,
-including all nine trips in the README priority table.
+### Member 3: Samah Ahmed Mahmoud Ahmed (Process Sensing & Demand Logic)
+* **APP Layer:** `demand.c`
+* **HAL Layer:** `level.c`, `current.c`
+* **Responsibilities:**
+  * Samples analog channels via ADC MCAL (`ADC0`, `ADC1`, `ADC2`).
+  * Implements median-of-3 noise filtering for roof/ground levels and 4-sample moving average for motor current.
+  * Calculates hysteresis bounds (pump start $<30\%$, stop $>90\%$).
+  * Enforces the 60-second minimum-off anti-cycling protection timer.
+### Member 4: Sama Rizk El Saeed Azzam (Telemetry, Memory Logs & Display UI)
+* **MCAL Layer:** `spi.c`
+* **APP Layer:** `flowmeter.c`, `console.c`
+* **HAL Layer:** `lcd_i2c.c`, `bargraph.c`, `shiftreg.c`
+* **LIB Layer:** `ring_buffer.c`
+* **Responsibilities:**
+  * Uses Timer1 in external counter mode (`PB1`/`T1`) to calculate L/min flow rate and track volume.
+  * Maintains the 16-entry RAM ring buffer (`FaultRec_t`) for historical trip logging.
+  * Controls PCF8574 I2C 16x2 LCD display and SPI 74HC595 shift register status bar.
+  * Implements UART telemetry output (5 s periodic frame) and command line parser.
 
 ## 4. Shared Integration and Test Ownership
 
