@@ -135,10 +135,10 @@ checklist. The work is split by test area to keep the overall effort balanced:
 
 | Member | Shared test responsibility |
 | --- | --- |
-| Sama | Timing, ADC values, Timer1 wrap, and CPU-load pin |
-| Samah | LCD, UART commands, telemetry frames, SPI, and I2C failure handling |
-| Doaa | Button/float debounce, actuator startup state, sensor limits, and scaling |
-| Aya | Nine trip scenarios, latch/ACK behavior, hysteresis, flow totaliser, and fault log |
+| Sama | Timer1 overflow pulse counting, flow totalization, SPI shift register bargraph output, LCD UI rendering, and fault log ring buffer. |
+| Samah | ADC sampling accuracy, median/moving-average filters, sensor limit scaling, and demand anti-cycling hysteresis timers. |
+| Doaa | Button/float switch software debouncing, INT0 hardware override guard, priority trip conditions, and USART telemetry output. |
+| Aya | Executive FSM state transitions, non-blocking scheduler tick timing, actuator startup states, and I2C peripheral bus validation. |
 
 All members participate in the final SimulIDE demonstration, code review, and
 report. A module is considered complete only when its `.c`, `.h`, test result,
