@@ -7,7 +7,18 @@ must not access another layer's private registers or variables.
 
 ## 1. Missing Drivers and Modules
 
-### 1.1 LIB layer
+### 1.1 Existing drivers
+
+The following drivers are already implemented and should not be rewritten:
+
+| Driver | Current status | Remaining work |
+| --- | --- | --- |
+| `gpio` / `dio` | Implemented | Use the existing pin configuration and APIs; do not reimplement this driver |
+| `adc` | Implemented | Verify channel configuration, scaling, and integration with the sensor HAL |
+| `timer` | Implemented | Verify the 10 ms tick and expose the callback/service needed by the scheduler |
+| `interrupt` / `exti` | Implemented | Verify INT0/INT1 configuration, callback behavior, and safe ISR flags |
+
+### 1.2 LIB layer
 
 | Module | Required work | Main API / contents |
 | --- | --- | --- |
@@ -16,23 +27,19 @@ must not access another layer's private registers or variables.
 | `ring_buffer` | RAM ring buffer for UART RX and fault records | `RB_Init`, `RB_Put`, `RB_Get`, `RB_IsEmpty` |
 | `common` | Shared enums and constants | `TankState_t`, `Trip_t`, system tick constants |
 
-### 1.2 MCAL drivers
+### 1.3 MCAL drivers
 
-These are the low-level drivers missing from the project implementation. They
-must be implemented first because the HAL and APP layers depend on them.
+These are the remaining low-level drivers required by the project. The existing
+`adc`, `timer`, and `interrupt` drivers are excluded from this list.
 
 | Driver | Hardware responsibility | Required API |
 | --- | --- | --- |
-| `dio` | Configure/read/write ATmega32 digital pins | `DIO_Init`, `DIO_SetPinDirection`, `DIO_WritePin`, `DIO_ReadPin`, `DIO_TogglePin` |
-| `adc` | Read ADC0, ADC1, and ADC2 using AVCC and prescaler 64 | `ADC_Init`, `ADC_StartConversion`, `ADC_GetValue`, `ADC_ReadChannel` |
-| `timer` | Timer0 CTC 10 ms tick and Timer2 buzzer PWM bonus | `TIMER0_Init`, `TIMER0_SetCallback`, `TIMER2_InitPwm`, `TIMER2_SetDuty` |
 | `counter` | Timer1 external rising-edge pulse counter | `TIMER1_CounterInit`, `TIMER1_ReadCount`, `TIMER1_ResetCount` |
-| `exti` | INT0 high-float emergency input and INT1 acknowledge input | `EXTI_Init`, `EXTI_SetCallback`, `EXTI_Enable`, `EXTI_Disable` |
 | `usart` | 9600 8N1 serial console and telemetry | `USART_Init`, `USART_SendByte`, `USART_SendString`, `USART_ReadByte`, `USART_SetRxCallback` |
 | `spi` | SPI master, mode 0, f/16 for 74HC595 | `SPI_Init`, `SPI_Transmit`, `SPI_TransmitBuffer` |
 | `i2c` | TWI master at 100 kHz for PCF8574 LCD adapter | `I2C_Init`, `I2C_Start`, `I2C_Stop`, `I2C_Write`, `I2C_Read` |
 
-### 1.3 HAL drivers
+### 1.4 HAL drivers
 
 These drivers translate project signals into usable application functions.
 
@@ -49,7 +56,7 @@ These drivers translate project signals into usable application functions.
 | `shiftreg` | Send the 8 status/fault bits to 74HC595 over SPI | `SHR_Init`, `SHR_Write`, `SHR_SetBit` |
 | `lcd_i2c` | 16x2 LCD commands and text over PCF8574 | `LCD_Init`, `LCD_Clear`, `LCD_SetCursor`, `LCD_WriteString`, `LCD_WriteNumber` |
 
-### 1.4 APP modules
+### 1.5 APP modules
 
 These modules implement the behavior described in the README and are not
 hardware drivers, but they are required for a complete working project.
@@ -89,69 +96,126 @@ The four members have a similar number of modules and each member owns both
 implementation and verification for their assigned area. Integration rules
 and interfaces are shared so that no module is delivered without its header.
 
+## Project Explanation
+
+This project is a smart controller for a pump that transfers water from a
+ground tank to a roof tank. The controller reads the two tank levels, pump
+current, flow pulses, float switches, and operator buttons. It then decides
+whether the pump and inlet valve may run.
+
+The normal cycle is simple: when the roof tank is below the low set point, the
+pump fills it until the high set point is reached. The important part is the
+safety system around this cycle. The controller must stop the pump if the
+reservoir is empty, the pipe has no flow, the motor current is too high or too
+low, the tank overflows, the level sensor is stuck, the pump runs too long, or
+the tank level falls unexpectedly.
+
+The software is divided into four layers. `MCAL` talks directly to the
+ATmega32 peripherals, `HAL` converts hardware signals into project functions,
+`APP` implements the pump state machine and protection rules, and `LIB` holds
+shared types and reusable utilities. GPIO, ADC, Timer, and Interrupt drivers
+already exist and are used by the new modules. The team only implements the
+remaining modules listed below.
+
 ### Member 1 - Sama Rizk El Saeed Azzam
 
-#### MCAL and timing owner
+#### SPI and flow owner
 
-- `dio.c/.h`
-- `adc.c/.h`
-- `timer.c/.h`
+- `common.h/.c`
+- `spi.c/.h`
+- `shiftreg.c/.h`
 - `counter.c/.h`
+- `flowmeter.c/.h`
 - `scheduler.c/.h`
-- `STD_TYPES.h`, `BIT_MATH.h`, and shared register definitions
-- Verify ADC scaling, Timer0 10 ms tick, Timer1 wrap-around, and safe startup
 
-**Integration deliverable:** stable hardware initialization and timing services
-that all other modules can call without direct register access.
+**What Sama will do:** Define the shared data types used by all modules, then
+implement SPI in master mode 0 for communication with the 74HC595. The
+`shiftreg` module will convert fault and status flags into the eight output
+bits and latch them safely. She will also configure the Timer1 pulse counter,
+read its value atomically, calculate the pulse difference every second, and
+convert it to flow and total litres. She must provide headers, initialization
+functions, boundary handling, and tests for counter wrap-around and SPI bit
+ordering. She will also connect the existing 10 ms Timer driver to the
+scheduler and provide the periodic job hooks used by the application.
+
+**Integration deliverable:** shared types, the SPI driver, the complete
+SPI-to-74HC595 status-bar path, flow-pulse counting/measurement, and the
+periodic scheduler service. The existing GPIO, ADC, Timer, and Interrupt
+drivers are used as-is.
 
 ### Member 2 - Samah Ahmed Mahmoud Ahmed
 
-#### Communication and display owner
+#### Main control and remaining HAL owner
 
-- `usart.c/.h`
-- `spi.c/.h`
-- `i2c.c/.h`
-- `lcd_i2c.c/.h`
-- `shiftreg.c/.h`
-- `console.c/.h`
-- Verify UART commands/telemetry, LCD refresh, SPI status bits, and I2C errors
+- `interlocks.c/.h`
+- `demand.c/.h`
+- `tank_fsm.c/.h`
+- `main.c/.h`
+- `current.c/.h`
+- `floats.c/.h`
 
-**Integration deliverable:** the operator can see level, flow, state, and fault
-history on the LCD and can use UART commands including `ACK` and `FAULTS?`.
+**What Samah will do:** Implement the control decision order so interlocks are
+checked before demand, write the pump state machine, and enforce hysteresis and
+the minimum-off time. She will also convert the pump-current ADC reading,
+debounce the float switches, and connect the application startup to the
+existing drivers. Her tests must cover normal filling, an empty reservoir,
+overflow input, sensor limits, and a latched trip that blocks the pump.
+
+**Integration deliverable:** state machine, demand logic, pump-current input,
+float debounce, and final application startup.
 
 ### Member 3 - Doaa Shaker Mohamed Aziz Awad
 
-#### Sensors and actuator HAL owner
+#### UART and UART services owner
 
-- `level.c/.h`
-- `reservoir.c/.h`
-- `current.c/.h`
-- `floats.c/.h`
-- `buttons.c/.h`
+- `usart.c/.h`
+- `ring_buffer.c/.h`
+- `console.c/.h`
+- `faultlog.c/.h`
 - `pump.c/.h`
 - `valve.c/.h`
-- Verify filtering, debounce, sensor plausibility, relay outputs, and runtime
-  accounting
+- Verify UART RX/TX, ring-buffer safety, console commands, fault-history dump,
+  and actuator runtime accounting
 
-**Integration deliverable:** clean `TankData_t` input values and safe actuator
+**What Doaa will do:** Configure the USART at 9600 8N1 and handle received
+characters without blocking the control loop. The ring buffer will protect
+UART data between the RX interrupt and the main loop. She will parse commands
+such as `ACK`, `STATUS?`, and `FAULTS?`, transmit telemetry, and store or dump
+the 16-entry fault history. She will also implement the pump contactor and
+inlet-valve outputs, including safe OFF startup, run-time accounting, and
+cycle counting. Tests must cover long UART messages, unknown commands, fault
+log output, and actuator shutdown.
+
+**Integration deliverable:** complete UART service path and safe pump/valve
 functions for the application layer.
 
 ### Member 4 - Aya Mohamed Refaat Naguib
 
-#### Control logic and protection owner
+#### I2C and display owner
 
-- `interlocks.c/.h`
-- `demand.c/.h`
-- `flowmeter.c/.h`
-- `tank_fsm.c/.h`
-- `faultlog.c/.h`
+- `i2c.c/.h`
+- `lcd_i2c.c/.h`
+- `buttons.c/.h`
 - `bargraph.c/.h`
-- `ring_buffer.c/.h`
-- Verify trip priority, latching/acknowledgement, hysteresis, flow maths, and
-  the 16-entry fault history
+- `level.c/.h`
+- `reservoir.c/.h`
+- Verify TWI transactions, LCD initialization, cursor/write operations, and
+  display error handling, button debounce, bargraph levels, and tank-level
+  scaling
 
-**Integration deliverable:** complete safe control behavior using the HAL APIs,
-including all nine trips in the README priority table.
+**What Aya will do:** Implement the TWI master at 100 kHz and handle start,
+write, read, acknowledge, stop, and bus-error conditions. She will build the
+PCF8574 LCD layer on top of I2C, initialize the 16x2 display, position the
+cursor, print numbers and status text, and refresh the screen without
+flicker. The display must show level, flow, pump state, wait time, and active
+fault information supplied by the application layer. She will also debounce
+the mode, acknowledge, and manual-start buttons and drive the four-level
+bargraph. Tests must cover LCD startup, both display lines, numeric formatting,
+button bounce, bargraph thresholds, roof/reservoir level scaling, and an I2C
+failure.
+
+**Integration deliverable:** complete I2C-to-PCF8574-to-LCD display path using
+the application data supplied by the control modules.
 
 ## 4. Shared Integration and Test Ownership
 
@@ -160,10 +224,10 @@ checklist. The work is split by test area to keep the overall effort balanced:
 
 | Member | Shared test responsibility |
 | --- | --- |
-| Sama | Timing, ADC values, Timer1 wrap, and CPU-load pin |
-| Samah | LCD, UART commands, telemetry frames, SPI, and I2C failure handling |
-| Doaa | Button/float debounce, actuator startup state, sensor limits, and scaling |
-| Aya | Nine trip scenarios, latch/ACK behavior, hysteresis, flow totaliser, and fault log |
+| Sama | SPI, 74HC595 status bits, Timer1 wrap, flow totaliser, and scheduler jobs |
+| Samah | State machine, interlock priority, pump current, and float safety |
+| Doaa | UART commands, fault log dump, sensor limits, and pump/valve behavior |
+| Aya | I2C transactions, LCD content, level scaling, button debounce, and bargraph |
 
 All members participate in the final SimulIDE demonstration, code review, and
 report. A module is considered complete only when its `.c`, `.h`, test result,
