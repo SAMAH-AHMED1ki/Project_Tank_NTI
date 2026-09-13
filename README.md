@@ -13,8 +13,8 @@
 | **Project code** | `PRJ-03-WATERTANK` |
 | **Team size** | 4 students |
 | **Team Names** | Sama Rizk El Saeed Azzam<br>Samah Ahmed Mahmoud Ahmed<br>Doaa Shaker Mohamed Aziz Awad<br>Aya Mohamed Refaat Naguib |
-| **Build window** | Days 11 – 15 (Jul 26 – Jul 30, 2026) |
-| **Demo & submission** | July 30, 2026 |
+| **Build window** | Days 11 – 15 (Sep 13 – Sep 17, 2026) |
+| **Demo & submission** | September 17, 2026 |
 | **Dominant skill** | Safety interlocks, latched faults, cross-checked sensors |
 | **MCU** | ATmega32A @ 8 MHz |
 | **Simulator** | SimulIDE 1.x |
