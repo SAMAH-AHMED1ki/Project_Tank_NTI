@@ -73,7 +73,7 @@ STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading)
  * 1. Select the channel as above.
  * 2. Set ADSC and return. Used when the result will be read later or in an ISR.
  */
-/*STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel)
+STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel)
 {
     if (Copy_u8Channel > ADC_CHANNEL_7)
     {
@@ -86,13 +86,13 @@ STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading)
 
     return E_OK;
 }
-    */
+
 /*
  * ADC_GetResult
  * 1. If ADIF is 0, return E_NOK (still busy).
  * 2. Clear ADIF, read ADCL then ADCH, store the 10-bit value.
  */
-/*STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading)
+STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading)
 {
     if (Copy_pu16Reading == NULL)
     {
@@ -109,7 +109,7 @@ STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading)
 
     return E_OK;
 }
-    */
+
 /*
  * ADC_SetInterrupt
  * 1. Copy_u8State == 1 -> set ADIE.  == 0 -> clear ADIE.
