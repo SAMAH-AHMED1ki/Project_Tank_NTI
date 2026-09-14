@@ -332,4 +332,59 @@ TIMER1_Stop:
 /* epilogue start */
 	ret
 	.size	TIMER1_Stop, .-TIMER1_Stop
+	.section	.text.TIMER1_ExternalCounterInit,"ax",@progbits
+.global	TIMER1_ExternalCounterInit
+	.type	TIMER1_ExternalCounterInit, @function
+TIMER1_ExternalCounterInit:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	in r24,0x2e
+	andi r24,lo8(-8)
+	out 0x2e,r24
+	in r24,0x2f
+	andi r24,lo8(-4)
+	out 0x2f,r24
+	in r24,0x2e
+	andi r24,lo8(-25)
+	out 0x2e,r24
+	out 0x2c+1,__zero_reg__
+	out 0x2c,__zero_reg__
+	in r24,0x2e
+	ori r24,lo8(7)
+	out 0x2e,r24
+	ldi r24,0
+	ldi r25,0
+/* epilogue start */
+	ret
+	.size	TIMER1_ExternalCounterInit, .-TIMER1_ExternalCounterInit
+	.section	.text.TIMER1_GetCounter,"ax",@progbits
+.global	TIMER1_GetCounter
+	.type	TIMER1_GetCounter, @function
+TIMER1_GetCounter:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	in r24,0x2c
+	in r25,0x2c+1
+/* epilogue start */
+	ret
+	.size	TIMER1_GetCounter, .-TIMER1_GetCounter
+	.section	.text.TIMER1_ResetCounter,"ax",@progbits
+.global	TIMER1_ResetCounter
+	.type	TIMER1_ResetCounter, @function
+TIMER1_ResetCounter:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	out 0x2c+1,__zero_reg__
+	out 0x2c,__zero_reg__
+	ldi r24,0
+	ldi r25,0
+/* epilogue start */
+	ret
+	.size	TIMER1_ResetCounter, .-TIMER1_ResetCounter
 	.ident	"GCC: (GNU) 15.2.0"

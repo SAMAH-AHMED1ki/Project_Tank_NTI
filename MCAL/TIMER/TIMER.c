@@ -17,6 +17,7 @@
  */
 
 #include "STD_TYPES.h"
+#include "MATH.h"
 #include "TIMER_interface.h"
 #include "TIMER_private.h"
 #include <avr/io.h>
@@ -165,6 +166,58 @@ STD_ReturnType TIMER1_Stop(void)
     return E_OK;
 }
 
+/*==================================================================
+ * Timer1 - External Counter for Flowmeter
+ *==================================================================*/
+
+STD_ReturnType TIMER1_ExternalCounterInit(void)
+{
+    /*
+     * Stop Timer1 first.
+     * CS12:0 = 000
+     */
+    TIMER1_REG_TCCR1B &=
+        ~((1 << CS12) | (1 << CS11) | (1 << CS10));
+
+    /*
+     * Select Normal Mode.
+     * WGM13:0 = 0000
+     */
+    TIMER1_REG_TCCR1A &=
+        ~((1 << WGM11) | (1 << WGM10));
+
+    TIMER1_REG_TCCR1B &=
+        ~((1 << WGM13) | (1 << WGM12));
+
+    /*
+     * Clear Timer1 counter.
+     */
+    TIMER1_REG_TCNT1 = 0u;
+
+    /*
+     * Count external rising edges on T1/PB1.
+     * CS12:0 = 111
+     */
+    TIMER1_REG_TCCR1B |= (1 << CS12) | (1 << CS11) | (1 << CS10);
+
+    return E_OK;
+}
+
+uint16 TIMER1_GetCounter(void)
+{
+    uint16 Local_u16CounterValue;
+
+    Local_u16CounterValue = TIMER1_REG_TCNT1;
+
+    return Local_u16CounterValue;
+}
+
+STD_ReturnType TIMER1_ResetCounter(void)
+{
+    TIMER1_REG_TCNT1 = 0u;
+
+    return E_OK;
+}
 /*==================================================================
  *  Local helper bodies
  *==================================================================*/

@@ -13,6 +13,7 @@
 #include "GPIO_interface.h"
 #include "TIMER_interface.h"
 #include "INTERRUPT_interface.h"
+#include "Flowmeter_interface.h"
 
 void INT0_Handler(void);
 int main(void)

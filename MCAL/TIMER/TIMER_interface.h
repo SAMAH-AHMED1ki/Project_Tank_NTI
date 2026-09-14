@@ -77,4 +77,22 @@ STD_ReturnType TIMER1_PWM(uint16 Copy_u16FrequencyHz, uint8 Copy_u8DutyPercent);
  */
 STD_ReturnType TIMER1_Stop(void);
 
+/*===================== Timer1 — External Counter =====================*/
+
+/*
+ * Configure Timer1 to count external pulses on T1/PB1.
+ * Counting occurs on rising edges.
+ */
+STD_ReturnType TIMER1_ExternalCounterInit(void);
+
+/*
+ * Return the current number of counted pulses.
+ */
+uint16 TIMER1_GetCounter(void);
+
+/*
+ * Reset the external pulse counter.
+ */
+STD_ReturnType TIMER1_ResetCounter(void);
+
 #endif /* TIMER_INTERFACE_H */

@@ -1,8 +1,7 @@
-# 0 "main.c"
+# 0 "Logic/Flowmeter/Flowmeter.c"
 # 0 "<built-in>"
 # 0 "<command-line>"
-# 1 "main.c"
-# 12 "main.c"
+# 1 "Logic/Flowmeter/Flowmeter.c"
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
 typedef unsigned char uint8;
@@ -21,7 +20,7 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 13 "main.c" 2
+# 2 "Logic/Flowmeter/Flowmeter.c" 2
 # 1 "MCAL/GPIO/GPIO_interface.h" 1
 # 41 "MCAL/GPIO/GPIO_interface.h"
 STD_ReturnType GPIO_SetPinDirection(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Direction);
@@ -55,7 +54,7 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 
 
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 14 "main.c" 2
+# 3 "Logic/Flowmeter/Flowmeter.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -119,42 +118,7 @@ uint16 TIMER1_GetCounter(void);
 
 
 STD_ReturnType TIMER1_ResetCounter(void);
-# 15 "main.c" 2
-# 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
-# 30 "MCAL/INTERRUPT/INTERRUPT_interface.h"
-STD_ReturnType INTERRUPT_EnableGlobal(void);
-
-
-
-
-STD_ReturnType INTERRUPT_DisableGlobal(void);
-
-
-
-
-
-STD_ReturnType EXTI_SetSense(uint8 Copy_u8Int, uint8 Copy_u8Sense);
-
-
-
-
-
-STD_ReturnType EXTI_Enable(uint8 Copy_u8Int);
-
-
-
-
-STD_ReturnType EXTI_Disable(uint8 Copy_u8Int);
-
-
-
-
-STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
-
-typedef void (*EXTI_CallbackType)(void);
-
-STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
-# 16 "main.c" 2
+# 4 "Logic/Flowmeter/Flowmeter.c" 2
 # 1 "Logic/Flowmeter/Flowmeter_interface.h" 1
 # 10 "Logic/Flowmeter/Flowmeter_interface.h"
 STD_ReturnType FLOWMETER_Init(void);
@@ -170,30 +134,78 @@ STD_ReturnType FLOWMETER_GetLiters(uint16 *Copy_pu16Liters);
 
 
 STD_ReturnType FLOWMETER_ResetMeasurement(void);
-# 17 "main.c" 2
+# 5 "Logic/Flowmeter/Flowmeter.c" 2
 
-void INT0_Handler(void);
-int main(void)
+
+
+
+
+
+
+STD_ReturnType FLOWMETER_Init(void)
 {
+    STD_ReturnType Local_u8ErrorState = E_OK;
 
-    GPIO_SetPinDirection(0u, 5u, 1u);
-    GPIO_SetPinDirection(0u, 6u, 1u);
-    GPIO_SetPinDirection(3u, 2u, 0u);
-    TIMER0_Init();
 
-    EXTI_SetSense(0u, 1u);
-    EXTI_SetCallback(0u, INT0_Handler);
-    EXTI_Enable(0u);
-    INTERRUPT_EnableGlobal();
-    while (1)
+
+
+    Local_u8ErrorState =
+        GPIO_SetPinDirection(1u, 1u, 0u);
+
+
+
+
+    if (Local_u8ErrorState == E_OK)
     {
-        GPIO_TogglePinValue(0u, 5u);
-        TIMER0_DelayMS(1000);
+        Local_u8ErrorState = TIMER1_ExternalCounterInit();
     }
 
-    return 0;
+    return Local_u8ErrorState;
 }
-void INT0_Handler(void)
+
+
+
+
+
+
+STD_ReturnType FLOWMETER_StartMeasurement(void)
 {
-    GPIO_TogglePinValue(0u, 6u);
+    STD_ReturnType Local_u8ErrorState;
+
+    Local_u8ErrorState = TIMER1_ResetCounter();
+
+    return Local_u8ErrorState;
+}
+
+
+
+
+uint16 FLOWMETER_GetPulses(void)
+{
+    uint16 Local_u16Pulses;
+
+    Local_u16Pulses = TIMER1_GetCounter();
+
+    return Local_u16Pulses;
+}
+# 67 "Logic/Flowmeter/Flowmeter.c"
+uint16 FLOWMETER_GetMilliliters(void)
+{
+    uint16 Local_u16Pulses;
+    uint32 Local_u32Milliliters;
+
+    Local_u16Pulses = FLOWMETER_GetPulses();
+
+    Local_u32Milliliters =
+        ((uint32)Local_u16Pulses * 1000UL) / 450UL;
+
+    return (uint16)Local_u32Milliliters;
+}
+
+
+
+
+STD_ReturnType FLOWMETER_ResetMeasurement(void)
+{
+    return TIMER1_ResetCounter();
 }
