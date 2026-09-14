@@ -20,9 +20,7 @@ static TankState_t Global_eCurrentState = ST_INIT;
 static uint16 Global_u16SettlingTicks = 0u;
 static uint16 Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
 
-/* ---------------------------------------------------------- */
 /* Stop both pump and valve                                   */
-/* ---------------------------------------------------------- */
 
 static void FSM_StopOutputs(void)
 {
@@ -30,9 +28,7 @@ static void FSM_StopOutputs(void)
     Valve_Set(GPIO_LOW);
 }
 
-/* ---------------------------------------------------------- */
 /* Start filling                                               */
-/* ---------------------------------------------------------- */
 
 static void FSM_StartFilling(void)
 {
@@ -40,9 +36,7 @@ static void FSM_StartFilling(void)
     Valve_Set(GPIO_HIGH);
 }
 
-/* ---------------------------------------------------------- */
 /* Update minimum OFF timer                                    */
-/* ---------------------------------------------------------- */
 
 static void FSM_UpdateMinOffTimer(uint8 Copy_u8PumpOn)
 {
@@ -59,9 +53,7 @@ static void FSM_UpdateMinOffTimer(uint8 Copy_u8PumpOn)
     }
 }
 
-/* ---------------------------------------------------------- */
 /* Initialize FSM                                              */
-/* ---------------------------------------------------------- */
 
 STD_ReturnType FSM_Init(void)
 {
@@ -87,9 +79,7 @@ STD_ReturnType FSM_Init(void)
     return E_OK;
 }
 
-/* ---------------------------------------------------------- */
 /* Main FSM cycle                                              */
-/* ---------------------------------------------------------- */
 
 STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 {
@@ -103,23 +93,17 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         return E_NOK;
     }
 
-    /* ------------------------------------------------------ */
     /* Update minimum OFF timer                                */
-    /* ------------------------------------------------------ */
 
     FSM_UpdateMinOffTimer(Copy_pstData->pumpOn);
 
-    /* ------------------------------------------------------ */
     /* Read button events                                      */
-    /* ------------------------------------------------------ */
 
     BTN_GetEvent(BTN_MODE, &Local_eModeEvent);
     BTN_GetEvent(BTN_MANUAL_START, &Local_eManualEvent);
     BTN_GetEvent(BTN_ACK, &Local_eAckEvent);
 
-    /* ------------------------------------------------------ */
     /* Interlocks have priority over the FSM                  */
-    /* ------------------------------------------------------ */
 
     Local_eTrip = ILK_Evaluate(Copy_pstData);
 
@@ -132,9 +116,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         return E_OK;
     }
 
-    /* ------------------------------------------------------ */
     /* ACK button                                               */
-    /* ------------------------------------------------------ */
 
     if ((Local_eAckEvent == BTN_EVENT_SHORT_PRESS) ||
         (Local_eAckEvent == BTN_EVENT_LONG_HOLD_1S))
@@ -142,9 +124,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         FSM_Ack();
     }
 
-    /* ------------------------------------------------------ */
     /* MODE button: AUTO <-> MANUAL                            */
-    /* ------------------------------------------------------ */
 
     if (Local_eModeEvent == BTN_EVENT_SHORT_PRESS)
     {
@@ -161,9 +141,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         }
     }
 
-    /* ------------------------------------------------------ */
     /* State machine                                            */
-    /* ------------------------------------------------------ */
 
     switch (Global_eCurrentState)
     {
@@ -180,7 +158,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     case ST_IDLE:
 
         FSM_StopOutputs();
@@ -207,7 +184,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     case ST_FILLING:
 
         /*
@@ -243,7 +219,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     case ST_SETTLING:
 
         FSM_StopOutputs();
@@ -262,7 +237,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     case ST_RESERVOIR_WAIT:
 
         FSM_StopOutputs();
@@ -274,7 +248,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     case ST_TRIPPED:
 
         FSM_StopOutputs();
@@ -293,7 +266,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     case ST_MANUAL:
 
         /*
@@ -321,7 +293,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     case ST_SERVICE:
 
         /*
@@ -334,7 +305,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-    /* -------------------------------------------------- */
     default:
 
         FSM_StopOutputs();
@@ -346,19 +316,14 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
     return E_OK;
 }
-
-/* ---------------------------------------------------------- */
 /* Get current state                                          */
-/* ---------------------------------------------------------- */
 
 TankState_t FSM_GetState(void)
 {
     return Global_eCurrentState;
 }
 
-/* ---------------------------------------------------------- */
 /* Acknowledge trip                                           */
-/* ---------------------------------------------------------- */
 
 STD_ReturnType FSM_Ack(void)
 {
