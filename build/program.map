@@ -68,9 +68,9 @@ Discarded input sections
  .data          0x00000000        0x0 build/HAL/floats/floats.o
  .bss           0x00000000        0x0 build/HAL/floats/floats.o
  .text.FLT_Init
-                0x00000000       0x22 build/HAL/floats/floats.o
+                0x00000000       0x2c build/HAL/floats/floats.o
  .text.FLT_Update
-                0x00000000       0x56 build/HAL/floats/floats.o
+                0x00000000       0x5a build/HAL/floats/floats.o
  .text.FLT_IsHighActive
                 0x00000000        0x6 build/HAL/floats/floats.o
  .text.FLT_IsLowActive
@@ -94,7 +94,7 @@ Discarded input sections
  .text.LEVEL_Init
                 0x00000000        0x8 build/HAL/Level/level.o
  .text.LEVEL_ReadPercentage
-                0x00000000       0xcc build/HAL/Level/level.o
+                0x00000000       0xc6 build/HAL/Level/level.o
  .text.LEVEL_GetBand
                 0x00000000       0x3a build/HAL/Level/level.o
  .comment       0x00000000       0x13 build/HAL/Level/level.o
@@ -220,7 +220,7 @@ Discarded input sections
  .text.ADC_Init
                 0x00000000       0x2a build/MCAL/ADC/ADC.o
  .text.ADC_ReadChannel
-                0x00000000       0x2e build/MCAL/ADC/ADC.o
+                0x00000000       0x30 build/MCAL/ADC/ADC.o
  .text.ADC_StartConversion
                 0x00000000       0x1a build/MCAL/ADC/ADC.o
  .text.ADC_GetResult

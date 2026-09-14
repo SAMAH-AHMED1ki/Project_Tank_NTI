@@ -11,6 +11,7 @@
 
 STD_ReturnType LEVEL_Init(uint8 adcChannel)
 {
+    (void)adcChannel;
     return ADC_Init(ADC_REF_AVCC, ADC_PRESC_64);
 }
 
@@ -26,10 +27,19 @@ STD_ReturnType LEVEL_ReadPercentage(uint8 adcChannel, uint8 *pPercentage)
     }
 
     /* 1. Take 3 consecutive ADC readings using ADC_ReadChannel from ADC.c */
-    status |= ADC_ReadChannel(adcChannel, &samples[0]);
-    status |= ADC_ReadChannel(adcChannel, &samples[1]);
-    status |= ADC_ReadChannel(adcChannel, &samples[2]);
+    status = ADC_ReadChannel(adcChannel, &samples[0]);
+    if (status != E_OK)
+    {
+        return E_NOK;
+    }
 
+    status = ADC_ReadChannel(adcChannel, &samples[1]);
+    if (status != E_OK)
+    {
+        return E_NOK;
+    }
+
+    status = ADC_ReadChannel(adcChannel, &samples[2]);
     if (status != E_OK)
     {
         return E_NOK;

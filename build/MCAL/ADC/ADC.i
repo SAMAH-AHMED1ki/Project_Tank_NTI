@@ -81,10 +81,7 @@ STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading)
     {
         return E_NOK;
     }
-
-
-    (*(volatile uint8 *)0x27) |= (Copy_u8Channel & 0x1F);
-
+    (*(volatile uint8 *)0x27) = ((*(volatile uint8 *)0x27) & 0xE0) | (Copy_u8Channel & 0x07);
     (*(volatile uint8 *)0x26) |= (1 << 6);
 
     while (((*(volatile uint8 *)0x26) & (1 << 4)) == 0)

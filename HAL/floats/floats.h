@@ -10,6 +10,7 @@
 
 STD_ReturnType FLT_Init(void);
 STD_ReturnType FLT_Update(void);
+
 uint8 FLT_IsHighActive(void);
 uint8 FLT_IsLowActive(void);
 

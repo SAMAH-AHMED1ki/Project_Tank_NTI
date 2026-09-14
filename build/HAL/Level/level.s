@@ -30,14 +30,13 @@ LEVEL_ReadPercentage:
 	rcall .
 	rcall .
 	rcall .
-	push __tmp_reg__
 	in r28,__SP_L__
 	in r29,__SP_H__
 /* prologue: function */
-/* frame size = 7 */
-/* stack size = 13 */
-.L__stack_usage = 13
-	std Y+7,r24
+/* frame size = 6 */
+/* stack size = 12 */
+.L__stack_usage = 12
+	mov r17,r24
 	movw r14,r22
 	or r22,r23
 	brne .L3
@@ -47,12 +46,12 @@ LEVEL_ReadPercentage:
 .L2:
 	movw r24,r16
 /* epilogue start */
-	adiw r28,7
-	in __tmp_reg__,__SREG__
-	cli
-	out __SP_H__,r29
-	out __SREG__,__tmp_reg__
-	out __SP_L__,r28
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
 	pop r29
 	pop r28
 	pop r17
@@ -64,25 +63,23 @@ LEVEL_ReadPercentage:
 	movw r22,r28
 	subi r22,-1
 	sbci r23,-1
-	ldd r24,Y+7
 	call ADC_ReadChannel
-	movw r16,r24
+	or r24,r25
+	brne .L5
 	movw r22,r28
 	subi r22,-3
 	sbci r23,-1
-	ldd r24,Y+7
+	mov r24,r17
 	call ADC_ReadChannel
-	or r16,r24
-	or r17,r25
+	or r24,r25
+	brne .L5
 	movw r22,r28
 	subi r22,-5
 	sbci r23,-1
-	ldd r24,Y+7
+	mov r24,r17
 	call ADC_ReadChannel
-	or r16,r24
-	or r17,r25
-	cp r16,__zero_reg__
-	cpc r17,__zero_reg__
+	movw r16,r24
+	or r24,r25
 	brne .L5
 	ldd r20,Y+1
 	ldd r21,Y+2

@@ -73,6 +73,7 @@ STD_ReturnType LEVEL_GetBand(uint8 levelPercent, LevelBand_t *pBand);
 # 12 "HAL/Level/level.c"
 STD_ReturnType LEVEL_Init(uint8 adcChannel)
 {
+    (void)adcChannel;
     return ADC_Init(1u, 6u);
 }
 
@@ -88,10 +89,19 @@ STD_ReturnType LEVEL_ReadPercentage(uint8 adcChannel, uint8 *pPercentage)
     }
 
 
-    status |= ADC_ReadChannel(adcChannel, &samples[0]);
-    status |= ADC_ReadChannel(adcChannel, &samples[1]);
-    status |= ADC_ReadChannel(adcChannel, &samples[2]);
+    status = ADC_ReadChannel(adcChannel, &samples[0]);
+    if (status != E_OK)
+    {
+        return E_NOK;
+    }
 
+    status = ADC_ReadChannel(adcChannel, &samples[1]);
+    if (status != E_OK)
+    {
+        return E_NOK;
+    }
+
+    status = ADC_ReadChannel(adcChannel, &samples[2]);
     if (status != E_OK)
     {
         return E_NOK;

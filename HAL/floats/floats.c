@@ -7,47 +7,98 @@
 #include "GPIO_interface.h"
 #include "floats.h"
 
-/* تحديد البنوت الخاصة بمفاتيح التعويم (مثلاً على بورت A) */
-#define HIGH_FLOAT_PORT GPIO_PORTA
-#define HIGH_FLOAT_PIN GPIO_PIN0
+/* Project wiring:
+ * High float -> PD2 / INT0
+ * Low float  -> PD6
+ */
 
-#define LOW_FLOAT_PORT GPIO_PORTA
-#define LOW_FLOAT_PIN GPIO_PIN1
+#define HIGH_FLOAT_PORT GPIO_PORTD
+#define HIGH_FLOAT_PIN GPIO_PIN2
 
-static uint8 Global_u8HighState = 0;
-static uint8 Global_u8LowState = 0;
+#define LOW_FLOAT_PORT GPIO_PORTD
+#define LOW_FLOAT_PIN GPIO_PIN6
+
+/* Cached float states */
+static uint8 Global_u8HighState = 0u;
+static uint8 Global_u8LowState = 0u;
 
 STD_ReturnType FLT_Init(void)
 {
-    STD_ReturnType Local_Status = E_OK;
+    STD_ReturnType Local_Status;
 
-    /* ضبط أطراف مفاتيح التعويم كدخل مع تفعيل الـ Pull-up الداخلي للأمان */
-    Local_Status &= GPIO_SetPinDirection(HIGH_FLOAT_PORT, HIGH_FLOAT_PIN, GPIO_INPUT_PULLUP);
-    Local_Status &= GPIO_SetPinDirection(LOW_FLOAT_PORT, LOW_FLOAT_PIN, GPIO_INPUT_PULLUP);
+    /* Configure high float as input with internal pull-up */
+    Local_Status =
+        GPIO_SetPinDirection(
+            HIGH_FLOAT_PORT,
+            HIGH_FLOAT_PIN,
+            GPIO_INPUT_PULLUP);
 
-    Global_u8HighState = 0;
-    Global_u8LowState = 0;
+    if (Local_Status != E_OK)
+    {
+        return E_NOK;
+    }
 
-    return Local_Status;
+    /* Configure low float as input with internal pull-up */
+    Local_Status =
+        GPIO_SetPinDirection(
+            LOW_FLOAT_PORT,
+            LOW_FLOAT_PIN,
+            GPIO_INPUT_PULLUP);
+
+    if (Local_Status != E_OK)
+    {
+        return E_NOK;
+    }
+
+    /* Initial states */
+    Global_u8HighState = 0u;
+    Global_u8LowState = 0u;
+
+    return E_OK;
 }
 
 STD_ReturnType FLT_Update(void)
 {
-    uint8 Local_u8PinHighVal = 0;
-    uint8 Local_u8PinLowVal = 0;
-    STD_ReturnType Local_Status = E_OK;
+    uint8 Local_u8PinHighVal = 0u;
+    uint8 Local_u8PinLowVal = 0u;
+    STD_ReturnType Local_Status;
 
-    /* قراءة الحالة الحالية للأطراف باستخدام GPIO_GetPinValue */
-    Local_Status |= GPIO_GetPinValue(HIGH_FLOAT_PORT, HIGH_FLOAT_PIN, &Local_u8PinHighVal);
-    Local_Status |= GPIO_GetPinValue(LOW_FLOAT_PORT, LOW_FLOAT_PIN, &Local_u8PinLowVal);
+    /* Read high float */
+    Local_Status =
+        GPIO_GetPinValue(
+            HIGH_FLOAT_PORT,
+            HIGH_FLOAT_PIN,
+            &Local_u8PinHighVal);
 
-    if (Local_Status == E_OK)
+    if (Local_Status != E_OK)
     {
-        Global_u8HighState = Local_u8PinHighVal;
-        Global_u8LowState = Local_u8PinLowVal;
+        return E_NOK;
     }
 
-    return Local_Status;
+    /* Read low float */
+    Local_Status =
+        GPIO_GetPinValue(
+            LOW_FLOAT_PORT,
+            LOW_FLOAT_PIN,
+            &Local_u8PinLowVal);
+
+    if (Local_Status != E_OK)
+    {
+        return E_NOK;
+    }
+
+    /*
+     * INPUT_PULLUP:
+     * Pin = 1 -> float inactive
+     * Pin = 0 -> float active
+     */
+    Global_u8HighState =
+        (Local_u8PinHighVal == 0u) ? 1u : 0u;
+
+    Global_u8LowState =
+        (Local_u8PinLowVal == 0u) ? 1u : 0u;
+
+    return E_OK;
 }
 
 uint8 FLT_IsHighActive(void)

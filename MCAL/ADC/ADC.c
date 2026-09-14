@@ -53,10 +53,7 @@ STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading)
     {
         return E_NOK;
     }
-
-    // ADC_ADMUX = (ADC_ADMUX & 0xE0) | (Copy_u8Channel & 0x1F);
-    ADC_ADMUX |= (Copy_u8Channel & 0x1F);
-
+    ADC_ADMUX = (ADC_ADMUX & 0xE0) | (Copy_u8Channel & 0x07);
     ADC_ADCSRA |= (1 << 6);
 
     while ((ADC_ADCSRA & (1 << 4)) == 0)

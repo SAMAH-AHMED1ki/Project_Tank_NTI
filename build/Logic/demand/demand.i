@@ -78,6 +78,7 @@ STD_ReturnType LEVEL_GetBand(uint8 levelPercent, LevelBand_t *pBand);
 # 11 "HAL/floats/floats.h"
 STD_ReturnType FLT_Init(void);
 STD_ReturnType FLT_Update(void);
+
 uint8 FLT_IsHighActive(void);
 uint8 FLT_IsLowActive(void);
 # 9 "Logic/demand/demand.c" 2

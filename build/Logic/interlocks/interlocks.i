@@ -37,6 +37,7 @@ uint8 CUR_IsOverLimit(uint16 Copy_u16LimitmA);
 # 11 "HAL/floats/floats.h"
 STD_ReturnType FLT_Init(void);
 STD_ReturnType FLT_Update(void);
+
 uint8 FLT_IsHighActive(void);
 uint8 FLT_IsLowActive(void);
 # 9 "Logic/interlocks/interlocks.c" 2

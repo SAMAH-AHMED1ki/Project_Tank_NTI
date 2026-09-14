@@ -52,6 +52,7 @@ ADC_ReadChannel:
 	cpc r23,__zero_reg__
 	breq .L10
 	in r25,0x7
+	andi r25,lo8(-32)
 	or r25,r24
 	out 0x7,r25
 	sbi 0x6,6
