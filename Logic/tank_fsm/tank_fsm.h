@@ -9,7 +9,7 @@
 #include "STD_TYPES.h"
 #include "tank_types.h"
 
-/* Initialize the tank FSM */
+/* Initialize the FSM */
 STD_ReturnType FSM_Init(void);
 
 /* Run one FSM cycle */
@@ -18,7 +18,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData);
 /* Get current FSM state */
 TankState_t FSM_GetState(void);
 
-/* Request fault acknowledge */
+/* Request acknowledgement of a latched trip */
 STD_ReturnType FSM_Ack(void);
 
 #endif /* TANK_FSM_H_ */

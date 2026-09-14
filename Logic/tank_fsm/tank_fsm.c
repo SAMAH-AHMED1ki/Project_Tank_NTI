@@ -7,17 +7,70 @@
 #include "GPIO_interface.h"
 #include "Pump_interface.h"
 #include "Valve_interface.h"
+#include "Buttons_interface.h"
 #include "interlocks.h"
 #include "demand.h"
 #include "tank_fsm.h"
 
+#define FSM_SETTLING_TICKS 500u
+#define FSM_MIN_OFF_TICKS 6000u
+
 static TankState_t Global_eCurrentState = ST_INIT;
+
+static uint16 Global_u16SettlingTicks = 0u;
+static uint16 Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
+
+/* ---------------------------------------------------------- */
+/* Stop both pump and valve                                   */
+/* ---------------------------------------------------------- */
+
+static void FSM_StopOutputs(void)
+{
+    PMP_Set(GPIO_LOW);
+    Valve_Set(GPIO_LOW);
+}
+
+/* ---------------------------------------------------------- */
+/* Start filling                                               */
+/* ---------------------------------------------------------- */
+
+static void FSM_StartFilling(void)
+{
+    PMP_Set(GPIO_HIGH);
+    Valve_Set(GPIO_HIGH);
+}
+
+/* ---------------------------------------------------------- */
+/* Update minimum OFF timer                                    */
+/* ---------------------------------------------------------- */
+
+static void FSM_UpdateMinOffTimer(uint8 Copy_u8PumpOn)
+{
+    if (Copy_u8PumpOn == GPIO_LOW)
+    {
+        if (Global_u16MinOffTicks < FSM_MIN_OFF_TICKS)
+        {
+            Global_u16MinOffTicks++;
+        }
+    }
+    else
+    {
+        Global_u16MinOffTicks = 0u;
+    }
+}
+
+/* ---------------------------------------------------------- */
+/* Initialize FSM                                              */
+/* ---------------------------------------------------------- */
 
 STD_ReturnType FSM_Init(void)
 {
     STD_ReturnType Local_Status;
 
     Global_eCurrentState = ST_INIT;
+
+    Global_u16SettlingTicks = 0u;
+    Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
 
     Local_Status = PMP_Set(GPIO_LOW);
     if (Local_Status != E_OK)
@@ -34,99 +87,185 @@ STD_ReturnType FSM_Init(void)
     return E_OK;
 }
 
+/* ---------------------------------------------------------- */
+/* Main FSM cycle                                              */
+/* ---------------------------------------------------------- */
+
 STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 {
-    Trip_t Local_eTrip;
+    Trip_t Local_eTrip = TRIP_NONE;
+    ButtonEvent_t Local_eModeEvent = BTN_EVENT_NONE;
+    ButtonEvent_t Local_eManualEvent = BTN_EVENT_NONE;
+    ButtonEvent_t Local_eAckEvent = BTN_EVENT_NONE;
 
     if (Copy_pstData == NULL)
     {
         return E_NOK;
     }
 
-    /*
-     * Interlocks are checked before state transitions.
-     */
+    /* ------------------------------------------------------ */
+    /* Update minimum OFF timer                                */
+    /* ------------------------------------------------------ */
+
+    FSM_UpdateMinOffTimer(Copy_pstData->pumpOn);
+
+    /* ------------------------------------------------------ */
+    /* Read button events                                      */
+    /* ------------------------------------------------------ */
+
+    BTN_GetEvent(BTN_MODE, &Local_eModeEvent);
+    BTN_GetEvent(BTN_MANUAL_START, &Local_eManualEvent);
+    BTN_GetEvent(BTN_ACK, &Local_eAckEvent);
+
+    /* ------------------------------------------------------ */
+    /* Interlocks have priority over the FSM                  */
+    /* ------------------------------------------------------ */
+
     Local_eTrip = ILK_Evaluate(Copy_pstData);
 
     if (Local_eTrip != TRIP_NONE)
     {
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        FSM_StopOutputs();
 
         Global_eCurrentState = ST_TRIPPED;
 
         return E_OK;
     }
 
+    /* ------------------------------------------------------ */
+    /* ACK button                                               */
+    /* ------------------------------------------------------ */
+
+    if ((Local_eAckEvent == BTN_EVENT_SHORT_PRESS) ||
+        (Local_eAckEvent == BTN_EVENT_LONG_HOLD_1S))
+    {
+        FSM_Ack();
+    }
+
+    /* ------------------------------------------------------ */
+    /* MODE button: AUTO <-> MANUAL                            */
+    /* ------------------------------------------------------ */
+
+    if (Local_eModeEvent == BTN_EVENT_SHORT_PRESS)
+    {
+        if (Global_eCurrentState == ST_MANUAL)
+        {
+            FSM_StopOutputs();
+            Global_eCurrentState = ST_IDLE;
+        }
+        else if ((Global_eCurrentState == ST_IDLE) ||
+                 (Global_eCurrentState == ST_FILLING))
+        {
+            FSM_StopOutputs();
+            Global_eCurrentState = ST_MANUAL;
+        }
+    }
+
+    /* ------------------------------------------------------ */
+    /* State machine                                            */
+    /* ------------------------------------------------------ */
+
     switch (Global_eCurrentState)
     {
     case ST_INIT:
 
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        FSM_StopOutputs();
 
-        Global_eCurrentState = ST_IDLE;
+        Global_u16SettlingTicks = 0u;
+
+        if (Local_eTrip == TRIP_NONE)
+        {
+            Global_eCurrentState = ST_IDLE;
+        }
 
         break;
 
+    /* -------------------------------------------------- */
     case ST_IDLE:
 
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        FSM_StopOutputs();
 
+        Global_u16SettlingTicks = 0u;
+
+        /*
+         * Reservoir below 25%:
+         * wait until enough water is available.
+         */
         if (Copy_pstData->reservoirPct < 25u)
         {
             Global_eCurrentState = ST_RESERVOIR_WAIT;
         }
-        else if (DEM_GetPumpDemand() != 0u)
+
+        /*
+         * Tank needs filling and minimum OFF time expired.
+         */
+        else if ((DEM_GetPumpDemand() != 0u) &&
+                 (Global_u16MinOffTicks >= FSM_MIN_OFF_TICKS))
         {
             Global_eCurrentState = ST_FILLING;
         }
 
         break;
 
+    /* -------------------------------------------------- */
     case ST_FILLING:
 
+        /*
+         * Reservoir became too low.
+         */
         if (Copy_pstData->reservoirPct < 25u)
         {
-            PMP_Set(GPIO_LOW);
-            Valve_Set(GPIO_LOW);
+            FSM_StopOutputs();
 
             Global_eCurrentState = ST_RESERVOIR_WAIT;
         }
+
+        /*
+         * Demand disappeared:
+         * stop pump and enter settling.
+         */
         else if (DEM_GetPumpDemand() == 0u)
         {
-            PMP_Set(GPIO_LOW);
-            Valve_Set(GPIO_LOW);
+            FSM_StopOutputs();
+
+            Global_u16SettlingTicks = 0u;
 
             Global_eCurrentState = ST_SETTLING;
         }
+
+        /*
+         * Continue filling.
+         */
         else
         {
-            PMP_Set(GPIO_HIGH);
-            Valve_Set(GPIO_HIGH);
+            FSM_StartFilling();
         }
 
         break;
 
+    /* -------------------------------------------------- */
     case ST_SETTLING:
 
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        FSM_StopOutputs();
 
-        /*
-         * Settling timer will be handled by the
-         * interlock/FSM timing logic.
-         */
+        if (Global_u16SettlingTicks < FSM_SETTLING_TICKS)
+        {
+            Global_u16SettlingTicks++;
+        }
 
-        Global_eCurrentState = ST_IDLE;
+        if (Global_u16SettlingTicks >= FSM_SETTLING_TICKS)
+        {
+            Global_u16SettlingTicks = 0u;
+
+            Global_eCurrentState = ST_IDLE;
+        }
 
         break;
 
+    /* -------------------------------------------------- */
     case ST_RESERVOIR_WAIT:
 
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        FSM_StopOutputs();
 
         if (Copy_pstData->reservoirPct >= 25u)
         {
@@ -135,38 +274,70 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
+    /* -------------------------------------------------- */
     case ST_TRIPPED:
 
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        FSM_StopOutputs();
 
         /*
-         * ILK_Reset() is responsible for acknowledging
-         * a latched fault.
+         * Interlock remains latched until ACK + clear
+         * condition.
+         *
+         * ILK_Evaluate() will return TRIP_NONE after
+         * the trip has actually been cleared.
          */
+        if (ILK_Evaluate(Copy_pstData) == TRIP_NONE)
+        {
+            Global_eCurrentState = ST_IDLE;
+        }
 
         break;
 
+    /* -------------------------------------------------- */
     case ST_MANUAL:
 
         /*
-         * Manual mode still keeps all interlocks active.
-         * Manual start is handled through the FSM/buttons.
+         * Interlocks are still evaluated above.
+         *
+         * Manual start is accepted only when the
+         * minimum OFF time has expired.
          */
+        if (Local_eManualEvent == BTN_EVENT_SHORT_PRESS)
+        {
+            if (Global_u16MinOffTicks >= FSM_MIN_OFF_TICKS)
+            {
+                PMP_Set(GPIO_HIGH);
+                Valve_Set(GPIO_HIGH);
+            }
+        }
+
+        /*
+         * If pump is already running, keep valve open.
+         */
+        if (Copy_pstData->pumpOn != GPIO_LOW)
+        {
+            Valve_Set(GPIO_HIGH);
+        }
 
         break;
 
+    /* -------------------------------------------------- */
     case ST_SERVICE:
 
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        /*
+         * Service mode always forces outputs OFF.
+         *
+         * Overflow, overcurrent and dry-reservoir
+         * interlocks are still evaluated above.
+         */
+        FSM_StopOutputs();
 
         break;
 
+    /* -------------------------------------------------- */
     default:
 
-        PMP_Set(GPIO_LOW);
-        Valve_Set(GPIO_LOW);
+        FSM_StopOutputs();
 
         Global_eCurrentState = ST_TRIPPED;
 
@@ -176,16 +347,20 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
     return E_OK;
 }
 
+/* ---------------------------------------------------------- */
+/* Get current state                                          */
+/* ---------------------------------------------------------- */
+
 TankState_t FSM_GetState(void)
 {
     return Global_eCurrentState;
 }
 
+/* ---------------------------------------------------------- */
+/* Acknowledge trip                                           */
+/* ---------------------------------------------------------- */
+
 STD_ReturnType FSM_Ack(void)
 {
-    /*
-     * Ask the interlock module to acknowledge the
-     * currently latched trip.
-     */
     return ILK_Reset();
 }
