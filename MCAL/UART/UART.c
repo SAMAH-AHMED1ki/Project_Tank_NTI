@@ -10,6 +10,21 @@
 #include "UART_interface.h"
 #include "UART_private.h"
 #include "MATH.h"
+#include <avr/interrupt.h>
+
+static RingBuffer_t *g_uartRxBuffer = NULL;
+
+ISR(USART_RXC_vect)
+{
+    uint8 Local_u8Data;
+
+    Local_u8Data = UDR;
+
+    if (g_uartRxBuffer != NULL)
+    {
+        RB_Put(g_uartRxBuffer, Local_u8Data);
+    }
+}
 
 /*
  * UART_Init
@@ -45,8 +60,8 @@ STD_ReturnType UART_SendByte(uint8 Copy_u8Data)
 {
     while (GET_BIT(UCSRA, UDRE) == 0)
     {
-        UDR = Copy_u8Data;
     }
+    UDR = Copy_u8Data;
     return E_OK;
 }
 /*
@@ -62,8 +77,8 @@ STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data)
     }
     while (GET_BIT(UCSRA, RXC) == 0)
     {
-        *Copy_pu8Data = UDR;
     }
+    *Copy_pu8Data = UDR;
     return E_OK;
 }
 /*
@@ -117,6 +132,12 @@ STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State)
     {
         return E_NOK;
     }
+}
+
+STD_ReturnType UART_SetRxBuffer(RingBuffer_t *Copy_pRxBuffer)
+{
+    g_uartRxBuffer = Copy_pRxBuffer;
+    return E_OK;
 }
 STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State)
 {

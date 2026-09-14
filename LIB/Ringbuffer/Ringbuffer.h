@@ -11,6 +11,11 @@
  */
 #define RB_BUFFER_SIZE 64U
 
+/* For the console/UART path, the RX queue is treated as a producer/consumer
+ * ring between the USART RX ISR and the main loop. The buffer content is raw
+ * bytes, not parsed commands.
+ */
+
 typedef struct
 {
     uint8 buffer[RB_BUFFER_SIZE];

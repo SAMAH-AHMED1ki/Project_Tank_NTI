@@ -82,10 +82,10 @@ Discarded input sections
  .text.KeyPad_GetPressedKey
                 0x00000000       0xca build/HAL/KeyPad/KeyPad.o
  .comment       0x00000000       0x13 build/HAL/KeyPad/KeyPad.o
- .text          0x00000000        0x0 build/HAL/level/level.o
- .data          0x00000000        0x0 build/HAL/level/level.o
- .bss           0x00000000        0x0 build/HAL/level/level.o
- .comment       0x00000000       0x13 build/HAL/level/level.o
+ .text          0x00000000        0x0 build/HAL/Level/level.o
+ .data          0x00000000        0x0 build/HAL/Level/level.o
+ .bss           0x00000000        0x0 build/HAL/Level/level.o
+ .comment       0x00000000       0x13 build/HAL/Level/level.o
  .text          0x00000000        0x0 build/HAL/Pump/Pump.o
  .data          0x00000000        0x0 build/HAL/Pump/Pump.o
  .bss           0x00000000        0x0 build/HAL/Pump/Pump.o
@@ -145,13 +145,48 @@ Discarded input sections
  .data          0x00000000        0x0 build/LIB/Ringbuffer/Ringbuffer.o
  .bss           0x00000000        0x0 build/LIB/Ringbuffer/Ringbuffer.o
  .text.RB_Init  0x00000000       0x16 build/LIB/Ringbuffer/Ringbuffer.o
- .text.RB_Put   0x00000000       0x4e build/LIB/Ringbuffer/Ringbuffer.o
  .text.RB_Get   0x00000000       0x58 build/LIB/Ringbuffer/Ringbuffer.o
  .text.RB_IsEmpty
                 0x00000000       0x20 build/LIB/Ringbuffer/Ringbuffer.o
  .text.RB_IsFull
                 0x00000000       0x1c build/LIB/Ringbuffer/Ringbuffer.o
- .comment       0x00000000       0x13 build/LIB/Ringbuffer/Ringbuffer.o
+ .text          0x00000000        0x0 build/Logic/Console/console.o
+ .data          0x00000000        0x0 build/Logic/Console/console.o
+ .bss           0x00000000        0x0 build/Logic/Console/console.o
+ .text.CON_CompareNoCase
+                0x00000000       0x50 build/Logic/Console/console.o
+ .text.CON_SkipSpaces
+                0x00000000       0x2a build/Logic/Console/console.o
+ .text.CON_WriteByte
+                0x00000000        0x4 build/Logic/Console/console.o
+ .text.CON_Init
+                0x00000000       0x46 build/Logic/Console/console.o
+ .rodata.CON_SendStatus.str1.1
+                0x00000000       0x3e build/Logic/Console/console.o
+ .text.CON_SendStatus
+                0x00000000        0x8 build/Logic/Console/console.o
+ .rodata.CON_SendHelp.str1.1
+                0x00000000       0x59 build/Logic/Console/console.o
+ .text.CON_SendHelp
+                0x00000000       0x50 build/Logic/Console/console.o
+ .rodata.CON_SendFaults.str1.1
+                0x00000000        0xc build/Logic/Console/console.o
+ .text.CON_SendFaults
+                0x00000000       0x28 build/Logic/Console/console.o
+ .rodata.CON_ProcessCommand.str1.1
+                0x00000000      0x112 build/Logic/Console/console.o
+ .text.CON_ProcessCommand
+                0x00000000      0x26c build/Logic/Console/console.o
+ .text.CON_Run  0x00000000       0xb2 build/Logic/Console/console.o
+ .bss.g_conLineLen
+                0x00000000        0x1 build/Logic/Console/console.o
+ .bss.g_conLine
+                0x00000000       0x29 build/Logic/Console/console.o
+ .bss.g_conFaultLog
+                0x00000000       0x93 build/Logic/Console/console.o
+ .bss.g_conRxBuffer
+                0x00000000       0x43 build/Logic/Console/console.o
+ .comment       0x00000000       0x13 build/Logic/Console/console.o
  .text          0x00000000        0x0 build/Logic/demand/demand.o
  .data          0x00000000        0x0 build/Logic/demand/demand.o
  .bss           0x00000000        0x0 build/Logic/demand/demand.o
@@ -164,6 +199,28 @@ Discarded input sections
  .bss.Global_u8PumpDemand
                 0x00000000        0x1 build/Logic/demand/demand.o
  .comment       0x00000000       0x13 build/Logic/demand/demand.o
+ .text          0x00000000        0x0 build/Logic/FaultLog/faultlog.o
+ .data          0x00000000        0x0 build/Logic/FaultLog/faultlog.o
+ .bss           0x00000000        0x0 build/Logic/FaultLog/faultlog.o
+ .text.FLG_WriteUint32
+                0x00000000       0xd6 build/Logic/FaultLog/faultlog.o
+ .text.FLG_Init
+                0x00000000       0x34 build/Logic/FaultLog/faultlog.o
+ .text.FLG_Append
+                0x00000000       0x88 build/Logic/FaultLog/faultlog.o
+ .text.FLG_GetCount
+                0x00000000       0x12 build/Logic/FaultLog/faultlog.o
+ .text.FLG_IsFull
+                0x00000000       0x16 build/Logic/FaultLog/faultlog.o
+ .text.FLG_GetNewestFirst
+                0x00000000       0x44 build/Logic/FaultLog/faultlog.o
+ .text.FLG_Clear
+                0x00000000        0xa build/Logic/FaultLog/faultlog.o
+ .rodata.FLG_Dump.str1.1
+                0x00000000        0x5 build/Logic/FaultLog/faultlog.o
+ .text.FLG_Dump
+                0x00000000      0x172 build/Logic/FaultLog/faultlog.o
+ .comment       0x00000000       0x13 build/Logic/FaultLog/faultlog.o
  .text          0x00000000        0x0 build/Logic/Flowmeter/Flowmeter.o
  .data          0x00000000        0x0 build/Logic/Flowmeter/Flowmeter.o
  .bss           0x00000000        0x0 build/Logic/Flowmeter/Flowmeter.o
@@ -283,7 +340,7 @@ Discarded input sections
  .text.UART_Init
                 0x00000000       0x42 build/MCAL/UART/UART.o
  .text.UART_SendByte
-                0x00000000        0xe build/MCAL/UART/UART.o
+                0x00000000        0xc build/MCAL/UART/UART.o
  .text.UART_ReceiveByte
                 0x00000000       0x1a build/MCAL/UART/UART.o
  .text.UART_SendString
@@ -292,9 +349,10 @@ Discarded input sections
                 0x00000000        0xa build/MCAL/UART/UART.o
  .text.UART_SetRxInterrupt
                 0x00000000       0x18 build/MCAL/UART/UART.o
+ .text.UART_SetRxBuffer
+                0x00000000        0xe build/MCAL/UART/UART.o
  .text.UART_SetTxInterrupt
                 0x00000000       0x18 build/MCAL/UART/UART.o
- .comment       0x00000000       0x13 build/MCAL/UART/UART.o
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
@@ -437,13 +495,15 @@ LOAD build/HAL/Buttons/buttons.o
 LOAD build/HAL/current/current.o
 LOAD build/HAL/floats/floats.o
 LOAD build/HAL/KeyPad/KeyPad.o
-LOAD build/HAL/level/level.o
+LOAD build/HAL/Level/level.o
 LOAD build/HAL/Pump/Pump.o
 LOAD build/HAL/SevenSegment/SevenSegment.o
 LOAD build/HAL/Shiftreg/Shiftreg.o
 LOAD build/HAL/Valve/Valve.o
 LOAD build/LIB/Ringbuffer/Ringbuffer.o
+LOAD build/Logic/Console/console.o
 LOAD build/Logic/demand/demand.o
+LOAD build/Logic/FaultLog/faultlog.o
 LOAD build/Logic/Flowmeter/Flowmeter.o
 LOAD build/Logic/interlocks/interlocks.o
 LOAD build/Logic/tank_fsm/tamk_fsm.o
@@ -560,7 +620,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x430
+.text           0x00000000      0x4d4
  *(.vectors)
  .vectors       0x00000000       0x54 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
                 0x00000000                __vector_default
@@ -622,7 +682,6 @@ END GROUP
                 0x0000008e                __bad_interrupt
                 0x0000008e                __vector_6
                 0x0000008e                __vector_11
-                0x0000008e                __vector_13
                 0x0000008e                __vector_17
                 0x0000008e                __vector_19
                 0x0000008e                __vector_7
@@ -644,44 +703,49 @@ END GROUP
  .text.startup.main
                 0x0000009a       0x50 build/main.o
                 0x0000009a                main
+ .text.RB_Put   0x000000ea       0x4e build/LIB/Ringbuffer/Ringbuffer.o
+                0x000000ea                RB_Put
  .text.GPIO_SetPinDirection
-                0x000000ea       0xe4 build/MCAL/GPIO/GPIO.o
-                0x000000ea                GPIO_SetPinDirection
+                0x00000138       0xe4 build/MCAL/GPIO/GPIO.o
+                0x00000138                GPIO_SetPinDirection
  .text.GPIO_TogglePinValue
-                0x000001ce       0x4c build/MCAL/GPIO/GPIO.o
-                0x000001ce                GPIO_TogglePinValue
+                0x0000021c       0x4c build/MCAL/GPIO/GPIO.o
+                0x0000021c                GPIO_TogglePinValue
  .text.INTERRUPT_EnableGlobal
-                0x0000021a        0xc build/MCAL/INTERRUPT/INTERRUPT.o
-                0x0000021a                INTERRUPT_EnableGlobal
+                0x00000268        0xc build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00000268                INTERRUPT_EnableGlobal
  .text.EXTI_SetSense
-                0x00000226       0x54 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00000226                EXTI_SetSense
+                0x00000274       0x54 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00000274                EXTI_SetSense
  .text.EXTI_Enable
-                0x0000027a       0x3c build/MCAL/INTERRUPT/INTERRUPT.o
-                0x0000027a                EXTI_Enable
+                0x000002c8       0x3c build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000002c8                EXTI_Enable
  .text.EXTI_SetCallback
-                0x000002b6       0x3a build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000002b6                EXTI_SetCallback
+                0x00000304       0x3a build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00000304                EXTI_SetCallback
  .text.__vector_1
-                0x000002f0       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000002f0                __vector_1
+                0x0000033e       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x0000033e                __vector_1
  .text.__vector_2
-                0x00000342       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00000342                __vector_2
+                0x00000390       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00000390                __vector_2
  .text.__vector_3
-                0x00000394       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00000394                __vector_3
+                0x000003e2       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000003e2                __vector_3
  .text.TIMER0_Init
-                0x000003e6       0x16 build/MCAL/TIMER/TIMER.o
-                0x000003e6                TIMER0_Init
+                0x00000434       0x16 build/MCAL/TIMER/TIMER.o
+                0x00000434                TIMER0_Init
  .text.TIMER0_DelayMS
-                0x000003fc       0x30 build/MCAL/TIMER/TIMER.o
-                0x000003fc                TIMER0_DelayMS
-                0x0000042c                        . = ALIGN (0x2)
+                0x0000044a       0x30 build/MCAL/TIMER/TIMER.o
+                0x0000044a                TIMER0_DelayMS
+ .text.__vector_13
+                0x0000047a       0x56 build/MCAL/UART/UART.o
+                0x0000047a                __vector_13
+                0x000004d0                        . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000042c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
-                0x0000042c                _exit
-                0x0000042c                exit
+ .fini9         0x000004d0        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+                0x000004d0                _exit
+                0x000004d0                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -700,18 +764,18 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000042c        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x000004d0        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
  *(.hightext)
  *(.hightext*)
  *(.progmemx)
  *(.progmemx.*)
-                0x00000430                        . = ALIGN (0x2)
+                0x000004d4                        . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
-                0x00000430                        _etext = .
+                0x000004d4                        _etext = .
 
-.data           0x00800060        0x0 load address 0x00000430
+.data           0x00800060        0x0 load address 0x000004d4
                 0x00800060                        PROVIDE (__data_start = .)
  *(.data)
  *(.data*)
@@ -723,7 +787,7 @@ END GROUP
                 0x00800060                        _edata = .
                 0x00800060                        PROVIDE (__data_end = .)
 
-.bss            0x00800060        0x6
+.bss            0x00800060        0x8
                 0x00800060                        PROVIDE (__bss_start = .)
  *(.bss)
  *(.bss*)
@@ -733,16 +797,18 @@ END GROUP
                 0x00800062        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
  .bss.EXTI_INT0_Callback
                 0x00800064        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
+ .bss.g_uartRxBuffer
+                0x00800066        0x2 build/MCAL/UART/UART.o
  *(COMMON)
-                0x00800066                        PROVIDE (__bss_end = .)
-                0x00000430                        __data_load_start = LOADADDR (.data)
-                0x00000430                        __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00800068                        PROVIDE (__bss_end = .)
+                0x000004d4                        __data_load_start = LOADADDR (.data)
+                0x000004d4                        __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800066        0x0
+.noinit         0x00800068        0x0
                 [!provide]                        PROVIDE (__noinit_start = .)
  *(.noinit .noinit.* .gnu.linkonce.n.*)
                 [!provide]                        PROVIDE (__noinit_end = .)
-                0x00800066                        _end = .
+                0x00800068                        _end = .
                 [!provide]                        PROVIDE (__heap_start = .)
                 0x00000000                        __flmap_init_label = DEFINED (__flmap_noinit_start)?__flmap_noinit_start:0x0
                 0x00000000                        __flmap = DEFINED (__flmap)?__flmap:0x0
@@ -785,11 +851,15 @@ END GROUP
  *(.comment)
  .comment       0x00000000       0x12 build/main.o
                                  0x13 (size before relaxing)
+ .comment       0x00000012        0x0 build/LIB/Ringbuffer/Ringbuffer.o
+                                 0x13 (size before relaxing)
  .comment       0x00000012        0x0 build/MCAL/GPIO/GPIO.o
                                  0x13 (size before relaxing)
  .comment       0x00000012        0x0 build/MCAL/INTERRUPT/INTERRUPT.o
                                  0x13 (size before relaxing)
  .comment       0x00000012        0x0 build/MCAL/TIMER/TIMER.o
+                                 0x13 (size before relaxing)
+ .comment       0x00000012        0x0 build/MCAL/UART/UART.o
                                  0x13 (size before relaxing)
 
 .note.gnu.avr.deviceinfo

@@ -12,12 +12,19 @@
  */
 
 #include "STD_TYPES.h"
+#include "Ringbuffer.h"
 
 /*
  * Description : Set 8 data bits, no parity, 1 stop bit (8N1), then enable TX and RX
  *               at Copy_u32BaudRate. UBRR = F_CPU / (16 * baud) - 1  (normal async).
  */
 STD_ReturnType UART_Init(uint32 Copy_u32BaudRate);
+
+/*
+ * Description : Attach a ring buffer to the UART RX interrupt. Incoming bytes are
+ *               pushed into that buffer by the USART RX ISR.
+ */
+STD_ReturnType UART_SetRxBuffer(RingBuffer_t *Copy_pRxBuffer);
 
 /*
  * Description : Block until UDRE is set, then write one byte to UDR.
