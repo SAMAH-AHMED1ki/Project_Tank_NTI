@@ -27,23 +27,140 @@ typedef enum
 } STD_ReturnType;
 # 7 "Logic/tank_fsm/tamk_fsm.c" 2
 # 1 "Logic/interlocks/interlocks.h" 1
-# 12 "Logic/interlocks/interlocks.h"
+
+
+
+
+# 1 "Logic/interlocks/tank_types.h" 1
+
+
+
+
+
+
+
+typedef enum
+{
+    ST_INIT = 0,
+    ST_IDLE,
+    ST_FILLING,
+    ST_SETTLING,
+    ST_RESERVOIR_WAIT,
+    ST_TRIPPED,
+    ST_MANUAL,
+    ST_SERVICE
+
+} TankState_t;
+
+
+
+typedef enum
+{
+    TRIP_NONE = 0,
+
+    TRIP_OVERFLOW,
+    TRIP_OVERCURRENT,
+    TRIP_DRY_RESERVOIR,
+    TRIP_DRY_RUN,
+    TRIP_NO_CURRENT,
+    TRIP_MAX_RUNTIME,
+    TRIP_LEVEL_SENSOR,
+    TRIP_LEAK,
+    TRIP_NO_RISE
+
+} Trip_t;
+
+
+
+typedef struct
+{
+    uint16 levelRaw;
+    uint16 reservoirRaw;
+    uint16 currentRaw;
+
+    uint8 levelPct;
+    uint8 reservoirPct;
+
+    uint16 currentmA;
+    uint16 flowLpmX10;
+
+    uint32 totalLitres;
+
+    sint8 levelRatePctMin;
+
+    uint8 pumpOn : 1;
+    uint8 valveOn : 1;
+    uint8 highFloat : 1;
+    uint8 lowFloat : 1;
+    uint8 reserved : 4;
+
+    uint8 state;
+    uint8 activeTrip;
+
+    uint16 pumpRunSec;
+    uint32 pumpTotalSec;
+    uint16 pumpCycles;
+
+    uint32 upTimeSec;
+
+} TankData_t;
+
+
+
+
+
+
+typedef struct
+{
+    uint16 magic;
+    uint8 version;
+
+    uint8 startPct;
+    uint8 stopPct;
+    uint8 reserveMinPct;
+    uint8 overflowPct;
+
+    uint8 overCurrentA_X10;
+    uint8 minCurrentA_X10;
+    uint8 minFlowLpm;
+
+    uint16 maxRunSec;
+    uint16 minOffSec;
+
+    uint8 leakDropPct;
+
+    uint32 totalLitres;
+    uint32 pumpTotalSec;
+    uint16 pumpCycles;
+
+    uint8 faultHead;
+    uint8 checksum;
+
+} TankCfg_t;
+# 6 "Logic/interlocks/interlocks.h" 2
+
 STD_ReturnType INT_Init(void);
+# 17 "Logic/interlocks/interlocks.h"
+Trip_t ILK_Evaluate(const TankData_t *Copy_pstData);
 
 
-STD_ReturnType INT_Update(void);
 
 
-uint8 INT_IsSystemTripped(void);
+
+
+
+STD_ReturnType ILK_Reset(void);
 # 8 "Logic/tank_fsm/tamk_fsm.c" 2
 # 1 "Logic/demand/demand.h" 1
-# 12 "Logic/demand/demand.h"
+
+
+
+
+# 1 "Logic/interlocks/tank_types.h" 1
+# 6 "Logic/demand/demand.h" 2
+
 STD_ReturnType DEM_Init(void);
-
-
-STD_ReturnType DEM_Update(void);
-
-
+STD_ReturnType DEM_Update(const TankData_t *Copy_pstData);
 uint8 DEM_GetPumpDemand(void);
 # 9 "Logic/tank_fsm/tamk_fsm.c" 2
 # 1 "Logic/tank_fsm/tank_fsm.h" 1

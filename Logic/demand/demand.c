@@ -4,38 +4,47 @@
  */
 
 #include "STD_TYPES.h"
-#include "level_interface.h"
-#include "floats.h"
-#include "interlocks.h"
 #include "demand.h"
 
-static uint8 Global_u8PumpDemand = 0;
+#define DEM_START_LEVEL_PCT 30u
+#define DEM_STOP_LEVEL_PCT 90u
+
+static uint8 Global_u8PumpDemand = 0u;
 
 STD_ReturnType DEM_Init(void)
 {
-    Global_u8PumpDemand = 0;
+    Global_u8PumpDemand = 0u;
+
     return E_OK;
 }
 
-STD_ReturnType DEM_Update(void)
+STD_ReturnType DEM_Update(const TankData_t *Copy_pstData)
 {
-    /* لو النظام في حالة فصل طوارئ (Trip)، ممنوع تماماً تشغيل المضخة */
-    if (INT_IsSystemTripped() == 1)
+    if (Copy_pstData == NULL)
     {
-        Global_u8PumpDemand = 0;
-        return E_OK;
+        return E_NOK;
     }
 
-    /* مثال للمنطق: لو مفتاح التعويم السفلي بيشير لوجود نقص، أو الـ level قليل */
-    /* (يمكن تعديل الشرط حسب تصميم المشروع الدقيق لمستويات الخزان) */
-    if (FLT_IsLowActive() == 1)
+    /*
+     * Start filling below 30%
+     */
+    if (Copy_pstData->levelPct < DEM_START_LEVEL_PCT)
     {
-        Global_u8PumpDemand = 1; /* اطلب تشغيل المضخة */
+        Global_u8PumpDemand = 1u;
     }
-    else if (FLT_IsHighActive() == 1)
+
+    /*
+     * Stop filling above 90%
+     */
+    else if (Copy_pstData->levelPct > DEM_STOP_LEVEL_PCT)
     {
-        Global_u8PumpDemand = 0; /* الخزان اتملى، أوقف الطلب */
+        Global_u8PumpDemand = 0u;
     }
+
+    /*
+     * Between 30% and 90%:
+     * keep the previous demand.
+     */
 
     return E_OK;
 }

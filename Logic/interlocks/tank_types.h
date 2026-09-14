@@ -1,43 +1,9 @@
-# 0 "Logic/demand/demand.c"
-# 0 "<built-in>"
-# 0 "<command-line>"
-# 1 "Logic/demand/demand.c"
+#ifndef TANK_TYPES_H_
+#define TANK_TYPES_H_
 
+#include "STD_TYPES.h"
 
-
-
-
-# 1 "LIB/STD_TYPES.h" 1
-# 12 "LIB/STD_TYPES.h"
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned long uint32;
-typedef signed char sint8;
-typedef signed short sint16;
-typedef signed long sint32;
-
-typedef unsigned char uint8_h;
-
-typedef enum
-{
-    E_OK = 0,
-    E_NOK = 1,
-    E_PORT_NOT_VALID = 2,
-    E_PIN_NOT_VALID = 3,
-} STD_ReturnType;
-# 7 "Logic/demand/demand.c" 2
-# 1 "Logic/demand/demand.h" 1
-
-
-
-
-# 1 "Logic/interlocks/tank_types.h" 1
-
-
-
-
-
-
+/* ================= Tank States ================= */
 
 typedef enum
 {
@@ -52,7 +18,7 @@ typedef enum
 
 } TankState_t;
 
-
+/* ================= Trip Types ================= */
 
 typedef enum
 {
@@ -70,7 +36,7 @@ typedef enum
 
 } Trip_t;
 
-
+/* ================= Shared Tank Data ================= */
 
 typedef struct
 {
@@ -105,10 +71,10 @@ typedef struct
 
 } TankData_t;
 
+/* ================= Configuration ================= */
 
-
-
-
+#define TNK_MAGIC 0x5754u
+#define TNK_VERSION 0x01u
 
 typedef struct
 {
@@ -137,57 +103,5 @@ typedef struct
     uint8 checksum;
 
 } TankCfg_t;
-# 6 "Logic/demand/demand.h" 2
 
-STD_ReturnType DEM_Init(void);
-STD_ReturnType DEM_Update(const TankData_t *Copy_pstData);
-uint8 DEM_GetPumpDemand(void);
-# 8 "Logic/demand/demand.c" 2
-
-
-
-
-static uint8 Global_u8PumpDemand = 0u;
-
-STD_ReturnType DEM_Init(void)
-{
-    Global_u8PumpDemand = 0u;
-
-    return E_OK;
-}
-
-STD_ReturnType DEM_Update(const TankData_t *Copy_pstData)
-{
-    if (Copy_pstData == ((void *)0))
-    {
-        return E_NOK;
-    }
-
-
-
-
-    if (Copy_pstData->levelPct < 30u)
-    {
-        Global_u8PumpDemand = 1u;
-    }
-
-
-
-
-    else if (Copy_pstData->levelPct > 90u)
-    {
-        Global_u8PumpDemand = 0u;
-    }
-
-
-
-
-
-
-    return E_OK;
-}
-
-uint8 DEM_GetPumpDemand(void)
-{
-    return Global_u8PumpDemand;
-}
+#endif
