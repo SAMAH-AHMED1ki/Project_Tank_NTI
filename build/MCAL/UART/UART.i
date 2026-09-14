@@ -85,9 +85,9 @@ STD_ReturnType UART_Init(uint32 Copy_u32BaudRate){
 
 
 STD_ReturnType UART_SendByte(uint8 Copy_u8Data){
-    while(READ_BIT((*(volatile uint8 *)0x2B),5)==0){
-        (*(volatile uint8 *)0x2C)=Copy_u8Data;
+    while(((((*(volatile uint8 *)0x2B)) >> (5)) & 1u)==0){
     }
+    (*(volatile uint8 *)0x2C)=Copy_u8Data;
     return E_OK;
 }
 
@@ -99,9 +99,9 @@ STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data){
     if(Copy_pu8Data==((void *)0)){
         return E_NOK;
     }
-    while(READ_BIT((*(volatile uint8 *)0x2B),7)==0){
-        *Copy_pu8Data = (*(volatile uint8 *)0x2C);
+    while(((((*(volatile uint8 *)0x2B)) >> (7)) & 1u)==0){
     }
+    *Copy_pu8Data = (*(volatile uint8 *)0x2C);
     return E_OK;
 }
 
@@ -125,7 +125,7 @@ STD_ReturnType UART_SendString(const uint8 *Copy_pu8String){
 
 
 STD_ReturnType UART_IsDataReady(void){
-    if(READ_BIT((*(volatile uint8 *)0x2B),7)==1)
+    if(((((*(volatile uint8 *)0x2B)) >> (7)) & 1u)==1)
         return E_OK;
     else
         return E_NOK;
