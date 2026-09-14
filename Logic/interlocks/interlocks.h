@@ -1,20 +1,27 @@
-/*
- * Author: Samah Ahmed Mahmoud Ahmed
- * Module: Application Interlocks & Safety Layer - Header
- */
-
 #ifndef INTERLOCKS_H_
 #define INTERLOCKS_H_
 
 #include "STD_TYPES.h"
+#include "tank_types.h"
 
-/* تهيئة نظام الحماية والإنذارات */
 STD_ReturnType INT_Init(void);
 
-/* تحديث وفحص شروط الحماية بصفة دورية */
-STD_ReturnType INT_Update(void);
+/*
+ * Must be called every 10 ms.
+ *
+ * Evaluates all safety interlocks according to the
+ * fixed priority defined by the project specification.
+ *
+ * Returns the currently latched trip, or TRIP_NONE.
+ */
+Trip_t ILK_Evaluate(const TankData_t *Copy_pstData);
 
-/* التحقق هل هناك حالة طوارئ أو فصل (Trip) حالياً؟ */
-uint8 INT_IsSystemTripped(void);
+/*
+ * Requests clearing of the currently latched trip.
+ *
+ * The trip is cleared only when its own clear condition
+ * is satisfied.
+ */
+STD_ReturnType ILK_Reset(void);
 
-#endif /* INTERLOCKS_H_ */
+#endif

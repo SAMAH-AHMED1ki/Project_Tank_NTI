@@ -64,44 +64,91 @@ STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
 # 11 "HAL/floats/floats.h"
 STD_ReturnType FLT_Init(void);
 STD_ReturnType FLT_Update(void);
+
 uint8 FLT_IsHighActive(void);
 uint8 FLT_IsLowActive(void);
 # 9 "HAL/floats/floats.c" 2
-# 17 "HAL/floats/floats.c"
-static uint8 Global_u8HighState = 0;
-static uint8 Global_u8LowState = 0;
+# 22 "HAL/floats/floats.c"
+static uint8 Global_u8HighState = 0u;
+static uint8 Global_u8LowState = 0u;
 
 STD_ReturnType FLT_Init(void)
 {
-    STD_ReturnType Local_Status = E_OK;
+    STD_ReturnType Local_Status;
 
 
-    Local_Status &= GPIO_SetPinDirection(0u, 0u, 2u);
-    Local_Status &= GPIO_SetPinDirection(0u, 1u, 2u);
+    Local_Status =
+        GPIO_SetPinDirection(
+            3u,
+            2u,
+            2u);
 
-    Global_u8HighState = 0;
-    Global_u8LowState = 0;
+    if (Local_Status != E_OK)
+    {
+        return E_NOK;
+    }
 
-    return Local_Status;
+
+    Local_Status =
+        GPIO_SetPinDirection(
+            3u,
+            6u,
+            2u);
+
+    if (Local_Status != E_OK)
+    {
+        return E_NOK;
+    }
+
+
+    Global_u8HighState = 0u;
+    Global_u8LowState = 0u;
+
+    return E_OK;
 }
 
 STD_ReturnType FLT_Update(void)
 {
-    uint8 Local_u8PinHighVal = 0;
-    uint8 Local_u8PinLowVal = 0;
-    STD_ReturnType Local_Status = E_OK;
+    uint8 Local_u8PinHighVal = 0u;
+    uint8 Local_u8PinLowVal = 0u;
+    STD_ReturnType Local_Status;
 
 
-    Local_Status |= GPIO_GetPinValue(0u, 0u, &Local_u8PinHighVal);
-    Local_Status |= GPIO_GetPinValue(0u, 1u, &Local_u8PinLowVal);
+    Local_Status =
+        GPIO_GetPinValue(
+            3u,
+            2u,
+            &Local_u8PinHighVal);
 
-    if (Local_Status == E_OK)
+    if (Local_Status != E_OK)
     {
-        Global_u8HighState = Local_u8PinHighVal;
-        Global_u8LowState = Local_u8PinLowVal;
+        return E_NOK;
     }
 
-    return Local_Status;
+
+    Local_Status =
+        GPIO_GetPinValue(
+            3u,
+            6u,
+            &Local_u8PinLowVal);
+
+    if (Local_Status != E_OK)
+    {
+        return E_NOK;
+    }
+
+
+
+
+
+
+    Global_u8HighState =
+        (Local_u8PinHighVal == 0u) ? 1u : 0u;
+
+    Global_u8LowState =
+        (Local_u8PinLowVal == 0u) ? 1u : 0u;
+
+    return E_OK;
 }
 
 uint8 FLT_IsHighActive(void)
