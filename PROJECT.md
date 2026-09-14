@@ -121,7 +121,6 @@ remaining modules listed below.
 
 #### SPI and flow owner
 
-- `common.h/.c`
 - `spi.c/.h`
 - `shiftreg.c/.h`
 - `counter.c/.h`
