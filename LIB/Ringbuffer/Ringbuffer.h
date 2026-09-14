@@ -9,14 +9,14 @@
  * console polls (e.g. one full command line). Increase if TC-43
  * (40-char line test) overflows it.
  */
-#define RB_BUFFER_SIZE   32U
+#define RB_BUFFER_SIZE 64U
 
 typedef struct
 {
     uint8 buffer[RB_BUFFER_SIZE];
-    uint8 head;   /* next index to write */
-    uint8 tail;   /* next index to read  */
-    uint8 count;  /* number of bytes currently stored */
+    volatile uint8 head;   /* next index to write */
+    volatile uint8 tail;   /* next index to read  */
+    volatile uint8 count;  /* number of bytes currently stored */
 } RingBuffer_t;
 
 /*
