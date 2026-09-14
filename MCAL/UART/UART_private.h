@@ -34,5 +34,34 @@
  */
 
 /* TODO: map UDR, UCSRA, UCSRB, UCSRC, UBRRL, UBRRH and the bit names. */
+#define UDR     (*(volatile uint8 *)0x2C)
+#define UCSRA   (*(volatile uint8 *)0x2B)
+#define UCSRB   (*(volatile uint8 *)0x2A)
+#define UCSRC   (*(volatile uint8 *)0x40)
+#define UBRRL   (*(volatile uint8 *)0x29)
+#define UBRRH   (*(volatile uint8 *)0x40)
+// Bit names
+#define UDRE    5
+#define RXC     7
+#define RXEN    4
+#define TXEN    3
+#define RXCIE 7
+#define UDRIE 5
+//8N1 configuration
+#define URSEL   7
+#define UMSEL   6
+#define UPM1    5
+#define UPM0    4
+#define USBS    3
+#define UCSZ2   2
+#define UCSZ1   1
+#define UCSZ0   0
+#define UCPOL   0
+// Baud helper
+#define BRUD_PRESCALER(baud) ((uint16)((8000000UL / (16UL * (baud))) - 1))
+
+
+
+
 
 #endif /* UART_PRIVATE_H */
