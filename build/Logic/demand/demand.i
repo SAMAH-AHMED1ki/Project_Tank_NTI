@@ -26,7 +26,53 @@ typedef enum
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
 # 7 "Logic/demand/demand.c" 2
-# 1 "HAL/level/level_interface.h" 1
+# 1 "HAL/Level/level_interface.h" 1
+
+
+
+
+# 1 "MCAL/ADC/ADC_interface.h" 1
+# 46 "MCAL/ADC/ADC_interface.h"
+STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler);
+
+
+
+
+
+STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading);
+
+
+
+
+STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel);
+
+
+
+
+
+STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
+
+
+
+
+
+STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
+# 6 "HAL/Level/level_interface.h" 2
+
+typedef enum
+{
+    LEVEL_BAND_CRITICAL_LOW = 0,
+    LEVEL_BAND_LOW,
+    LEVEL_BAND_NORMAL,
+    LEVEL_BAND_HIGH,
+    LEVEL_BAND_OVERFLOW
+} LevelBand_t;
+
+STD_ReturnType LEVEL_Init(uint8 adcChannel);
+
+STD_ReturnType LEVEL_ReadPercentage(uint8 adcChannel, uint8 *pPercentage);
+
+STD_ReturnType LEVEL_GetBand(uint8 levelPercent, LevelBand_t *pBand);
 # 8 "Logic/demand/demand.c" 2
 # 1 "HAL/floats/floats.h" 1
 # 11 "HAL/floats/floats.h"

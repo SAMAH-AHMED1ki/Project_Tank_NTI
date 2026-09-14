@@ -48,13 +48,19 @@ Discarded input sections
  .data          0x00000000        0x0 build/HAL/current/current.o
  .bss           0x00000000        0x0 build/HAL/current/current.o
  .text.CUR_Init
-                0x00000000        0xe build/HAL/current/current.o
+                0x00000000       0x42 build/HAL/current/current.o
  .text.CUR_Update
-                0x00000000       0x94 build/HAL/current/current.o
+                0x00000000       0xe6 build/HAL/current/current.o
  .text.CUR_GetmA
                 0x00000000       0x1e build/HAL/current/current.o
  .text.CUR_IsOverLimit
                 0x00000000       0x16 build/HAL/current/current.o
+ .bss.Global_u32SampleSum
+                0x00000000        0x4 build/HAL/current/current.o
+ .bss.Global_u8SampleIndex
+                0x00000000        0x1 build/HAL/current/current.o
+ .bss.Global_u16Samples
+                0x00000000        0x8 build/HAL/current/current.o
  .bss.Global_u16CurrentmA
                 0x00000000        0x2 build/HAL/current/current.o
  .comment       0x00000000       0x13 build/HAL/current/current.o
@@ -82,16 +88,16 @@ Discarded input sections
  .text.KeyPad_GetPressedKey
                 0x00000000       0xca build/HAL/KeyPad/KeyPad.o
  .comment       0x00000000       0x13 build/HAL/KeyPad/KeyPad.o
- .text          0x00000000        0x0 build/HAL/level/level.o
- .data          0x00000000        0x0 build/HAL/level/level.o
- .bss           0x00000000        0x0 build/HAL/level/level.o
+ .text          0x00000000        0x0 build/HAL/Level/level.o
+ .data          0x00000000        0x0 build/HAL/Level/level.o
+ .bss           0x00000000        0x0 build/HAL/Level/level.o
  .text.LEVEL_Init
-                0x00000000        0x8 build/HAL/level/level.o
+                0x00000000        0x8 build/HAL/Level/level.o
  .text.LEVEL_ReadPercentage
-                0x00000000       0xcc build/HAL/level/level.o
+                0x00000000       0xcc build/HAL/Level/level.o
  .text.LEVEL_GetBand
-                0x00000000       0x3a build/HAL/level/level.o
- .comment       0x00000000       0x13 build/HAL/level/level.o
+                0x00000000       0x3a build/HAL/Level/level.o
+ .comment       0x00000000       0x13 build/HAL/Level/level.o
  .text          0x00000000        0x0 build/HAL/Pump/Pump.o
  .data          0x00000000        0x0 build/HAL/Pump/Pump.o
  .bss           0x00000000        0x0 build/HAL/Pump/Pump.o
@@ -443,7 +449,7 @@ LOAD build/HAL/Buttons/buttons.o
 LOAD build/HAL/current/current.o
 LOAD build/HAL/floats/floats.o
 LOAD build/HAL/KeyPad/KeyPad.o
-LOAD build/HAL/level/level.o
+LOAD build/HAL/Level/level.o
 LOAD build/HAL/Pump/Pump.o
 LOAD build/HAL/SevenSegment/SevenSegment.o
 LOAD build/HAL/Shiftreg/Shiftreg.o

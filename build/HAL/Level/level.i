@@ -1,7 +1,7 @@
-# 0 "HAL/level/level.c"
+# 0 "HAL/Level/level.c"
 # 0 "<built-in>"
 # 0 "<command-line>"
-# 1 "HAL/level/level.c"
+# 1 "HAL/Level/level.c"
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
 typedef unsigned char uint8;
@@ -20,7 +20,7 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 2 "HAL/level/level.c" 2
+# 2 "HAL/Level/level.c" 2
 # 1 "MCAL/ADC/ADC_interface.h" 1
 # 46 "MCAL/ADC/ADC_interface.h"
 STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler);
@@ -47,8 +47,8 @@ STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
 
 
 STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
-# 3 "HAL/level/level.c" 2
-# 1 "HAL/level/LEVEL_interface.h" 1
+# 3 "HAL/Level/level.c" 2
+# 1 "HAL/Level/LEVEL_interface.h" 1
 
 
 
@@ -69,8 +69,8 @@ STD_ReturnType LEVEL_Init(uint8 adcChannel);
 STD_ReturnType LEVEL_ReadPercentage(uint8 adcChannel, uint8 *pPercentage);
 
 STD_ReturnType LEVEL_GetBand(uint8 levelPercent, LevelBand_t *pBand);
-# 4 "HAL/level/level.c" 2
-# 12 "HAL/level/level.c"
+# 4 "HAL/Level/level.c" 2
+# 12 "HAL/Level/level.c"
 STD_ReturnType LEVEL_Init(uint8 adcChannel)
 {
     return ADC_Init(1u, 6u);
