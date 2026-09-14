@@ -92,6 +92,7 @@ STD_ReturnType UART_SendByte(uint8 Copy_u8Data)
     {
         (*(volatile uint8 *)0x2C) = Copy_u8Data;
     }
+
     return E_OK;
 }
 
@@ -109,6 +110,7 @@ STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data)
     {
         *Copy_pu8Data = (*(volatile uint8 *)0x2C);
     }
+
     return E_OK;
 }
 

@@ -5,18 +5,6 @@ __SREG__ = 0x3f
 __tmp_reg__ = 0
 __zero_reg__ = 1
 	.text
-	.section	.text.INT0_Handler,"ax",@progbits
-.global	INT0_Handler
-	.type	INT0_Handler, @function
-INT0_Handler:
-/* prologue: function */
-/* frame size = 0 */
-/* stack size = 0 */
-.L__stack_usage = 0
-	ldi r22,lo8(6)
-	ldi r24,0
-	jmp GPIO_TogglePinValue
-	.size	INT0_Handler, .-INT0_Handler
 	.section	.text.startup.main,"ax",@progbits
 .global	main
 	.type	main, @function
@@ -25,36 +13,51 @@ main:
 /* frame size = 0 */
 /* stack size = 0 */
 .L__stack_usage = 0
-	ldi r20,lo8(1)
-	ldi r22,lo8(5)
-	ldi r24,0
-	call GPIO_SetPinDirection
-	ldi r20,lo8(1)
-	ldi r22,lo8(6)
-	ldi r24,0
-	call GPIO_SetPinDirection
-	ldi r20,0
-	ldi r22,lo8(2)
-	ldi r24,lo8(3)
-	call GPIO_SetPinDirection
+	ldi r24,lo8(1)
+	call SPI_InitMaster
+	call SHIFTREG_Init
 	call TIMER0_Init
-	ldi r22,lo8(1)
+	call FLOWMETER_Init
+	ldi r24,lo8(-1)
+	call SHIFTREG_SendByte
+	ldi r24,lo8(1)
+	ldi r25,0
+	call TIMER0_DelayS
 	ldi r24,0
-	call EXTI_SetSense
-	ldi r22,lo8(gs(INT0_Handler))
-	ldi r23,hi8(gs(INT0_Handler))
-	ldi r24,0
-	call EXTI_SetCallback
-	ldi r24,0
-	call EXTI_Enable
-	call INTERRUPT_EnableGlobal
+	call SHIFTREG_SendByte
+	ldi r24,lo8(1)
+	ldi r25,0
+	call TIMER0_DelayS
+.L8:
+	ldi r29,0
+.L10:
+	ldi r28,0
+.L2:
+	ldi r24,lo8(1)
+	ldi r25,0
+	call TIMER0_DelayS
+	call FLOWMETER_Update1Hz
+	cpi r29,lo8(1)
+	brlo .L3
+	breq .L4
+	call FLOWMETER_GetTotalMilliliters
+	mov r24,r22
+	rjmp .L11
 .L3:
-	ldi r22,lo8(5)
-	ldi r24,0
-	call GPIO_TogglePinValue
-	ldi r24,lo8(-24)
-	ldi r25,lo8(3)
-	call TIMER0_DelayMS
-	rjmp .L3
+	call FLOWMETER_GetPulsesPerSec
+.L11:
+	call SHIFTREG_SendByte
+	subi r28,lo8(-(1))
+	ldi r24,lo8(1)
+	add r24,r29
+	cpi r28,lo8(3)
+	brne .L2
+	cpi r24,lo8(3)
+	brsh .L8
+	mov r29,r24
+	rjmp .L10
+.L4:
+	call FLOWMETER_GetFlowLpmX10
+	rjmp .L11
 	.size	main, .-main
 	.ident	"GCC: (GNU) 15.2.0"

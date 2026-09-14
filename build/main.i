@@ -2,7 +2,7 @@
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "main.c"
-# 12 "main.c"
+# 72 "main.c"
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
 typedef unsigned char uint8;
@@ -21,41 +21,41 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 13 "main.c" 2
-# 1 "MCAL/GPIO/GPIO_interface.h" 1
-# 41 "MCAL/GPIO/GPIO_interface.h"
-STD_ReturnType GPIO_SetPinDirection(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Direction);
+# 73 "main.c" 2
+# 1 "MCAL/SPI/SPI_interface.h" 1
+# 30 "MCAL/SPI/SPI_interface.h"
+STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
 
 
 
 
-STD_ReturnType GPIO_SetPinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Value);
+STD_ReturnType SPI_InitSlave(void);
 
 
 
 
-STD_ReturnType GPIO_GetPinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 *Copy_pu8Value);
+
+STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received);
 
 
 
 
-STD_ReturnType GPIO_TogglePinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin);
+
+STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
+STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
+# 74 "main.c" 2
+# 1 "HAL/Shiftreg/Shiftreg_interface.h" 1
 
 
 
 
-STD_ReturnType GPIO_SetPortDirection(uint8 Copy_u8Port, uint8 Copy_u8Direction);
 
 
+STD_ReturnType SHIFTREG_Init(void);
 
 
-STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
-
-
-
-
-STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 14 "main.c" 2
+STD_ReturnType SHIFTREG_SendByte(uint8 Copy_u8Data);
+# 75 "main.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -119,81 +119,93 @@ uint16 TIMER1_GetCounter(void);
 
 
 STD_ReturnType TIMER1_ResetCounter(void);
-# 15 "main.c" 2
-# 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
-# 30 "MCAL/INTERRUPT/INTERRUPT_interface.h"
-STD_ReturnType INTERRUPT_EnableGlobal(void);
-
-
-
-
-STD_ReturnType INTERRUPT_DisableGlobal(void);
-
-
-
-
-
-STD_ReturnType EXTI_SetSense(uint8 Copy_u8Int, uint8 Copy_u8Sense);
-
-
-
-
-
-STD_ReturnType EXTI_Enable(uint8 Copy_u8Int);
-
-
-
-
-STD_ReturnType EXTI_Disable(uint8 Copy_u8Int);
-
-
-
-
-STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
-
-typedef void (*EXTI_CallbackType)(void);
-
-STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
-# 16 "main.c" 2
+# 76 "main.c" 2
 # 1 "Logic/Flowmeter/Flowmeter_interface.h" 1
-# 10 "Logic/Flowmeter/Flowmeter_interface.h"
+# 11 "Logic/Flowmeter/Flowmeter_interface.h"
 STD_ReturnType FLOWMETER_Init(void);
 
 
-STD_ReturnType FLOWMETER_StartMeasurement(void);
 
 
-STD_ReturnType FLOWMETER_GetPulseCount(uint16 *Copy_pu16PulseCount);
 
 
-STD_ReturnType FLOWMETER_GetLiters(uint16 *Copy_pu16Liters);
+
+STD_ReturnType FLOWMETER_Update1Hz(void);
 
 
-STD_ReturnType FLOWMETER_ResetMeasurement(void);
-# 17 "main.c" 2
+uint16 FLOWMETER_GetPulsesPerSec(void);
 
-void INT0_Handler(void);
+
+uint16 FLOWMETER_GetFlowLpmX10(void);
+
+
+
+
+uint32 FLOWMETER_GetTotalMilliliters(void);
+
+
+
+
+
+STD_ReturnType FLOWMETER_ResetTotaliser(void);
+# 77 "main.c" 2
+
+
+
 int main(void)
 {
+    uint8 Local_u8SecInPhase = 0u;
+    uint8 Local_u8Phase = 0u;
+    uint16 Local_u16Value16;
+    uint32 Local_u32Value32;
 
-    GPIO_SetPinDirection(0u, 5u, 1u);
-    GPIO_SetPinDirection(0u, 6u, 1u);
-    GPIO_SetPinDirection(3u, 2u, 0u);
+    SPI_InitMaster(1u);
+    SHIFTREG_Init();
     TIMER0_Init();
+    FLOWMETER_Init();
 
-    EXTI_SetSense(0u, 1u);
-    EXTI_SetCallback(0u, INT0_Handler);
-    EXTI_Enable(0u);
-    INTERRUPT_EnableGlobal();
+
+    SHIFTREG_SendByte(0xFFu);
+    TIMER0_DelayS(1);
+    SHIFTREG_SendByte(0x00u);
+    TIMER0_DelayS(1);
+
+
     while (1)
     {
-        GPIO_TogglePinValue(0u, 5u);
-        TIMER0_DelayMS(1000);
+        TIMER0_DelayS(1);
+        FLOWMETER_Update1Hz();
+
+        switch (Local_u8Phase)
+        {
+        case 0:
+            Local_u16Value16 = FLOWMETER_GetPulsesPerSec();
+            SHIFTREG_SendByte((uint8)Local_u16Value16);
+            break;
+
+        case 1:
+            Local_u16Value16 = FLOWMETER_GetFlowLpmX10();
+            SHIFTREG_SendByte((uint8)Local_u16Value16);
+            break;
+
+        case 2:
+        default:
+            Local_u32Value32 = FLOWMETER_GetTotalMilliliters();
+            SHIFTREG_SendByte((uint8)Local_u32Value32);
+            break;
+        }
+
+        Local_u8SecInPhase++;
+        if (Local_u8SecInPhase >= 3u)
+        {
+            Local_u8SecInPhase = 0u;
+            Local_u8Phase++;
+            if (Local_u8Phase >= 3u)
+            {
+                Local_u8Phase = 0u;
+            }
+        }
     }
 
     return 0;
-}
-void INT0_Handler(void)
-{
-    GPIO_TogglePinValue(0u, 6u);
 }

@@ -120,92 +120,96 @@ uint16 TIMER1_GetCounter(void);
 STD_ReturnType TIMER1_ResetCounter(void);
 # 4 "Logic/Flowmeter/Flowmeter.c" 2
 # 1 "Logic/Flowmeter/Flowmeter_interface.h" 1
-# 10 "Logic/Flowmeter/Flowmeter_interface.h"
+# 11 "Logic/Flowmeter/Flowmeter_interface.h"
 STD_ReturnType FLOWMETER_Init(void);
 
 
-STD_ReturnType FLOWMETER_StartMeasurement(void);
 
 
-STD_ReturnType FLOWMETER_GetPulseCount(uint16 *Copy_pu16PulseCount);
 
 
-STD_ReturnType FLOWMETER_GetLiters(uint16 *Copy_pu16Liters);
+
+STD_ReturnType FLOWMETER_Update1Hz(void);
 
 
-STD_ReturnType FLOWMETER_ResetMeasurement(void);
+uint16 FLOWMETER_GetPulsesPerSec(void);
+
+
+uint16 FLOWMETER_GetFlowLpmX10(void);
+
+
+
+
+uint32 FLOWMETER_GetTotalMilliliters(void);
+
+
+
+
+
+STD_ReturnType FLOWMETER_ResetTotaliser(void);
 # 5 "Logic/Flowmeter/Flowmeter.c" 2
 
-
-
-
-
-
+static uint16 g_lastCount = 0u;
+static uint16 g_pulsesLastSecond = 0u;
+static uint32 g_totalPulses = 0u;
 
 STD_ReturnType FLOWMETER_Init(void)
 {
-    STD_ReturnType Local_u8ErrorState = E_OK;
-
-
-
+    STD_ReturnType Local_u8ErrorState;
 
     Local_u8ErrorState =
         GPIO_SetPinDirection(1u, 1u, 0u);
-
-
-
 
     if (Local_u8ErrorState == E_OK)
     {
         Local_u8ErrorState = TIMER1_ExternalCounterInit();
     }
 
-    return Local_u8ErrorState;
-}
 
 
-
-
-
-
-STD_ReturnType FLOWMETER_StartMeasurement(void)
-{
-    STD_ReturnType Local_u8ErrorState;
-
-    Local_u8ErrorState = TIMER1_ResetCounter();
+    g_lastCount = 0u;
+    g_pulsesLastSecond = 0u;
+    g_totalPulses = 0u;
 
     return Local_u8ErrorState;
 }
 
-
-
-
-uint16 FLOWMETER_GetPulses(void)
+STD_ReturnType FLOWMETER_Update1Hz(void)
 {
-    uint16 Local_u16Pulses;
+    uint16 Local_u16Now;
+    uint16 Local_u16Diff;
 
-    Local_u16Pulses = TIMER1_GetCounter();
+    Local_u16Now = TIMER1_GetCounter();
 
-    return Local_u16Pulses;
-}
-# 67 "Logic/Flowmeter/Flowmeter.c"
-uint16 FLOWMETER_GetMilliliters(void)
-{
-    uint16 Local_u16Pulses;
-    uint32 Local_u32Milliliters;
 
-    Local_u16Pulses = FLOWMETER_GetPulses();
 
-    Local_u32Milliliters =
-        ((uint32)Local_u16Pulses * 1000UL) / 450UL;
+    Local_u16Diff = (uint16)(Local_u16Now - g_lastCount);
+    g_lastCount = Local_u16Now;
 
-    return (uint16)Local_u32Milliliters;
+    g_pulsesLastSecond = Local_u16Diff;
+    g_totalPulses += Local_u16Diff;
+
+    return E_OK;
 }
 
-
-
-
-STD_ReturnType FLOWMETER_ResetMeasurement(void)
+uint16 FLOWMETER_GetPulsesPerSec(void)
 {
-    return TIMER1_ResetCounter();
+    return g_pulsesLastSecond;
+}
+
+uint16 FLOWMETER_GetFlowLpmX10(void)
+{
+
+    return (uint16)(((uint32)g_pulsesLastSecond * 4UL) / 3UL);
+}
+
+uint32 FLOWMETER_GetTotalMilliliters(void)
+{
+    return (uint32)((g_totalPulses * 1000UL) / 450UL);
+}
+
+STD_ReturnType FLOWMETER_ResetTotaliser(void)
+{
+    g_totalPulses = 0u;
+    return E_OK;
 }

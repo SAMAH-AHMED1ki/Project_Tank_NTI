@@ -3,84 +3,67 @@
 #include "TIMER_interface.h"
 #include "Flowmeter_interface.h"
 
-/*
- * Initialize the Flowmeter.
- *
- * Flowmeter signal is connected to:
- * PB1 / T1
- */
+static uint16 g_lastCount = 0u;
+static uint16 g_pulsesLastSecond = 0u;
+static uint32 g_totalPulses = 0u;
+
 STD_ReturnType FLOWMETER_Init(void)
 {
-    STD_ReturnType Local_u8ErrorState = E_OK;
+    STD_ReturnType Local_u8ErrorState;
 
-    /*
-     * Set PB1/T1 as input.
-     */
     Local_u8ErrorState =
         GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN1, GPIO_INPUT);
 
-    /*
-     * Initialize Timer1 as an external counter.
-     */
     if (Local_u8ErrorState == E_OK)
     {
         Local_u8ErrorState = TIMER1_ExternalCounterInit();
     }
 
-    return Local_u8ErrorState;
-}
-
-/*
- * Start a new flow measurement.
- *
- * The counter is reset to zero before starting.
- */
-STD_ReturnType FLOWMETER_StartMeasurement(void)
-{
-    STD_ReturnType Local_u8ErrorState;
-
-    Local_u8ErrorState = TIMER1_ResetCounter();
+    /* TIMER1_ExternalCounterInit() clears TCNT1, so the baseline for the
+       first wrap-safe diff is 0 too. */
+    g_lastCount = 0u;
+    g_pulsesLastSecond = 0u;
+    g_totalPulses = 0u;
 
     return Local_u8ErrorState;
 }
 
-/*
- * Return the number of pulses counted by Timer1.
- */
-uint16 FLOWMETER_GetPulses(void)
+STD_ReturnType FLOWMETER_Update1Hz(void)
 {
-    uint16 Local_u16Pulses;
+    uint16 Local_u16Now;
+    uint16 Local_u16Diff;
 
-    Local_u16Pulses = TIMER1_GetCounter();
+    Local_u16Now = TIMER1_GetCounter();
 
-    return Local_u16Pulses;
+    /* Wrap-safe: unsigned subtraction handles the 16-bit TCNT1 rollover
+       transparently. Never cast this to a signed type. */
+    Local_u16Diff = (uint16)(Local_u16Now - g_lastCount);
+    g_lastCount = Local_u16Now;
+
+    g_pulsesLastSecond = Local_u16Diff;
+    g_totalPulses += Local_u16Diff;
+
+    return E_OK;
 }
 
-/*
- * Convert pulses to milliliters.
- *
- * 450 pulses = 1 liter
- * 1 liter = 1000 milliliters
- *
- * milliliters = pulses * 1000 / 450
- */
-uint16 FLOWMETER_GetMilliliters(void)
+uint16 FLOWMETER_GetPulsesPerSec(void)
 {
-    uint16 Local_u16Pulses;
-    uint32 Local_u32Milliliters;
-
-    Local_u16Pulses = FLOWMETER_GetPulses();
-
-    Local_u32Milliliters =
-        ((uint32)Local_u16Pulses * 1000UL) / FLOWMETER_PULSES_PER_LITER;
-
-    return (uint16)Local_u32Milliliters;
+    return g_pulsesLastSecond;
 }
 
-/*
- * Reset the flow measurement counter.
- */
-STD_ReturnType FLOWMETER_ResetMeasurement(void)
+uint16 FLOWMETER_GetFlowLpmX10(void)
 {
-    return TIMER1_ResetCounter();
+    /* Lpm x10 = pulses_per_sec * 10 / 7.5 = pulses_per_sec * 4 / 3 */
+    return (uint16)(((uint32)g_pulsesLastSecond * 4UL) / 3UL);
+}
+
+uint32 FLOWMETER_GetTotalMilliliters(void)
+{
+    return (uint32)((g_totalPulses * 1000UL) / FLOWMETER_PULSES_PER_LITER);
+}
+
+STD_ReturnType FLOWMETER_ResetTotaliser(void)
+{
+    g_totalPulses = 0u;
+    return E_OK;
 }
