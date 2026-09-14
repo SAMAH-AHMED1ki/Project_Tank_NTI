@@ -31,19 +31,22 @@ Discarded input sections
  .text          0x00000000        0x0 build/HAL/Pump/Pump.o
  .data          0x00000000        0x0 build/HAL/Pump/Pump.o
  .bss           0x00000000        0x0 build/HAL/Pump/Pump.o
- .text.Pump_Init
-                0x00000000       0x42 build/HAL/Pump/Pump.o
- .text.Pump_Set
-                0x00000000       0x56 build/HAL/Pump/Pump.o
- .text.Pump_GetState
+ .text.PMP_Init
+                0x00000000       0x52 build/HAL/Pump/Pump.o
+ .text.PMP_Set  0x00000000       0x6e build/HAL/Pump/Pump.o
+ .text.PMP_GetState
                 0x00000000       0x18 build/HAL/Pump/Pump.o
- .text.Pump_GetRunSeconds
+ .text.PMP_RunSeconds
                 0x00000000       0x2a build/HAL/Pump/Pump.o
- .text.Pump_GetCycles
+ .text.PMP_TotalSeconds
                 0x00000000       0x2a build/HAL/Pump/Pump.o
- .text.Pump_Update1s
-                0x00000000       0x34 build/HAL/Pump/Pump.o
+ .text.PMP_Cycles
+                0x00000000       0x2a build/HAL/Pump/Pump.o
+ .text.PMP_Update1s
+                0x00000000       0x5a build/HAL/Pump/Pump.o
  .bss.Pump_u32Cycles
+                0x00000000        0x4 build/HAL/Pump/Pump.o
+ .bss.Pump_u32TotalSeconds
                 0x00000000        0x4 build/HAL/Pump/Pump.o
  .bss.Pump_u32RunSeconds
                 0x00000000        0x4 build/HAL/Pump/Pump.o
