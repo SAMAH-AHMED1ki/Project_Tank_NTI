@@ -85,6 +85,12 @@ Discarded input sections
  .text          0x00000000        0x0 build/HAL/level/level.o
  .data          0x00000000        0x0 build/HAL/level/level.o
  .bss           0x00000000        0x0 build/HAL/level/level.o
+ .text.LEVEL_Init
+                0x00000000        0x8 build/HAL/level/level.o
+ .text.LEVEL_ReadPercentage
+                0x00000000       0xcc build/HAL/level/level.o
+ .text.LEVEL_GetBand
+                0x00000000       0x3a build/HAL/level/level.o
  .comment       0x00000000       0x13 build/HAL/level/level.o
  .text          0x00000000        0x0 build/HAL/Pump/Pump.o
  .data          0x00000000        0x0 build/HAL/Pump/Pump.o
