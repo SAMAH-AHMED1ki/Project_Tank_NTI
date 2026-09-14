@@ -25,7 +25,6 @@ The following drivers are already implemented and should not be rewritten:
 | `STD_TYPES` | Common fixed-width types and status values | `uint8`, `uint16`, `uint32`, `Std_ReturnType`, `E_OK`, `E_NOK` |
 | `BIT_MATH` | Register bit operations | `SET_BIT`, `CLR_BIT`, `TOGGLE_BIT`, `GET_BIT` |
 | `ring_buffer` | RAM ring buffer for UART RX and fault records | `RB_Init`, `RB_Put`, `RB_Get`, `RB_IsEmpty` |
-| `common` | Shared enums and constants | `TankState_t`, `Trip_t`, system tick constants |
 
 ### 1.3 MCAL drivers
 
