@@ -60,9 +60,25 @@ Discarded input sections
  .text.SevenSegment_DisplayNumber
                 0x00000000       0x54 build/HAL/SevenSegment/SevenSegment.o
  .comment       0x00000000       0x13 build/HAL/SevenSegment/SevenSegment.o
- .text          0x00000000       0x5c build/HAL/Valve/Valve.o
+ .text          0x00000000        0x0 build/HAL/Shiftreg/Shiftreg.o
+ .data          0x00000000        0x0 build/HAL/Shiftreg/Shiftreg.o
+ .bss           0x00000000        0x0 build/HAL/Shiftreg/Shiftreg.o
+ .text.SHIFTREG_Init
+                0x00000000       0x1a build/HAL/Shiftreg/Shiftreg.o
+ .text.SHIFTREG_SendByte
+                0x00000000       0x42 build/HAL/Shiftreg/Shiftreg.o
+ .comment       0x00000000       0x13 build/HAL/Shiftreg/Shiftreg.o
+ .text          0x00000000        0x0 build/HAL/Valve/Valve.o
  .data          0x00000000        0x0 build/HAL/Valve/Valve.o
- .bss           0x00000000        0x1 build/HAL/Valve/Valve.o
+ .bss           0x00000000        0x0 build/HAL/Valve/Valve.o
+ .text.Valve_Init
+                0x00000000       0x22 build/HAL/Valve/Valve.o
+ .text.Valve_Set
+                0x00000000       0x22 build/HAL/Valve/Valve.o
+ .text.Valve_GetState
+                0x00000000       0x18 build/HAL/Valve/Valve.o
+ .bss.Valve_u8State
+                0x00000000        0x1 build/HAL/Valve/Valve.o
  .comment       0x00000000       0x13 build/HAL/Valve/Valve.o
  .text          0x00000000        0x0 build/MCAL/ADC/ADC.o
  .data          0x00000000        0x0 build/MCAL/ADC/ADC.o
@@ -105,6 +121,16 @@ Discarded input sections
  .text          0x00000000        0x0 build/MCAL/SPI/SPI.o
  .data          0x00000000        0x0 build/MCAL/SPI/SPI.o
  .bss           0x00000000        0x0 build/MCAL/SPI/SPI.o
+ .text.SPI_InitMaster
+                0x00000000       0x20 build/MCAL/SPI/SPI.o
+ .text.SPI_InitSlave
+                0x00000000       0x14 build/MCAL/SPI/SPI.o
+ .text.SPI_Transceive
+                0x00000000       0x1e build/MCAL/SPI/SPI.o
+ .text.SPI_SelectSlave
+                0x00000000       0x3c build/MCAL/SPI/SPI.o
+ .text.SPI_ReleaseSlave
+                0x00000000       0x14 build/MCAL/SPI/SPI.o
  .comment       0x00000000       0x13 build/MCAL/SPI/SPI.o
  .text          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
  .data          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
@@ -129,7 +155,7 @@ Discarded input sections
  .text.UART_Init
                 0x00000000       0x42 build/MCAL/UART/UART.o
  .text.UART_SendByte
-                0x00000000        0xc build/MCAL/UART/UART.o
+                0x00000000        0xe build/MCAL/UART/UART.o
  .text.UART_ReceiveByte
                 0x00000000       0x1a build/MCAL/UART/UART.o
  .text.UART_SendString
@@ -281,6 +307,7 @@ LOAD build/main.o
 LOAD build/HAL/KeyPad/KeyPad.o
 LOAD build/HAL/Pump/Pump.o
 LOAD build/HAL/SevenSegment/SevenSegment.o
+LOAD build/HAL/Shiftreg/Shiftreg.o
 LOAD build/HAL/Valve/Valve.o
 LOAD build/MCAL/ADC/ADC.o
 LOAD build/MCAL/GPIO/GPIO.o

@@ -59,12 +59,14 @@ UART_SendByte:
 .L__stack_usage = 0
 .L5:
 	sbis 0xb,5
-	rjmp .L5
-	out 0xc,r24
+	rjmp .L6
 	ldi r24,0
 	ldi r25,0
 /* epilogue start */
 	ret
+.L6:
+	out 0xc,r24
+	rjmp .L5
 	.size	UART_SendByte, .-UART_SendByte
 	.section	.text.UART_ReceiveByte,"ax",@progbits
 .global	UART_ReceiveByte
@@ -75,20 +77,20 @@ UART_ReceiveByte:
 /* stack size = 0 */
 .L__stack_usage = 0
 	sbiw r24,0
-	breq .L11
-.L10:
-	sbis 0xb,7
-	rjmp .L10
-	in r18,0xc
-	movw r30,r24
-	st Z,r18
-	ldi r24,0
-	ldi r25,0
-	ret
-.L11:
+	brne .L9
 	ldi r24,lo8(1)
 	ldi r25,0
 /* epilogue start */
+	ret
+.L10:
+	in r18,0xc
+	movw r30,r24
+	st Z,r18
+.L9:
+	sbis 0xb,7
+	rjmp .L10
+	ldi r24,0
+	ldi r25,0
 	ret
 	.size	UART_ReceiveByte, .-UART_ReceiveByte
 	.section	.text.UART_SendString,"ax",@progbits
@@ -105,23 +107,23 @@ UART_SendString:
 	movw r16,r24
 	ldi r28,0
 	or r24,r25
-	brne .L16
+	brne .L14
 	ldi r24,lo8(1)
 	ldi r25,0
-	rjmp .L14
-.L17:
+	rjmp .L12
+.L15:
 	call UART_SendByte
 	subi r28,lo8(-(1))
-.L16:
+.L14:
 	movw r30,r16
 	add r30,r28
 	adc r31,__zero_reg__
 	ld r24,Z
 	cpse r24,__zero_reg__
-	rjmp .L17
+	rjmp .L15
 	ldi r24,0
 	ldi r25,0
-.L14:
+.L12:
 /* epilogue start */
 	pop r28
 	pop r17
@@ -152,17 +154,17 @@ UART_SetRxInterrupt:
 /* stack size = 0 */
 .L__stack_usage = 0
 	cpi r24,lo8(1)
-	brne .L21
+	brne .L19
 	sbi 0xa,7
-.L22:
+.L20:
 	ldi r24,0
 	ldi r25,0
 	ret
-.L21:
-	brsh .L24
+.L19:
+	brsh .L22
 	cbi 0xa,7
-	rjmp .L22
-.L24:
+	rjmp .L20
+.L22:
 	ldi r24,lo8(1)
 	ldi r25,0
 /* epilogue start */
@@ -177,17 +179,17 @@ UART_SetTxInterrupt:
 /* stack size = 0 */
 .L__stack_usage = 0
 	cpi r24,lo8(1)
-	brne .L26
+	brne .L24
 	sbi 0xa,5
-.L27:
+.L25:
 	ldi r24,0
 	ldi r25,0
 	ret
-.L26:
-	brsh .L29
+.L24:
+	brsh .L27
 	cbi 0xa,5
-	rjmp .L27
-.L29:
+	rjmp .L25
+.L27:
 	ldi r24,lo8(1)
 	ldi r25,0
 /* epilogue start */

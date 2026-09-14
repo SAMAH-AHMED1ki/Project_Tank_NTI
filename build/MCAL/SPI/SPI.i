@@ -46,3 +46,136 @@ STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
 # 11 "MCAL/SPI/SPI.c" 2
 # 1 "MCAL/SPI/SPI_private.h" 1
 # 12 "MCAL/SPI/SPI.c" 2
+# 1 "MCAL/GPIO/GPIO_interface.h" 1
+# 41 "MCAL/GPIO/GPIO_interface.h"
+STD_ReturnType GPIO_SetPinDirection(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Direction);
+
+
+
+
+STD_ReturnType GPIO_SetPinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Value);
+
+
+
+
+STD_ReturnType GPIO_GetPinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 *Copy_pu8Value);
+
+
+
+
+STD_ReturnType GPIO_TogglePinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin);
+
+
+
+
+STD_ReturnType GPIO_SetPortDirection(uint8 Copy_u8Port, uint8 Copy_u8Direction);
+
+
+
+
+STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
+
+
+
+
+STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
+# 13 "MCAL/SPI/SPI.c" 2
+# 23 "MCAL/SPI/SPI.c"
+STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler)
+{
+    if (Copy_u8Prescaler > 3u)
+    {
+        return E_NOK;
+    }
+
+    (*(volatile uint8 *)0x37) |= (1u << 4u);
+    (*(volatile uint8 *)0x37) |= (1u << 5u);
+    (*(volatile uint8 *)0x37) &= ~(1u << 6u);
+    (*(volatile uint8 *)0x37) |= (1u << 7u);
+
+    (*(volatile uint8 *)0x38) |= (1u << 4u);
+
+    (*(volatile uint8 *)0x2D) = (1u << 6u) | (1u << 4u) | Copy_u8Prescaler;
+
+    (*(volatile uint8 *)0x2E) &= ~(1u << 0u);
+
+    return E_OK;
+}
+
+
+
+
+
+STD_ReturnType SPI_InitSlave(void)
+{
+    (*(volatile uint8 *)0x37) &= ~(1u << 4u);
+    (*(volatile uint8 *)0x37) &= ~(1u << 5u);
+    (*(volatile uint8 *)0x37) |= (1u << 6u);
+    (*(volatile uint8 *)0x37) &= ~(1u << 7u);
+
+    (*(volatile uint8 *)0x2D) = (1u << 6u);
+
+    (*(volatile uint8 *)0x2E) &= ~(1u << 0u);
+
+    return E_OK;
+}
+
+
+
+
+
+
+
+STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received)
+{
+    if (Copy_pu8Received == ((void *)0))
+    {
+        return E_NOK;
+    }
+
+    (*(volatile uint8 *)0x2F) = Copy_u8Sent;
+
+    while (((*(volatile uint8 *)0x2E) & (1u << 7u)) == 0u)
+    {
+    }
+
+    *Copy_pu8Received = (*(volatile uint8 *)0x2F);
+
+    return E_OK;
+}
+# 93 "MCAL/SPI/SPI.c"
+STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin)
+{
+    STD_ReturnType Local_u8Error;
+
+    Local_u8Error = GPIO_SetPinDirection(Copy_u8Port, Copy_u8Pin, 1u);
+
+    if (Local_u8Error != E_OK)
+    {
+        return E_NOK;
+    }
+
+    Local_u8Error =
+        GPIO_SetPinValue(Copy_u8Port, Copy_u8Pin, 0u);
+
+    if (Local_u8Error != E_OK)
+    {
+        return E_NOK;
+    }
+
+    return E_OK;
+}
+
+STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin)
+{
+    STD_ReturnType Local_u8Error;
+
+    Local_u8Error = GPIO_SetPinValue(Copy_u8Port, Copy_u8Pin, 1u);
+
+    if (Local_u8Error != E_OK)
+    {
+        return E_NOK;
+    }
+
+    return E_OK;
+}
