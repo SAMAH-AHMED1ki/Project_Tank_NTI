@@ -27,27 +27,28 @@ DEM_Update:
 /* frame size = 0 */
 /* stack size = 0 */
 .L__stack_usage = 0
-	call INT_IsSystemTripped
-	cpi r24,lo8(1)
-	brne .L3
-.L6:
-	sts Global_u8PumpDemand,__zero_reg__
-.L4:
+	sbiw r24,0
+	breq .L6
+	movw r30,r24
+	ldd r24,Z+6
+	cpi r24,lo8(30)
+	brsh .L4
+	ldi r24,lo8(1)
+	sts Global_u8PumpDemand,r24
+.L5:
 	ldi r24,0
+	ldi r25,0
+	ret
+.L4:
+	cpi r24,lo8(91)
+	brlo .L5
+	sts Global_u8PumpDemand,__zero_reg__
+	rjmp .L5
+.L6:
+	ldi r24,lo8(1)
 	ldi r25,0
 /* epilogue start */
 	ret
-.L3:
-	call FLT_IsLowActive
-	cpi r24,lo8(1)
-	brne .L5
-	sts Global_u8PumpDemand,r24
-	rjmp .L4
-.L5:
-	call FLT_IsHighActive
-	cpi r24,lo8(1)
-	brne .L4
-	rjmp .L6
 	.size	DEM_Update, .-DEM_Update
 	.section	.text.DEM_GetPumpDemand,"ax",@progbits
 .global	DEM_GetPumpDemand

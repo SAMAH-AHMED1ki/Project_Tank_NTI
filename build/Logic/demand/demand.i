@@ -26,59 +26,13 @@ typedef enum
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
 # 7 "Logic/demand/demand.c" 2
+<<<<<<< HEAD
 # 1 "HAL/Level/level_interface.h" 1
-
-
-
-
-# 1 "MCAL/ADC/ADC_interface.h" 1
-# 46 "MCAL/ADC/ADC_interface.h"
-STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler);
-
-
-
-
-
-STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading);
-
-
-
-
-STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel);
-
-
-
-
-
-STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
-
-
-
-
-
-STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
-# 6 "HAL/Level/level_interface.h" 2
-
-typedef enum
-{
-    LEVEL_BAND_CRITICAL_LOW = 0,
-    LEVEL_BAND_LOW,
-    LEVEL_BAND_NORMAL,
-    LEVEL_BAND_HIGH,
-    LEVEL_BAND_OVERFLOW
-} LevelBand_t;
-
-STD_ReturnType LEVEL_Init(uint8 adcChannel);
-
-STD_ReturnType LEVEL_ReadPercentage(uint8 adcChannel, uint8 *pPercentage);
-
-STD_ReturnType LEVEL_GetBand(uint8 levelPercent, LevelBand_t *pBand);
 # 8 "Logic/demand/demand.c" 2
 # 1 "HAL/floats/floats.h" 1
 # 11 "HAL/floats/floats.h"
 STD_ReturnType FLT_Init(void);
 STD_ReturnType FLT_Update(void);
-
 uint8 FLT_IsHighActive(void);
 uint8 FLT_IsLowActive(void);
 # 9 "Logic/demand/demand.c" 2
@@ -92,44 +46,165 @@ STD_ReturnType INT_Update(void);
 
 uint8 INT_IsSystemTripped(void);
 # 10 "Logic/demand/demand.c" 2
+=======
+>>>>>>> ca2aec30e5da655ab31dacfe0e43f3490c591fe5
 # 1 "Logic/demand/demand.h" 1
-# 12 "Logic/demand/demand.h"
+
+
+
+
+# 1 "Logic/interlocks/tank_types.h" 1
+
+
+
+
+
+
+
+typedef enum
+{
+    ST_INIT = 0,
+    ST_IDLE,
+    ST_FILLING,
+    ST_SETTLING,
+    ST_RESERVOIR_WAIT,
+    ST_TRIPPED,
+    ST_MANUAL,
+    ST_SERVICE
+
+} TankState_t;
+
+
+
+typedef enum
+{
+    TRIP_NONE = 0,
+
+    TRIP_OVERFLOW,
+    TRIP_OVERCURRENT,
+    TRIP_DRY_RESERVOIR,
+    TRIP_DRY_RUN,
+    TRIP_NO_CURRENT,
+    TRIP_MAX_RUNTIME,
+    TRIP_LEVEL_SENSOR,
+    TRIP_LEAK,
+    TRIP_NO_RISE
+
+} Trip_t;
+
+
+
+typedef struct
+{
+    uint16 levelRaw;
+    uint16 reservoirRaw;
+    uint16 currentRaw;
+
+    uint8 levelPct;
+    uint8 reservoirPct;
+
+    uint16 currentmA;
+    uint16 flowLpmX10;
+
+    uint32 totalLitres;
+
+    sint8 levelRatePctMin;
+
+    uint8 pumpOn : 1;
+    uint8 valveOn : 1;
+    uint8 highFloat : 1;
+    uint8 lowFloat : 1;
+    uint8 reserved : 4;
+
+    uint8 state;
+    uint8 activeTrip;
+
+    uint16 pumpRunSec;
+    uint32 pumpTotalSec;
+    uint16 pumpCycles;
+
+    uint32 upTimeSec;
+
+} TankData_t;
+
+
+
+
+
+
+typedef struct
+{
+    uint16 magic;
+    uint8 version;
+
+    uint8 startPct;
+    uint8 stopPct;
+    uint8 reserveMinPct;
+    uint8 overflowPct;
+
+    uint8 overCurrentA_X10;
+    uint8 minCurrentA_X10;
+    uint8 minFlowLpm;
+
+    uint16 maxRunSec;
+    uint16 minOffSec;
+
+    uint8 leakDropPct;
+
+    uint32 totalLitres;
+    uint32 pumpTotalSec;
+    uint16 pumpCycles;
+
+    uint8 faultHead;
+    uint8 checksum;
+
+} TankCfg_t;
+# 6 "Logic/demand/demand.h" 2
+
 STD_ReturnType DEM_Init(void);
-
-
-STD_ReturnType DEM_Update(void);
-
-
+STD_ReturnType DEM_Update(const TankData_t *Copy_pstData);
 uint8 DEM_GetPumpDemand(void);
-# 11 "Logic/demand/demand.c" 2
+# 8 "Logic/demand/demand.c" 2
 
-static uint8 Global_u8PumpDemand = 0;
+
+
+
+static uint8 Global_u8PumpDemand = 0u;
 
 STD_ReturnType DEM_Init(void)
 {
-    Global_u8PumpDemand = 0;
+    Global_u8PumpDemand = 0u;
+
     return E_OK;
 }
 
-STD_ReturnType DEM_Update(void)
+STD_ReturnType DEM_Update(const TankData_t *Copy_pstData)
 {
-
-    if (INT_IsSystemTripped() == 1)
+    if (Copy_pstData == ((void *)0))
     {
-        Global_u8PumpDemand = 0;
-        return E_OK;
+        return E_NOK;
     }
 
 
 
-    if (FLT_IsLowActive() == 1)
+
+    if (Copy_pstData->levelPct < 30u)
     {
-        Global_u8PumpDemand = 1;
+        Global_u8PumpDemand = 1u;
     }
-    else if (FLT_IsHighActive() == 1)
+
+
+
+
+    else if (Copy_pstData->levelPct > 90u)
     {
-        Global_u8PumpDemand = 0;
+        Global_u8PumpDemand = 0u;
     }
+
+
+
+
+
 
     return E_OK;
 }
