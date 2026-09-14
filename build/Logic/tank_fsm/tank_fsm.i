@@ -269,8 +269,6 @@ static uint16 Global_u16MinOffTicks = 6000u;
 
 
 
-
-
 static void FSM_StopOutputs(void)
 {
     PMP_Set(0u);
@@ -279,15 +277,11 @@ static void FSM_StopOutputs(void)
 
 
 
-
-
 static void FSM_StartFilling(void)
 {
     PMP_Set(1u);
     Valve_Set(1u);
 }
-
-
 
 
 
@@ -305,8 +299,6 @@ static void FSM_UpdateMinOffTimer(uint8 Copy_u8PumpOn)
         Global_u16MinOffTicks = 0u;
     }
 }
-
-
 
 
 
@@ -336,8 +328,6 @@ STD_ReturnType FSM_Init(void)
 
 
 
-
-
 STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 {
     Trip_t Local_eTrip = TRIP_NONE;
@@ -352,19 +342,13 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
-
-
     FSM_UpdateMinOffTimer(Copy_pstData->pumpOn);
-
-
 
 
 
     BTN_GetEvent(BTN_MODE, &Local_eModeEvent);
     BTN_GetEvent(BTN_MANUAL_START, &Local_eManualEvent);
     BTN_GetEvent(BTN_ACK, &Local_eAckEvent);
-
-
 
 
 
@@ -381,15 +365,11 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
-
-
     if ((Local_eAckEvent == BTN_EVENT_SHORT_PRESS) ||
         (Local_eAckEvent == BTN_EVENT_LONG_HOLD_1S))
     {
         FSM_Ack();
     }
-
-
 
 
 
@@ -410,8 +390,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
-
-
     switch (Global_eCurrentState)
     {
     case ST_INIT:
@@ -426,7 +404,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         }
 
         break;
-
 
     case ST_IDLE:
 
@@ -453,7 +430,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         }
 
         break;
-
 
     case ST_FILLING:
 
@@ -490,7 +466,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-
     case ST_SETTLING:
 
         FSM_StopOutputs();
@@ -509,7 +484,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-
     case ST_RESERVOIR_WAIT:
 
         FSM_StopOutputs();
@@ -521,18 +495,16 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-
     case ST_TRIPPED:
 
         FSM_StopOutputs();
-# 289 "Logic/tank_fsm/tank_fsm.c"
+# 262 "Logic/tank_fsm/tank_fsm.c"
         if (ILK_Evaluate(Copy_pstData) == TRIP_NONE)
         {
             Global_eCurrentState = ST_IDLE;
         }
 
         break;
-
 
     case ST_MANUAL:
 
@@ -561,7 +533,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
-
     case ST_SERVICE:
 
 
@@ -573,7 +544,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         FSM_StopOutputs();
 
         break;
-
 
     default:
 
@@ -588,15 +558,10 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 }
 
 
-
-
-
 TankState_t FSM_GetState(void)
 {
     return Global_eCurrentState;
 }
-
-
 
 
 

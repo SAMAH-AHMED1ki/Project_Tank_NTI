@@ -54,7 +54,7 @@ STD_ReturnType UART_Init(uint32 Copy_u32BaudRate)
 }
 /*
  * UART_SendByte
- * 1. while (UDRE == 0) ;   then UDR = Copy_u8Data.
+ * 1. while (UDRE == 0) ; then UDR = Copy_u8Data.
  */
 STD_ReturnType UART_SendByte(uint8 Copy_u8Data)
 {
@@ -62,12 +62,13 @@ STD_ReturnType UART_SendByte(uint8 Copy_u8Data)
     {
     }
     UDR = Copy_u8Data;
+
     return E_OK;
 }
 /*
  * UART_ReceiveByte
  * 1. Reject a NULL pointer.
- * 2. while (RXC == 0) ;    then *Copy_pu8Data = UDR.
+ * 2. while (RXC == 0) ; then *Copy_pu8Data = UDR.
  */
 STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data)
 {
@@ -79,6 +80,7 @@ STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data)
     {
     }
     *Copy_pu8Data = UDR;
+
     return E_OK;
 }
 /*

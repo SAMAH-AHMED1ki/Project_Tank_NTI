@@ -394,6 +394,7 @@ STD_ReturnType UART_SendByte(uint8 Copy_u8Data)
    (*(volatile uint8_t *)((0x0C) + 0x20)) 
 # 64 "MCAL/UART/UART.c"
        = Copy_u8Data;
+
     return E_OK;
 }
 
@@ -408,21 +409,22 @@ STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data)
         return E_NOK;
     }
     while ((((
-# 78 "MCAL/UART/UART.c" 3
+# 79 "MCAL/UART/UART.c" 3
           (*(volatile uint8_t *)((0x0B) + 0x20))
-# 78 "MCAL/UART/UART.c"
+# 79 "MCAL/UART/UART.c"
           ) >> (
-# 78 "MCAL/UART/UART.c" 3
+# 79 "MCAL/UART/UART.c" 3
           7
-# 78 "MCAL/UART/UART.c"
+# 79 "MCAL/UART/UART.c"
           )) & 1u) == 0)
     {
     }
     *Copy_pu8Data = 
-# 81 "MCAL/UART/UART.c" 3
+# 82 "MCAL/UART/UART.c" 3
                    (*(volatile uint8_t *)((0x0C) + 0x20))
-# 81 "MCAL/UART/UART.c"
+# 82 "MCAL/UART/UART.c"
                       ;
+
     return E_OK;
 }
 
@@ -451,13 +453,13 @@ STD_ReturnType UART_SendString(const uint8 *Copy_pu8String)
 STD_ReturnType UART_IsDataReady(void)
 {
     if ((((
-# 109 "MCAL/UART/UART.c" 3
+# 111 "MCAL/UART/UART.c" 3
        (*(volatile uint8_t *)((0x0B) + 0x20))
-# 109 "MCAL/UART/UART.c"
+# 111 "MCAL/UART/UART.c"
        ) >> (
-# 109 "MCAL/UART/UART.c" 3
+# 111 "MCAL/UART/UART.c" 3
        7
-# 109 "MCAL/UART/UART.c"
+# 111 "MCAL/UART/UART.c"
        )) & 1u) == 1)
         return E_OK;
     else
@@ -473,26 +475,26 @@ STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State)
     if (Copy_u8State == 1)
     {
         ((
-# 123 "MCAL/UART/UART.c" 3
+# 125 "MCAL/UART/UART.c" 3
        (*(volatile uint8_t *)((0x0A) + 0x20))
-# 123 "MCAL/UART/UART.c"
+# 125 "MCAL/UART/UART.c"
        ) |= (1u << (
-# 123 "MCAL/UART/UART.c" 3
+# 125 "MCAL/UART/UART.c" 3
        7
-# 123 "MCAL/UART/UART.c"
+# 125 "MCAL/UART/UART.c"
        )));
         return E_OK;
     }
     else if (Copy_u8State == 0)
     {
         ((
-# 128 "MCAL/UART/UART.c" 3
+# 130 "MCAL/UART/UART.c" 3
        (*(volatile uint8_t *)((0x0A) + 0x20))
-# 128 "MCAL/UART/UART.c"
+# 130 "MCAL/UART/UART.c"
        ) &= ~(1u << (
-# 128 "MCAL/UART/UART.c" 3
+# 130 "MCAL/UART/UART.c" 3
        7
-# 128 "MCAL/UART/UART.c"
+# 130 "MCAL/UART/UART.c"
        )));
         return E_OK;
     }
@@ -512,26 +514,26 @@ STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State)
     if (Copy_u8State == 1)
     {
         ((
-# 146 "MCAL/UART/UART.c" 3
+# 148 "MCAL/UART/UART.c" 3
        (*(volatile uint8_t *)((0x0A) + 0x20))
-# 146 "MCAL/UART/UART.c"
+# 148 "MCAL/UART/UART.c"
        ) |= (1u << (
-# 146 "MCAL/UART/UART.c" 3
+# 148 "MCAL/UART/UART.c" 3
        5
-# 146 "MCAL/UART/UART.c"
+# 148 "MCAL/UART/UART.c"
        )));
         return E_OK;
     }
     else if (Copy_u8State == 0)
     {
         ((
-# 151 "MCAL/UART/UART.c" 3
+# 153 "MCAL/UART/UART.c" 3
        (*(volatile uint8_t *)((0x0A) + 0x20))
-# 151 "MCAL/UART/UART.c"
+# 153 "MCAL/UART/UART.c"
        ) &= ~(1u << (
-# 151 "MCAL/UART/UART.c" 3
+# 153 "MCAL/UART/UART.c" 3
        5
-# 151 "MCAL/UART/UART.c"
+# 153 "MCAL/UART/UART.c"
        )));
         return E_OK;
     }

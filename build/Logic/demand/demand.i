@@ -26,28 +26,6 @@ typedef enum
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
 # 7 "Logic/demand/demand.c" 2
-<<<<<<< HEAD
-# 1 "HAL/Level/level_interface.h" 1
-# 8 "Logic/demand/demand.c" 2
-# 1 "HAL/floats/floats.h" 1
-# 11 "HAL/floats/floats.h"
-STD_ReturnType FLT_Init(void);
-STD_ReturnType FLT_Update(void);
-uint8 FLT_IsHighActive(void);
-uint8 FLT_IsLowActive(void);
-# 9 "Logic/demand/demand.c" 2
-# 1 "Logic/interlocks/interlocks.h" 1
-# 12 "Logic/interlocks/interlocks.h"
-STD_ReturnType INT_Init(void);
-
-
-STD_ReturnType INT_Update(void);
-
-
-uint8 INT_IsSystemTripped(void);
-# 10 "Logic/demand/demand.c" 2
-=======
->>>>>>> ca2aec30e5da655ab31dacfe0e43f3490c591fe5
 # 1 "Logic/demand/demand.h" 1
 
 

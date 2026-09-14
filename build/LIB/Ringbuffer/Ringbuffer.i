@@ -25,7 +25,7 @@ typedef enum
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
 # 5 "LIB/Ringbuffer/Ringbuffer.h" 2
-# 14 "LIB/Ringbuffer/Ringbuffer.h"
+# 19 "LIB/Ringbuffer/Ringbuffer.h"
 typedef struct
 {
     uint8 buffer[64U];
@@ -39,9 +39,9 @@ typedef struct
 
 
 void RB_Init(RingBuffer_t *pRb);
-# 35 "LIB/Ringbuffer/Ringbuffer.h"
+# 40 "LIB/Ringbuffer/Ringbuffer.h"
 STD_ReturnType RB_Put(RingBuffer_t *pRb, uint8 data);
-# 44 "LIB/Ringbuffer/Ringbuffer.h"
+# 49 "LIB/Ringbuffer/Ringbuffer.h"
 STD_ReturnType RB_Get(RingBuffer_t *pRb, uint8 *pData);
 
 
