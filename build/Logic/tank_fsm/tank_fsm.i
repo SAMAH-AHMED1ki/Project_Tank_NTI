@@ -84,6 +84,30 @@ STD_ReturnType Valve_Init(void);
 STD_ReturnType Valve_Set(uint8 Copy_u8State);
 STD_ReturnType Valve_GetState(uint8 *Copy_pu8State);
 # 10 "Logic/tank_fsm/tank_fsm.c" 2
+# 1 "HAL/Buttons/Buttons_interface.h" 1
+# 11 "HAL/Buttons/Buttons_interface.h"
+typedef enum
+{
+    BTN_MODE = 0,
+    BTN_MANUAL_START = 1,
+    BTN_ACK = 2,
+    BTN_COUNT = 3
+} ButtonID_t;
+
+typedef enum
+{
+    BTN_EVENT_NONE = 0,
+    BTN_EVENT_PRESSED = 1,
+    BTN_EVENT_RELEASED = 2,
+    BTN_EVENT_SHORT_PRESS = 3,
+    BTN_EVENT_LONG_HOLD_1S = 4
+} ButtonEvent_t;
+
+STD_ReturnType BTN_Init(uint8 port);
+void BTN_Update10ms(uint8 port);
+STD_ReturnType BTN_GetEvent(ButtonID_t btn, ButtonEvent_t *pEvent);
+STD_ReturnType BTN_IsPressed(uint8 port, ButtonID_t btn, uint8 *pIsPressed);
+# 11 "Logic/tank_fsm/tank_fsm.c" 2
 # 1 "Logic/interlocks/interlocks.h" 1
 
 
@@ -208,7 +232,7 @@ Trip_t ILK_Evaluate(const TankData_t *Copy_pstData);
 
 
 STD_ReturnType ILK_Reset(void);
-# 11 "Logic/tank_fsm/tank_fsm.c" 2
+# 12 "Logic/tank_fsm/tank_fsm.c" 2
 # 1 "Logic/demand/demand.h" 1
 
 
@@ -220,7 +244,7 @@ STD_ReturnType ILK_Reset(void);
 STD_ReturnType DEM_Init(void);
 STD_ReturnType DEM_Update(const TankData_t *Copy_pstData);
 uint8 DEM_GetPumpDemand(void);
-# 12 "Logic/tank_fsm/tank_fsm.c" 2
+# 13 "Logic/tank_fsm/tank_fsm.c" 2
 # 1 "Logic/tank_fsm/tank_fsm.h" 1
 # 13 "Logic/tank_fsm/tank_fsm.h"
 STD_ReturnType FSM_Init(void);
@@ -233,15 +257,67 @@ TankState_t FSM_GetState(void);
 
 
 STD_ReturnType FSM_Ack(void);
-# 13 "Logic/tank_fsm/tank_fsm.c" 2
+# 14 "Logic/tank_fsm/tank_fsm.c" 2
+
+
+
 
 static TankState_t Global_eCurrentState = ST_INIT;
+
+static uint16 Global_u16SettlingTicks = 0u;
+static uint16 Global_u16MinOffTicks = 6000u;
+
+
+
+
+
+static void FSM_StopOutputs(void)
+{
+    PMP_Set(0u);
+    Valve_Set(0u);
+}
+
+
+
+
+
+static void FSM_StartFilling(void)
+{
+    PMP_Set(1u);
+    Valve_Set(1u);
+}
+
+
+
+
+
+static void FSM_UpdateMinOffTimer(uint8 Copy_u8PumpOn)
+{
+    if (Copy_u8PumpOn == 0u)
+    {
+        if (Global_u16MinOffTicks < 6000u)
+        {
+            Global_u16MinOffTicks++;
+        }
+    }
+    else
+    {
+        Global_u16MinOffTicks = 0u;
+    }
+}
+
+
+
+
 
 STD_ReturnType FSM_Init(void)
 {
     STD_ReturnType Local_Status;
 
     Global_eCurrentState = ST_INIT;
+
+    Global_u16SettlingTicks = 0u;
+    Global_u16MinOffTicks = 6000u;
 
     Local_Status = PMP_Set(0u);
     if (Local_Status != E_OK)
@@ -258,9 +334,16 @@ STD_ReturnType FSM_Init(void)
     return E_OK;
 }
 
+
+
+
+
 STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 {
-    Trip_t Local_eTrip;
+    Trip_t Local_eTrip = TRIP_NONE;
+    ButtonEvent_t Local_eModeEvent = BTN_EVENT_NONE;
+    ButtonEvent_t Local_eManualEvent = BTN_EVENT_NONE;
+    ButtonEvent_t Local_eAckEvent = BTN_EVENT_NONE;
 
     if (Copy_pstData == ((void *)0))
     {
@@ -270,87 +353,166 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
+
+    FSM_UpdateMinOffTimer(Copy_pstData->pumpOn);
+
+
+
+
+
+    BTN_GetEvent(BTN_MODE, &Local_eModeEvent);
+    BTN_GetEvent(BTN_MANUAL_START, &Local_eManualEvent);
+    BTN_GetEvent(BTN_ACK, &Local_eAckEvent);
+
+
+
+
+
     Local_eTrip = ILK_Evaluate(Copy_pstData);
 
     if (Local_eTrip != TRIP_NONE)
     {
-        PMP_Set(0u);
-        Valve_Set(0u);
+        FSM_StopOutputs();
 
         Global_eCurrentState = ST_TRIPPED;
 
         return E_OK;
     }
 
+
+
+
+
+    if ((Local_eAckEvent == BTN_EVENT_SHORT_PRESS) ||
+        (Local_eAckEvent == BTN_EVENT_LONG_HOLD_1S))
+    {
+        FSM_Ack();
+    }
+
+
+
+
+
+    if (Local_eModeEvent == BTN_EVENT_SHORT_PRESS)
+    {
+        if (Global_eCurrentState == ST_MANUAL)
+        {
+            FSM_StopOutputs();
+            Global_eCurrentState = ST_IDLE;
+        }
+        else if ((Global_eCurrentState == ST_IDLE) ||
+                 (Global_eCurrentState == ST_FILLING))
+        {
+            FSM_StopOutputs();
+            Global_eCurrentState = ST_MANUAL;
+        }
+    }
+
+
+
+
+
     switch (Global_eCurrentState)
     {
     case ST_INIT:
 
-        PMP_Set(0u);
-        Valve_Set(0u);
+        FSM_StopOutputs();
 
-        Global_eCurrentState = ST_IDLE;
+        Global_u16SettlingTicks = 0u;
+
+        if (Local_eTrip == TRIP_NONE)
+        {
+            Global_eCurrentState = ST_IDLE;
+        }
 
         break;
 
+
     case ST_IDLE:
 
-        PMP_Set(0u);
-        Valve_Set(0u);
+        FSM_StopOutputs();
+
+        Global_u16SettlingTicks = 0u;
+
+
+
+
 
         if (Copy_pstData->reservoirPct < 25u)
         {
             Global_eCurrentState = ST_RESERVOIR_WAIT;
         }
-        else if (DEM_GetPumpDemand() != 0u)
+
+
+
+
+        else if ((DEM_GetPumpDemand() != 0u) &&
+                 (Global_u16MinOffTicks >= 6000u))
         {
             Global_eCurrentState = ST_FILLING;
         }
 
         break;
 
+
     case ST_FILLING:
+
+
+
 
         if (Copy_pstData->reservoirPct < 25u)
         {
-            PMP_Set(0u);
-            Valve_Set(0u);
+            FSM_StopOutputs();
 
             Global_eCurrentState = ST_RESERVOIR_WAIT;
         }
+
+
+
+
+
         else if (DEM_GetPumpDemand() == 0u)
         {
-            PMP_Set(0u);
-            Valve_Set(0u);
+            FSM_StopOutputs();
+
+            Global_u16SettlingTicks = 0u;
 
             Global_eCurrentState = ST_SETTLING;
         }
+
+
+
+
         else
         {
-            PMP_Set(1u);
-            Valve_Set(1u);
+            FSM_StartFilling();
         }
 
         break;
 
+
     case ST_SETTLING:
 
-        PMP_Set(0u);
-        Valve_Set(0u);
+        FSM_StopOutputs();
 
+        if (Global_u16SettlingTicks < 500u)
+        {
+            Global_u16SettlingTicks++;
+        }
 
+        if (Global_u16SettlingTicks >= 500u)
+        {
+            Global_u16SettlingTicks = 0u;
 
-
-
-
-        Global_eCurrentState = ST_IDLE;
+            Global_eCurrentState = ST_IDLE;
+        }
 
         break;
 
+
     case ST_RESERVOIR_WAIT:
 
-        PMP_Set(0u);
-        Valve_Set(0u);
+        FSM_StopOutputs();
 
         if (Copy_pstData->reservoirPct >= 25u)
         {
@@ -359,17 +521,18 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         break;
 
+
     case ST_TRIPPED:
 
-        PMP_Set(0u);
-        Valve_Set(0u);
-
-
-
-
-
+        FSM_StopOutputs();
+# 289 "Logic/tank_fsm/tank_fsm.c"
+        if (ILK_Evaluate(Copy_pstData) == TRIP_NONE)
+        {
+            Global_eCurrentState = ST_IDLE;
+        }
 
         break;
+
 
     case ST_MANUAL:
 
@@ -378,19 +541,43 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
+
+        if (Local_eManualEvent == BTN_EVENT_SHORT_PRESS)
+        {
+            if (Global_u16MinOffTicks >= 6000u)
+            {
+                PMP_Set(1u);
+                Valve_Set(1u);
+            }
+        }
+
+
+
+
+        if (Copy_pstData->pumpOn != 0u)
+        {
+            Valve_Set(1u);
+        }
+
         break;
+
 
     case ST_SERVICE:
 
-        PMP_Set(0u);
-        Valve_Set(0u);
+
+
+
+
+
+
+        FSM_StopOutputs();
 
         break;
 
+
     default:
 
-        PMP_Set(0u);
-        Valve_Set(0u);
+        FSM_StopOutputs();
 
         Global_eCurrentState = ST_TRIPPED;
 
@@ -400,16 +587,20 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
     return E_OK;
 }
 
+
+
+
+
 TankState_t FSM_GetState(void)
 {
     return Global_eCurrentState;
 }
 
+
+
+
+
 STD_ReturnType FSM_Ack(void)
 {
-
-
-
-
     return ILK_Reset();
 }
