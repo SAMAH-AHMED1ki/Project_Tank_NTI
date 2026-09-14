@@ -56,23 +56,22 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
 # 3 "HAL/Buttons/buttons.c" 2
 # 1 "HAL/Buttons/BUTTONS_interface.h" 1
-# 13 "HAL/Buttons/BUTTONS_interface.h"
+# 11 "HAL/Buttons/BUTTONS_interface.h"
 typedef enum
 {
     BTN_MODE = 0,
-    BTN_MANUAL_START,
-    BTN_ACK,
-    BTN_COUNT
+    BTN_MANUAL_START = 1,
+    BTN_ACK = 2,
+    BTN_COUNT = 3
 } ButtonID_t;
-
 
 typedef enum
 {
     BTN_EVENT_NONE = 0,
-    BTN_EVENT_PRESSED,
-    BTN_EVENT_RELEASED,
-    BTN_EVENT_SHORT_PRESS,
-    BTN_EVENT_LONG_HOLD_1S
+    BTN_EVENT_PRESSED = 1,
+    BTN_EVENT_RELEASED = 2,
+    BTN_EVENT_SHORT_PRESS = 3,
+    BTN_EVENT_LONG_HOLD_1S = 4
 } ButtonEvent_t;
 
 STD_ReturnType BTN_Init(uint8 port);
