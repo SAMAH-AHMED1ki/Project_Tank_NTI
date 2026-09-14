@@ -96,3 +96,44 @@ STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading)
 
     return E_OK;
 }
+
+
+
+
+
+STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel)
+{
+    if (Copy_u8Channel > 7u)
+    {
+        return E_NOK;
+    }
+
+    (*(volatile uint8 *)0x27) = ((*(volatile uint8 *)0x27) & 0xE0) | (Copy_u8Channel & 0x07);
+
+    (*(volatile uint8 *)0x26) |= (1 << 6);
+
+    return E_OK;
+}
+
+
+
+
+
+
+STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading)
+{
+    if (Copy_pu16Reading == ((void *)0))
+    {
+        return E_NOK;
+    }
+
+    if (!((*(volatile uint8 *)0x26) & (1 << 4)))
+    {
+        return E_NOK;
+    }
+
+    (*(volatile uint8 *)0x26) |= (1 << 4);
+    *Copy_pu16Reading = (*(volatile uint8 *)0x24) | ((uint16)(*(volatile uint8 *)0x25) << 8);
+
+    return E_OK;
+}
