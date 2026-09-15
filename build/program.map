@@ -74,7 +74,7 @@ Discarded input sections
  .text.FLT_Init
                 0x00000000       0x2c build/HAL/floats/floats.o
  .text.FLT_Update
-                0x00000000       0x5a build/HAL/floats/floats.o
+                0x00000000       0x50 build/HAL/floats/floats.o
  .text.FLT_IsHighActive
                 0x00000000        0x6 build/HAL/floats/floats.o
  .text.FLT_IsLowActive
