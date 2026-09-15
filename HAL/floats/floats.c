@@ -1,16 +1,6 @@
-/*
- * Author: Samah Ahmed Mahmoud Ahmed
- * Module: Float Switches HAL Driver
- */
-
 #include "STD_TYPES.h"
 #include "GPIO_interface.h"
 #include "floats.h"
-
-/* Project wiring:
- * High float -> PD2 / INT0
- * Low float  -> PD6
- */
 
 #define HIGH_FLOAT_PORT GPIO_PORTD
 #define HIGH_FLOAT_PIN GPIO_PIN2
@@ -18,7 +8,6 @@
 #define LOW_FLOAT_PORT GPIO_PORTD
 #define LOW_FLOAT_PIN GPIO_PIN6
 
-/* Cached float states */
 static uint8 Global_u8HighState = 0u;
 static uint8 Global_u8LowState = 0u;
 
@@ -26,31 +15,26 @@ STD_ReturnType FLT_Init(void)
 {
     STD_ReturnType Local_Status;
 
-    /* Configure high float as input with internal pull-up */
-    Local_Status =
-        GPIO_SetPinDirection(
-            HIGH_FLOAT_PORT,
-            HIGH_FLOAT_PIN,
-            GPIO_INPUT_PULLUP);
+    Local_Status = GPIO_SetPinDirection(
+        HIGH_FLOAT_PORT,
+        HIGH_FLOAT_PIN,
+        GPIO_INPUT_PULLUP);
 
     if (Local_Status != E_OK)
     {
         return E_NOK;
     }
 
-    /* Configure low float as input with internal pull-up */
-    Local_Status =
-        GPIO_SetPinDirection(
-            LOW_FLOAT_PORT,
-            LOW_FLOAT_PIN,
-            GPIO_INPUT_PULLUP);
+    Local_Status = GPIO_SetPinDirection(
+        LOW_FLOAT_PORT,
+        LOW_FLOAT_PIN,
+        GPIO_INPUT_PULLUP);
 
     if (Local_Status != E_OK)
     {
         return E_NOK;
     }
 
-    /* Initial states */
     Global_u8HighState = 0u;
     Global_u8LowState = 0u;
 
@@ -59,44 +43,26 @@ STD_ReturnType FLT_Init(void)
 
 STD_ReturnType FLT_Update(void)
 {
-    uint8 Local_u8PinHighVal = 0u;
-    uint8 Local_u8PinLowVal = 0u;
-    STD_ReturnType Local_Status;
+    uint8 Local_u8HighRaw = 0u;
+    uint8 Local_u8LowRaw = 0u;
 
-    /* Read high float */
-    Local_Status =
-        GPIO_GetPinValue(
-            HIGH_FLOAT_PORT,
-            HIGH_FLOAT_PIN,
-            &Local_u8PinHighVal);
+    GPIO_GetPinValue(
+        HIGH_FLOAT_PORT,
+        HIGH_FLOAT_PIN,
+        &Local_u8HighRaw);
 
-    if (Local_Status != E_OK)
-    {
-        return E_NOK;
-    }
-
-    /* Read low float */
-    Local_Status =
-        GPIO_GetPinValue(
-            LOW_FLOAT_PORT,
-            LOW_FLOAT_PIN,
-            &Local_u8PinLowVal);
-
-    if (Local_Status != E_OK)
-    {
-        return E_NOK;
-    }
+    GPIO_GetPinValue(
+        LOW_FLOAT_PORT,
+        LOW_FLOAT_PIN,
+        &Local_u8LowRaw);
 
     /*
-     * INPUT_PULLUP:
-     * Pin = 1 -> float inactive
-     * Pin = 0 -> float active
+     * Pull-up logic:
+     * Raw HIGH -> Float inactive
+     * Raw LOW  -> Float active
      */
-    Global_u8HighState =
-        (Local_u8PinHighVal == 0u) ? 1u : 0u;
-
-    Global_u8LowState =
-        (Local_u8PinLowVal == 0u) ? 1u : 0u;
+    Global_u8HighState = (Local_u8HighRaw == GPIO_LOW) ? 1u : 0u;
+    Global_u8LowState = (Local_u8LowRaw == GPIO_LOW) ? 1u : 0u;
 
     return E_OK;
 }

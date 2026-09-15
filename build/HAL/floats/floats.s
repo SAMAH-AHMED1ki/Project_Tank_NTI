@@ -56,40 +56,32 @@ FLT_Update:
 	ldi r22,lo8(2)
 	ldi r24,lo8(3)
 	call GPIO_GetPinValue
-	or r24,r25
-	breq .L6
-.L8:
-	ldi r24,lo8(1)
-	ldi r25,0
-.L5:
-/* epilogue start */
-	pop __tmp_reg__
-	pop __tmp_reg__
-	pop r29
-	pop r28
-	ret
-.L6:
 	movw r20,r28
 	subi r20,-1
 	sbci r21,-1
 	ldi r22,lo8(6)
 	ldi r24,lo8(3)
 	call GPIO_GetPinValue
-	sbiw r24,0
-	brne .L8
-	ldi r18,lo8(1)
-	ldd r19,Y+2
-	cpse r19,__zero_reg__
-	ldi r18,0
-.L9:
-	sts Global_u8HighState,r18
-	ldi r18,lo8(1)
-	ldd r19,Y+1
-	cpse r19,__zero_reg__
-	ldi r18,0
-.L10:
-	sts Global_u8LowState,r18
-	rjmp .L5
+	ldi r24,lo8(1)
+	ldd r25,Y+2
+	cpse r25,__zero_reg__
+	ldi r24,0
+.L6:
+	sts Global_u8HighState,r24
+	ldi r24,lo8(1)
+	ldd r25,Y+1
+	cpse r25,__zero_reg__
+	ldi r24,0
+.L7:
+	sts Global_u8LowState,r24
+	ldi r24,0
+	ldi r25,0
+/* epilogue start */
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop r29
+	pop r28
+	ret
 	.size	FLT_Update, .-FLT_Update
 	.section	.text.FLT_IsHighActive,"ax",@progbits
 .global	FLT_IsHighActive
