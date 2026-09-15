@@ -120,11 +120,11 @@ remaining modules listed below.
 
 #### SPI and flow owner
 
-- `spi.c/.h`
-- `shiftreg.c/.h`
-- `counter.c/.h`
-- `flowmeter.c/.h`
-- `scheduler.c/.h`
+- `spi.c/.h` (Implemented and tested)
+- `shiftreg.c/.h` (Implemented and tested)
+- `counter.c/.h` (Implemented and tested)
+- `flowmeter.c/.h` (Implemented)
+- `scheduler.c/.h` (Implemented)
 
 **What Sama will do:** Define the shared data types used by all modules, then
 implement SPI in master mode 0 for communication with the 74HC595. The
