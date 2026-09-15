@@ -2,6 +2,8 @@ Archive member included to satisfy reference by file (symbol)
 
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
                               build/HAL/current/current.o (__umulhisi3)
+C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+                              build/HAL/lcd_i2c/lcd_i2c.o (__udivmodhi4)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
                               build/HAL/current/current.o (__udivmodsi4)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
@@ -90,6 +92,26 @@ Discarded input sections
  .text.KeyPad_GetPressedKey
                 0x00000000       0xca build/HAL/KeyPad/KeyPad.o
  .comment       0x00000000       0x13 build/HAL/KeyPad/KeyPad.o
+ .text          0x00000000        0x0 build/HAL/lcd_i2c/lcd_i2c.o
+ .data          0x00000000        0x0 build/HAL/lcd_i2c/lcd_i2c.o
+ .bss           0x00000000        0x0 build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_WriteNibble
+                0x00000000       0x50 build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_SendCommand
+                0x00000000       0x3a build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_SendChar
+                0x00000000       0x3a build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_SendString
+                0x00000000       0x2a build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_Clear
+                0x00000000       0x14 build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_Init
+                0x00000000       0x98 build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_SetCursor
+                0x00000000       0x1e build/HAL/lcd_i2c/lcd_i2c.o
+ .text.LCD_I2C_SendNumber
+                0x00000000       0x8e build/HAL/lcd_i2c/lcd_i2c.o
+ .comment       0x00000000       0x13 build/HAL/lcd_i2c/lcd_i2c.o
  .text          0x00000000        0x0 build/HAL/Level/level.o
  .data          0x00000000        0x0 build/HAL/Level/level.o
  .bss           0x00000000        0x0 build/HAL/Level/level.o
@@ -446,6 +468,30 @@ Discarded input sections
  .debug_aranges
                 0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .debug_str     0x00000000       0x68 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text.libgcc.mul
+                0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text.libgcc.div
+                0x00000000       0x28 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text.libgcc   0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .debug_line    0x00000000       0xbd C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .debug_line_str
+                0x00000000       0x5c C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .debug_info    0x00000000       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .debug_abbrev  0x00000000       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .debug_aranges
+                0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+ .debug_str     0x00000000       0x68 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
@@ -578,6 +624,7 @@ LOAD build/HAL/Buttons/buttons.o
 LOAD build/HAL/current/current.o
 LOAD build/HAL/floats/floats.o
 LOAD build/HAL/KeyPad/KeyPad.o
+LOAD build/HAL/lcd_i2c/lcd_i2c.o
 LOAD build/HAL/Level/level.o
 LOAD build/HAL/Pump/Pump.o
 LOAD build/HAL/SevenSegment/SevenSegment.o
