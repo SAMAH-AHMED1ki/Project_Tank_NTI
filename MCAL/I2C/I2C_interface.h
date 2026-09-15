@@ -14,16 +14,16 @@
 #include "STD_TYPES.h"
 
 /* ---------------- Status codes (TWSR & 0xF8) ---------------- */
-#define I2C_START_ACK         0x08u
-#define I2C_REP_START_ACK     0x10u
-#define I2C_SLA_W_ACK         0x18u
-#define I2C_SLA_R_ACK         0x40u
-#define I2C_DATA_TX_ACK       0x28u
-#define I2C_DATA_RX_ACK       0x50u
-#define I2C_DATA_RX_NACK      0x58u
+#define I2C_START_ACK 0x08u
+#define I2C_REP_START_ACK 0x10u
+#define I2C_SLA_W_ACK 0x18u
+#define I2C_SLA_R_ACK 0x40u
+#define I2C_DATA_TX_ACK 0x28u
+#define I2C_DATA_RX_ACK 0x50u
+#define I2C_DATA_RX_NACK 0x58u
 
-#define I2C_ACK               1u
-#define I2C_NACK              0u
+#define I2C_ACK 1u
+#define I2C_NACK 0u
 
 /*
  * Description : Enable TWI as master. TWBR = ((F_CPU / SCL) - 16) / 2  (prescaler = 1).

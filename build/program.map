@@ -337,6 +337,22 @@ Discarded input sections
  .text          0x00000000        0x0 build/MCAL/I2C/I2C.o
  .data          0x00000000        0x0 build/MCAL/I2C/I2C.o
  .bss           0x00000000        0x0 build/MCAL/I2C/I2C.o
+ .text.I2C_InitMaster
+                0x00000000       0x42 build/MCAL/I2C/I2C.o
+ .text.I2C_SendStart
+                0x00000000       0x1c build/MCAL/I2C/I2C.o
+ .text.I2C_SendRepeatedStart
+                0x00000000       0x1c build/MCAL/I2C/I2C.o
+ .text.I2C_SendStop
+                0x00000000        0x6 build/MCAL/I2C/I2C.o
+ .text.I2C_SendSlaveAddressWithWrite
+                0x00000000       0x20 build/MCAL/I2C/I2C.o
+ .text.I2C_SendSlaveAddressWithRead
+                0x00000000       0x22 build/MCAL/I2C/I2C.o
+ .text.I2C_SendByte
+                0x00000000       0x1e build/MCAL/I2C/I2C.o
+ .text.I2C_ReceiveByte
+                0x00000000       0x40 build/MCAL/I2C/I2C.o
  .comment       0x00000000       0x13 build/MCAL/I2C/I2C.o
  .text          0x00000000        0x0 build/MCAL/INTERRUPT/INTERRUPT.o
  .data          0x00000000        0x0 build/MCAL/INTERRUPT/INTERRUPT.o
