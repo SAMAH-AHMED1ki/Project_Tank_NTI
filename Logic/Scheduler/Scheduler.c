@@ -13,9 +13,7 @@ STD_ReturnType SCHEDULER_Init(void)
 {
     uint8 Local_u8Index;
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < SCHEDULER_MAX_TASKS;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < SCHEDULER_MAX_TASKS; Local_u8Index++)
     {
         Scheduler_Tasks[Local_u8Index].TaskFunction = NULL;
         Scheduler_Tasks[Local_u8Index].PeriodMs = 0u;
@@ -31,9 +29,7 @@ STD_ReturnType SCHEDULER_Init(void)
 /*
  * Add a periodic task to the scheduler.
  */
-STD_ReturnType SCHEDULER_AddTask(
-    SchedulerTaskFunction_t TaskFunction,
-    uint32 PeriodMs)
+STD_ReturnType SCHEDULER_AddTask(SchedulerTaskFunction_t TaskFunction, uint32 PeriodMs)
 {
     uint8 Local_u8Index;
 
@@ -52,9 +48,7 @@ STD_ReturnType SCHEDULER_AddTask(
         return E_NOK;
     }
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < SCHEDULER_MAX_TASKS;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < SCHEDULER_MAX_TASKS; Local_u8Index++)
     {
         if (Scheduler_Tasks[Local_u8Index].Active == 0u)
         {
@@ -65,6 +59,7 @@ STD_ReturnType SCHEDULER_AddTask(
             Scheduler_Tasks[Local_u8Index].RemainingTimeMs =
                 PeriodMs;
 
+            Scheduler_Tasks[Local_u8Index].Ready = 0u;
             Scheduler_Tasks[Local_u8Index].Active = 1u;
 
             return E_OK;
@@ -79,31 +74,28 @@ STD_ReturnType SCHEDULER_AddTask(
  *
  * This function must be called every 10 ms.
  */
+
 void SCHEDULER_Tick(void)
 {
     uint8 Local_u8Index;
-
     if (Scheduler_Initialized == 0u)
     {
         return;
     }
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < SCHEDULER_MAX_TASKS;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < SCHEDULER_MAX_TASKS; Local_u8Index++)
     {
         if (Scheduler_Tasks[Local_u8Index].Active == 1u)
         {
             if (Scheduler_Tasks[Local_u8Index].RemainingTimeMs >= SCHEDULER_TICK_MS)
             {
-                Scheduler_Tasks[Local_u8Index].RemainingTimeMs -=
-                    SCHEDULER_TICK_MS;
+                Scheduler_Tasks[Local_u8Index].RemainingTimeMs -= SCHEDULER_TICK_MS;
             }
-
             if (Scheduler_Tasks[Local_u8Index].RemainingTimeMs == 0u)
             {
-                Scheduler_Tasks[Local_u8Index].RemainingTimeMs =
-                    Scheduler_Tasks[Local_u8Index].PeriodMs;
+                Scheduler_Tasks[Local_u8Index].RemainingTimeMs = Scheduler_Tasks[Local_u8Index].PeriodMs;
+
+                Scheduler_Tasks[Local_u8Index].Ready = 1u; /* مرة واحدة بس لحد ما Run تاخدها */
             }
         }
     }
@@ -121,28 +113,13 @@ void SCHEDULER_Run(void)
         return;
     }
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < SCHEDULER_MAX_TASKS;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < SCHEDULER_MAX_TASKS; Local_u8Index++)
     {
-        if (Scheduler_Tasks[Local_u8Index].Active == 1u)
+        if ((Scheduler_Tasks[Local_u8Index].Active == 1u) && (Scheduler_Tasks[Local_u8Index].Ready == 1u))
         {
-            if (Scheduler_Tasks[Local_u8Index].RemainingTimeMs == Scheduler_Tasks[Local_u8Index].PeriodMs)
-            {
-                /*
-                 * The task period has elapsed.
-                 *
-                 * Execute the task once.
-                 */
-                Scheduler_Tasks[Local_u8Index].TaskFunction();
+            Scheduler_Tasks[Local_u8Index].Ready = 0u; /* بتتنزل الأول، قبل النداء */
 
-                /*
-                 * Prevent the task from executing repeatedly
-                 * until the next tick cycle.
-                 */
-                Scheduler_Tasks[Local_u8Index].RemainingTimeMs =
-                    Scheduler_Tasks[Local_u8Index].PeriodMs;
-            }
+            Scheduler_Tasks[Local_u8Index].TaskFunction();
         }
     }
 }

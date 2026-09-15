@@ -11,7 +11,7 @@ C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
                               build/HAL/Buttons/buttons.o (__do_copy_data)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
-                              build/HAL/current/current.o (__do_clear_bss)
+                              build/main.o (__do_clear_bss)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                               build/Logic/Flowmeter/Flowmeter.o (__muluhisi3)
 
@@ -233,8 +233,25 @@ Discarded input sections
  .text          0x00000000        0x0 build/Logic/Flowmeter/Flowmeter.o
  .data          0x00000000        0x0 build/Logic/Flowmeter/Flowmeter.o
  .bss           0x00000000        0x0 build/Logic/Flowmeter/Flowmeter.o
+ .text.FLOWMETER_Init
+                0x00000000       0x34 build/Logic/Flowmeter/Flowmeter.o
+ .text.FLOWMETER_Update1Hz
+                0x00000000       0x52 build/Logic/Flowmeter/Flowmeter.o
+ .text.FLOWMETER_GetPulsesPerSec
+                0x00000000        0xa build/Logic/Flowmeter/Flowmeter.o
+ .text.FLOWMETER_GetFlowLpmX10
+                0x00000000       0x2a build/Logic/Flowmeter/Flowmeter.o
+ .text.FLOWMETER_GetTotalMilliliters
+                0x00000000       0x2a build/Logic/Flowmeter/Flowmeter.o
  .text.FLOWMETER_ResetTotaliser
                 0x00000000       0x16 build/Logic/Flowmeter/Flowmeter.o
+ .bss.g_totalPulses
+                0x00000000        0x4 build/Logic/Flowmeter/Flowmeter.o
+ .bss.g_pulsesLastSecond
+                0x00000000        0x2 build/Logic/Flowmeter/Flowmeter.o
+ .bss.g_lastCount
+                0x00000000        0x2 build/Logic/Flowmeter/Flowmeter.o
+ .comment       0x00000000       0x13 build/Logic/Flowmeter/Flowmeter.o
  .text          0x00000000        0x0 build/Logic/interlocks/interlocks.o
  .data          0x00000000        0x0 build/Logic/interlocks/interlocks.o
  .bss           0x00000000        0x0 build/Logic/interlocks/interlocks.o
@@ -272,19 +289,6 @@ Discarded input sections
  .text          0x00000000        0x0 build/Logic/Scheduler/Scheduler.o
  .data          0x00000000        0x0 build/Logic/Scheduler/Scheduler.o
  .bss           0x00000000        0x0 build/Logic/Scheduler/Scheduler.o
- .text.SCHEDULER_Init
-                0x00000000       0x30 build/Logic/Scheduler/Scheduler.o
- .text.SCHEDULER_AddTask
-                0x00000000       0x9a build/Logic/Scheduler/Scheduler.o
- .text.SCHEDULER_Tick
-                0x00000000       0x56 build/Logic/Scheduler/Scheduler.o
- .text.SCHEDULER_Run
-                0x00000000       0x56 build/Logic/Scheduler/Scheduler.o
- .bss.Scheduler_Initialized
-                0x00000000        0x1 build/Logic/Scheduler/Scheduler.o
- .bss.Scheduler_Tasks
-                0x00000000       0x58 build/Logic/Scheduler/Scheduler.o
- .comment       0x00000000       0x13 build/Logic/Scheduler/Scheduler.o
  .text          0x00000000        0x0 build/Logic/tank_fsm/tank_fsm.o
  .data          0x00000000        0x0 build/Logic/tank_fsm/tank_fsm.o
  .bss           0x00000000        0x0 build/Logic/tank_fsm/tank_fsm.o
@@ -363,6 +367,8 @@ Discarded input sections
  .text          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
  .data          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
  .bss           0x00000000        0x0 build/MCAL/TIMER/TIMER.o
+ .text.TIMER0_DelayS
+                0x00000000       0x4a build/MCAL/TIMER/TIMER.o
  .text.TIMER0_PWM
                 0x00000000       0x40 build/MCAL/TIMER/TIMER.o
  .text.TIMER0_Stop
@@ -375,6 +381,10 @@ Discarded input sections
                 0x00000000       0x90 build/MCAL/TIMER/TIMER.o
  .text.TIMER1_Stop
                 0x00000000       0x12 build/MCAL/TIMER/TIMER.o
+ .text.TIMER1_ExternalCounterInit
+                0x00000000       0x22 build/MCAL/TIMER/TIMER.o
+ .text.TIMER1_GetCounter
+                0x00000000        0x6 build/MCAL/TIMER/TIMER.o
  .text.TIMER1_ResetCounter
                 0x00000000        0xa build/MCAL/TIMER/TIMER.o
  .text          0x00000000        0x0 build/MCAL/UART/UART.o
@@ -399,6 +409,8 @@ Discarded input sections
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .text.libgcc.mul
+                0x00000000       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .text.libgcc.div
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .text.libgcc   0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
@@ -410,6 +422,14 @@ Discarded input sections
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .text.libgcc.fixed
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .debug_line    0x00000000       0x9f C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .debug_line_str
+                0x00000000       0x5c C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .debug_info    0x00000000       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .debug_abbrev  0x00000000       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .debug_aranges
+                0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+ .debug_str     0x00000000       0x68 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
@@ -499,6 +519,8 @@ Discarded input sections
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .text.libgcc.mul
+                0x00000000       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc.div
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc   0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
@@ -510,6 +532,14 @@ Discarded input sections
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc.fixed
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_line    0x00000000       0x81 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_line_str
+                0x00000000       0x5c C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_info    0x00000000       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_abbrev  0x00000000       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_aranges
+                0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_str     0x00000000       0x68 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
 
 Memory Configuration
 
@@ -658,7 +688,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x6aa
+.text           0x00000000      0x66a
  *(.vectors)
  .vectors       0x00000000       0x54 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
                 0x00000000                __vector_default
@@ -735,85 +765,69 @@ END GROUP
                 0x0000008e                __vector_20
                 0x00000092                        . = ALIGN (0x2)
  *(.text.*)
+ .text.Task_Count
+                0x00000092        0xc build/main.o
  .text.startup.main
-                0x00000092       0x6c build/main.o
-                0x00000092                main
+                0x0000009e       0x50 build/main.o
+                0x0000009e                main
  .text.SHIFTREG_Init
-                0x000000fe       0x1a build/HAL/Shiftreg/Shiftreg.o
-                0x000000fe                SHIFTREG_Init
+                0x000000ee       0x1a build/HAL/Shiftreg/Shiftreg.o
+                0x000000ee                SHIFTREG_Init
  .text.SHIFTREG_SendByte
-                0x00000118       0x42 build/HAL/Shiftreg/Shiftreg.o
-                0x00000118                SHIFTREG_SendByte
- .text.RB_Put   0x0000015a       0x4e build/LIB/Ringbuffer/Ringbuffer.o
-                0x0000015a                RB_Put
- .text.FLOWMETER_Init
-                0x000001a8       0x34 build/Logic/Flowmeter/Flowmeter.o
-                0x000001a8                FLOWMETER_Init
- .text.FLOWMETER_Update1Hz
-                0x000001dc       0x52 build/Logic/Flowmeter/Flowmeter.o
-                0x000001dc                FLOWMETER_Update1Hz
- .text.FLOWMETER_GetPulsesPerSec
-                0x0000022e        0xa build/Logic/Flowmeter/Flowmeter.o
-                0x0000022e                FLOWMETER_GetPulsesPerSec
- .text.FLOWMETER_GetFlowLpmX10
-                0x00000238       0x2a build/Logic/Flowmeter/Flowmeter.o
-                0x00000238                FLOWMETER_GetFlowLpmX10
- .text.FLOWMETER_GetTotalMilliliters
-                0x00000262       0x2a build/Logic/Flowmeter/Flowmeter.o
-                0x00000262                FLOWMETER_GetTotalMilliliters
+                0x00000108       0x42 build/HAL/Shiftreg/Shiftreg.o
+                0x00000108                SHIFTREG_SendByte
+ .text.RB_Put   0x0000014a       0x4e build/LIB/Ringbuffer/Ringbuffer.o
+                0x0000014a                RB_Put
+ .text.SCHEDULER_Init
+                0x00000198       0x30 build/Logic/Scheduler/Scheduler.o
+                0x00000198                SCHEDULER_Init
+ .text.SCHEDULER_AddTask
+                0x000001c8       0x9c build/Logic/Scheduler/Scheduler.o
+                0x000001c8                SCHEDULER_AddTask
+ .text.SCHEDULER_Tick
+                0x00000264       0x5a build/Logic/Scheduler/Scheduler.o
+                0x00000264                SCHEDULER_Tick
+ .text.SCHEDULER_Run
+                0x000002be       0x34 build/Logic/Scheduler/Scheduler.o
+                0x000002be                SCHEDULER_Run
  .text.GPIO_SetPinDirection
-                0x0000028c       0xe4 build/MCAL/GPIO/GPIO.o
-                0x0000028c                GPIO_SetPinDirection
+                0x000002f2       0xe4 build/MCAL/GPIO/GPIO.o
+                0x000002f2                GPIO_SetPinDirection
  .text.GPIO_SetPinValue
-                0x00000370       0x7c build/MCAL/GPIO/GPIO.o
-                0x00000370                GPIO_SetPinValue
+                0x000003d6       0x7c build/MCAL/GPIO/GPIO.o
+                0x000003d6                GPIO_SetPinValue
  .text.__vector_1
-                0x000003ec       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000003ec                __vector_1
+                0x00000452       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00000452                __vector_1
  .text.__vector_2
-                0x0000043e       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x0000043e                __vector_2
+                0x000004a4       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000004a4                __vector_2
  .text.__vector_3
-                0x00000490       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00000490                __vector_3
+                0x000004f6       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000004f6                __vector_3
  .text.SPI_InitMaster
-                0x000004e2       0x20 build/MCAL/SPI/SPI.o
-                0x000004e2                SPI_InitMaster
+                0x00000548       0x20 build/MCAL/SPI/SPI.o
+                0x00000548                SPI_InitMaster
  .text.SPI_Transceive
-                0x00000502       0x1e build/MCAL/SPI/SPI.o
-                0x00000502                SPI_Transceive
+                0x00000568       0x1e build/MCAL/SPI/SPI.o
+                0x00000568                SPI_Transceive
  .text.TIMER0_Init
-                0x00000520       0x16 build/MCAL/TIMER/TIMER.o
-                0x00000520                TIMER0_Init
+                0x00000586       0x16 build/MCAL/TIMER/TIMER.o
+                0x00000586                TIMER0_Init
  .text.TIMER0_DelayMS
-                0x00000536       0x30 build/MCAL/TIMER/TIMER.o
-                0x00000536                TIMER0_DelayMS
- .text.TIMER0_DelayS
-                0x00000566       0x4a build/MCAL/TIMER/TIMER.o
-                0x00000566                TIMER0_DelayS
- .text.TIMER1_ExternalCounterInit
-                0x000005b0       0x22 build/MCAL/TIMER/TIMER.o
-                0x000005b0                TIMER1_ExternalCounterInit
- .text.TIMER1_GetCounter
-                0x000005d2        0x6 build/MCAL/TIMER/TIMER.o
-                0x000005d2                TIMER1_GetCounter
+                0x0000059c       0x30 build/MCAL/TIMER/TIMER.o
+                0x0000059c                TIMER0_DelayMS
  .text.__vector_13
-                0x000005d8       0x56 build/MCAL/UART/UART.o
-                0x000005d8                __vector_13
- .text.libgcc.mul
-                0x0000062e       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
-                0x0000062e                __umulhisi3
+                0x000005cc       0x56 build/MCAL/UART/UART.o
+                0x000005cc                __vector_13
  .text.libgcc.div
-                0x0000064c       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                0x0000064c                __udivmodsi4
- .text.libgcc.mul
-                0x00000690       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
-                0x00000690                __muluhisi3
-                0x000006a6                        . = ALIGN (0x2)
+                0x00000622       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000622                __udivmodsi4
+                0x00000666                        . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000006a6        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
-                0x000006a6                _exit
-                0x000006a6                exit
+ .fini9         0x00000666        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+                0x00000666                _exit
+                0x00000666                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -832,18 +846,18 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000006a6        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000666        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
  *(.hightext)
  *(.hightext*)
  *(.progmemx)
  *(.progmemx.*)
-                0x000006aa                        . = ALIGN (0x2)
+                0x0000066a                        . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
-                0x000006aa                        _etext = .
+                0x0000066a                        _etext = .
 
-.data           0x00800060        0x0 load address 0x000006aa
+.data           0x00800060        0x0 load address 0x0000066a
                 0x00800060                        PROVIDE (__data_start = .)
  *(.data)
  *(.data*)
@@ -855,34 +869,34 @@ END GROUP
                 0x00800060                        _edata = .
                 0x00800060                        PROVIDE (__data_end = .)
 
-.bss            0x00800060       0x10
+.bss            0x00800060       0x6a
                 0x00800060                        PROVIDE (__bss_start = .)
  *(.bss)
  *(.bss*)
- .bss.g_totalPulses
-                0x00800060        0x4 build/Logic/Flowmeter/Flowmeter.o
- .bss.g_pulsesLastSecond
-                0x00800064        0x2 build/Logic/Flowmeter/Flowmeter.o
- .bss.g_lastCount
-                0x00800066        0x2 build/Logic/Flowmeter/Flowmeter.o
+ .bss.g_u8Count
+                0x00800060        0x1 build/main.o
+ .bss.Scheduler_Initialized
+                0x00800061        0x1 build/Logic/Scheduler/Scheduler.o
+ .bss.Scheduler_Tasks
+                0x00800062       0x60 build/Logic/Scheduler/Scheduler.o
  .bss.EXTI_INT2_Callback
-                0x00800068        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x008000c2        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
  .bss.EXTI_INT1_Callback
-                0x0080006a        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x008000c4        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
  .bss.EXTI_INT0_Callback
-                0x0080006c        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x008000c6        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
  .bss.g_uartRxBuffer
-                0x0080006e        0x2 build/MCAL/UART/UART.o
+                0x008000c8        0x2 build/MCAL/UART/UART.o
  *(COMMON)
-                0x00800070                        PROVIDE (__bss_end = .)
-                0x000006aa                        __data_load_start = LOADADDR (.data)
-                0x000006aa                        __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x008000ca                        PROVIDE (__bss_end = .)
+                0x0000066a                        __data_load_start = LOADADDR (.data)
+                0x0000066a                        __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800070        0x0
+.noinit         0x008000ca        0x0
                 [!provide]                        PROVIDE (__noinit_start = .)
  *(.noinit .noinit.* .gnu.linkonce.n.*)
                 [!provide]                        PROVIDE (__noinit_end = .)
-                0x00800070                        _end = .
+                0x008000ca                        _end = .
                 [!provide]                        PROVIDE (__heap_start = .)
                 0x00000000                        __flmap_init_label = DEFINED (__flmap_noinit_start)?__flmap_noinit_start:0x0
                 0x00000000                        __flmap = DEFINED (__flmap)?__flmap:0x0
@@ -929,7 +943,7 @@ END GROUP
                                  0x13 (size before relaxing)
  .comment       0x00000012        0x0 build/LIB/Ringbuffer/Ringbuffer.o
                                  0x13 (size before relaxing)
- .comment       0x00000012        0x0 build/Logic/Flowmeter/Flowmeter.o
+ .comment       0x00000012        0x0 build/Logic/Scheduler/Scheduler.o
                                  0x13 (size before relaxing)
  .comment       0x00000012        0x0 build/MCAL/GPIO/GPIO.o
                                  0x13 (size before relaxing)
@@ -965,53 +979,43 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0xc0
+.debug_aranges  0x00000000       0x80
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+                0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .debug_aranges
-                0x00000020       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000020       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
  .debug_aranges
-                0x00000040       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+                0x00000040       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
  .debug_aranges
-                0x00000060       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
- .debug_aranges
-                0x00000080       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
- .debug_aranges
-                0x000000a0       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+                0x00000060       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x5be
+.debug_info     0x00000000      0x576
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x4e6 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
- .debug_info    0x000004e6       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
- .debug_info    0x0000050a       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_info    0x0000052e       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
- .debug_info    0x00000552       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
- .debug_info    0x00000576       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
- .debug_info    0x0000059a       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_info    0x000004e6       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+ .debug_info    0x0000050a       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .debug_info    0x0000052e       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
+ .debug_info    0x00000552       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
 
-.debug_abbrev   0x00000000      0x51b
+.debug_abbrev   0x00000000      0x4f3
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x4a3 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
- .debug_abbrev  0x000004a3       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
- .debug_abbrev  0x000004b7       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_abbrev  0x000004cb       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
- .debug_abbrev  0x000004df       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
- .debug_abbrev  0x000004f3       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
- .debug_abbrev  0x00000507       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_abbrev  0x000004a3       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+ .debug_abbrev  0x000004b7       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .debug_abbrev  0x000004cb       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
+ .debug_abbrev  0x000004df       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
 
-.debug_line     0x00000000      0x39b
+.debug_line     0x00000000      0x27b
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000       0x1d C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
- .debug_line    0x0000001d       0x9f C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
- .debug_line    0x000000bc      0x111 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_line    0x000001cd       0x51 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
- .debug_line    0x0000021e       0x87 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
- .debug_line    0x000002a5       0x75 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
- .debug_line    0x0000031a       0x81 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+ .debug_line    0x0000001d      0x111 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+ .debug_line    0x0000012e       0x51 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .debug_line    0x0000017f       0x87 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
+ .debug_line    0x00000206       0x75 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
 
 .debug_frame
  *(.debug_frame)
@@ -1019,16 +1023,12 @@ END GROUP
 .debug_str      0x00000000      0x1fe
  *(.debug_str)
  .debug_str     0x00000000      0x196 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
- .debug_str     0x00000196       0x68 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
- .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                                 0x68 (size before relaxing)
+ .debug_str     0x00000196       0x68 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
                                  0x68 (size before relaxing)
  .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
                                  0x68 (size before relaxing)
  .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
-                                 0x68 (size before relaxing)
- .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                                  0x68 (size before relaxing)
 
 .debug_loc
@@ -1062,10 +1062,7 @@ END GROUP
                 0x00000000       0x5c
  *(.debug_line_str)
  .debug_line_str
-                0x00000000       0x5c C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
- .debug_line_str
-                0x0000005c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                                 0x5c (size before relaxing)
+                0x00000000       0x5c C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .debug_line_str
                 0x0000005c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
                                  0x5c (size before relaxing)
@@ -1074,9 +1071,6 @@ END GROUP
                                  0x5c (size before relaxing)
  .debug_line_str
                 0x0000005c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
-                                 0x5c (size before relaxing)
- .debug_line_str
-                0x0000005c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                                  0x5c (size before relaxing)
 
 .debug_loclists

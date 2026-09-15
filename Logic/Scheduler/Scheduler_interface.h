@@ -17,10 +17,9 @@ typedef struct
     SchedulerTaskFunction_t TaskFunction;
 
     uint32 PeriodMs;
-
     uint32 RemainingTimeMs;
-
     uint8 Active;
+    uint8 Ready; /* SCHEDULER_Tick يرفعه، SCHEDULER_Run ينزّله فور التنفيذ */
 
 } SchedulerTask_t;
 

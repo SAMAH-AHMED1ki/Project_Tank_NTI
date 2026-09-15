@@ -27,9 +27,9 @@ SCHEDULER_Init:
 	std Z+8,__zero_reg__
 	std Z+9,__zero_reg__
 	std Z+10,__zero_reg__
-	adiw r30,11
-	ldi r24,hi8(Scheduler_Tasks+88)
-	cpi r30,lo8(Scheduler_Tasks+88)
+	adiw r30,12
+	ldi r24,hi8(Scheduler_Tasks+96)
+	cpi r30,lo8(Scheduler_Tasks+96)
 	cpc r31,r24
 	brne .L2
 	ldi r24,lo8(1)
@@ -86,7 +86,7 @@ SCHEDULER_AddTask:
 	ldd r18,Z+10
 	cpse r18,__zero_reg__
 	rjmp .L6
-	ldi r18,lo8(11)
+	ldi r18,lo8(12)
 	mul r18,r24
 	movw r30,r0
 	mul r18,r25
@@ -104,6 +104,7 @@ SCHEDULER_AddTask:
 	std Z+7,r13
 	std Z+8,r14
 	std Z+9,r15
+	std Z+11,__zero_reg__
 	ldi r24,lo8(1)
 	std Z+10,r24
 	ldi r24,0
@@ -119,7 +120,7 @@ SCHEDULER_AddTask:
 	ret
 .L6:
 	adiw r24,1
-	adiw r30,11
+	adiw r30,12
 	cpi r24,8
 	cpc r25,__zero_reg__
 	brne .L7
@@ -141,6 +142,7 @@ SCHEDULER_Tick:
 	breq .L13
 	ldi r30,lo8(Scheduler_Tasks)
 	ldi r31,hi8(Scheduler_Tasks)
+	ldi r18,lo8(1)
 .L19:
 	ldd r24,Z+10
 	cpi r24,lo8(1)
@@ -174,10 +176,11 @@ SCHEDULER_Tick:
 	std Z+7,r25
 	std Z+8,r26
 	std Z+9,r27
+	std Z+11,r18
 .L16:
-	adiw r30,11
-	ldi r24,hi8(Scheduler_Tasks+88)
-	cpi r30,lo8(Scheduler_Tasks+88)
+	adiw r30,12
+	ldi r24,hi8(Scheduler_Tasks+96)
+	cpi r30,lo8(Scheduler_Tasks+96)
 	cpc r31,r24
 	brne .L19
 .L13:
@@ -203,34 +206,17 @@ SCHEDULER_Run:
 	ldd r24,Y+10
 	cpi r24,lo8(1)
 	brne .L24
-	ldd r20,Y+6
-	ldd r21,Y+7
-	ldd r22,Y+8
-	ldd r23,Y+9
-	ldd r24,Y+2
-	ldd r25,Y+3
-	ldd r26,Y+4
-	ldd r27,Y+5
-	cp r20,r24
-	cpc r21,r25
-	cpc r22,r26
-	cpc r23,r27
+	ldd r24,Y+11
+	cpi r24,lo8(1)
 	brne .L24
+	std Y+11,__zero_reg__
 	ld r30,Y
 	ldd r31,Y+1
 	icall
-	ldd r24,Y+2
-	ldd r25,Y+3
-	ldd r26,Y+4
-	ldd r27,Y+5
-	std Y+6,r24
-	std Y+7,r25
-	std Y+8,r26
-	std Y+9,r27
 .L24:
-	adiw r28,11
-	ldi r24,hi8(Scheduler_Tasks+88)
-	cpi r28,lo8(Scheduler_Tasks+88)
+	adiw r28,12
+	ldi r24,hi8(Scheduler_Tasks+96)
+	cpi r28,lo8(Scheduler_Tasks+96)
 	cpc r29,r24
 	brne .L25
 .L22:
@@ -246,8 +232,8 @@ Scheduler_Initialized:
 	.zero	1
 	.section	.bss.Scheduler_Tasks,"aw",@nobits
 	.type	Scheduler_Tasks, @object
-	.size	Scheduler_Tasks, 88
+	.size	Scheduler_Tasks, 96
 Scheduler_Tasks:
-	.zero	88
+	.zero	96
 	.ident	"GCC: (GNU) 15.2.0"
 .global __do_clear_bss

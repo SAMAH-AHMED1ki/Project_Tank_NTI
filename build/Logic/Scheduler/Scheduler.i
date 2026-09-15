@@ -40,10 +40,9 @@ typedef struct
     SchedulerTaskFunction_t TaskFunction;
 
     uint32 PeriodMs;
-
     uint32 RemainingTimeMs;
-
     uint8 Active;
+    uint8 Ready;
 
 } SchedulerTask_t;
 
@@ -88,9 +87,7 @@ STD_ReturnType SCHEDULER_Init(void)
 {
     uint8 Local_u8Index;
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < 8u;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < 8u; Local_u8Index++)
     {
         Scheduler_Tasks[Local_u8Index].TaskFunction = ((void *)0);
         Scheduler_Tasks[Local_u8Index].PeriodMs = 0u;
@@ -106,9 +103,7 @@ STD_ReturnType SCHEDULER_Init(void)
 
 
 
-STD_ReturnType SCHEDULER_AddTask(
-    SchedulerTaskFunction_t TaskFunction,
-    uint32 PeriodMs)
+STD_ReturnType SCHEDULER_AddTask(SchedulerTaskFunction_t TaskFunction, uint32 PeriodMs)
 {
     uint8 Local_u8Index;
 
@@ -127,9 +122,7 @@ STD_ReturnType SCHEDULER_AddTask(
         return E_NOK;
     }
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < 8u;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < 8u; Local_u8Index++)
     {
         if (Scheduler_Tasks[Local_u8Index].Active == 0u)
         {
@@ -140,6 +133,7 @@ STD_ReturnType SCHEDULER_AddTask(
             Scheduler_Tasks[Local_u8Index].RemainingTimeMs =
                 PeriodMs;
 
+            Scheduler_Tasks[Local_u8Index].Ready = 0u;
             Scheduler_Tasks[Local_u8Index].Active = 1u;
 
             return E_OK;
@@ -154,31 +148,28 @@ STD_ReturnType SCHEDULER_AddTask(
 
 
 
+
 void SCHEDULER_Tick(void)
 {
     uint8 Local_u8Index;
-
     if (Scheduler_Initialized == 0u)
     {
         return;
     }
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < 8u;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < 8u; Local_u8Index++)
     {
         if (Scheduler_Tasks[Local_u8Index].Active == 1u)
         {
             if (Scheduler_Tasks[Local_u8Index].RemainingTimeMs >= 10u)
             {
-                Scheduler_Tasks[Local_u8Index].RemainingTimeMs -=
-                    10u;
+                Scheduler_Tasks[Local_u8Index].RemainingTimeMs -= 10u;
             }
-
             if (Scheduler_Tasks[Local_u8Index].RemainingTimeMs == 0u)
             {
-                Scheduler_Tasks[Local_u8Index].RemainingTimeMs =
-                    Scheduler_Tasks[Local_u8Index].PeriodMs;
+                Scheduler_Tasks[Local_u8Index].RemainingTimeMs = Scheduler_Tasks[Local_u8Index].PeriodMs;
+
+                Scheduler_Tasks[Local_u8Index].Ready = 1u;
             }
         }
     }
@@ -196,28 +187,13 @@ void SCHEDULER_Run(void)
         return;
     }
 
-    for (Local_u8Index = 0u;
-         Local_u8Index < 8u;
-         Local_u8Index++)
+    for (Local_u8Index = 0u; Local_u8Index < 8u; Local_u8Index++)
     {
-        if (Scheduler_Tasks[Local_u8Index].Active == 1u)
+        if ((Scheduler_Tasks[Local_u8Index].Active == 1u) && (Scheduler_Tasks[Local_u8Index].Ready == 1u))
         {
-            if (Scheduler_Tasks[Local_u8Index].RemainingTimeMs == Scheduler_Tasks[Local_u8Index].PeriodMs)
-            {
+            Scheduler_Tasks[Local_u8Index].Ready = 0u;
 
-
-
-
-
-                Scheduler_Tasks[Local_u8Index].TaskFunction();
-
-
-
-
-
-                Scheduler_Tasks[Local_u8Index].RemainingTimeMs =
-                    Scheduler_Tasks[Local_u8Index].PeriodMs;
-            }
+            Scheduler_Tasks[Local_u8Index].TaskFunction();
         }
     }
 }

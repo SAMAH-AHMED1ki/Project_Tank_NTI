@@ -2,7 +2,7 @@
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "main.c"
-# 72 "main.c"
+# 10 "main.c"
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
 typedef unsigned char uint8;
@@ -21,7 +21,7 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 73 "main.c" 2
+# 11 "main.c" 2
 # 1 "MCAL/SPI/SPI_interface.h" 1
 # 30 "MCAL/SPI/SPI_interface.h"
 STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
@@ -43,7 +43,7 @@ STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received);
 
 STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
 STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
-# 74 "main.c" 2
+# 12 "main.c" 2
 # 1 "HAL/Shiftreg/Shiftreg_interface.h" 1
 
 
@@ -55,7 +55,7 @@ STD_ReturnType SHIFTREG_Init(void);
 
 
 STD_ReturnType SHIFTREG_SendByte(uint8 Copy_u8Data);
-# 75 "main.c" 2
+# 13 "main.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -119,10 +119,27 @@ uint16 TIMER1_GetCounter(void);
 
 
 STD_ReturnType TIMER1_ResetCounter(void);
-# 76 "main.c" 2
-# 1 "Logic/Flowmeter/Flowmeter_interface.h" 1
-# 11 "Logic/Flowmeter/Flowmeter_interface.h"
-STD_ReturnType FLOWMETER_Init(void);
+# 14 "main.c" 2
+# 1 "Logic/Scheduler/Scheduler_interface.h" 1
+# 12 "Logic/Scheduler/Scheduler_interface.h"
+typedef void (*SchedulerTaskFunction_t)(void);
+
+
+typedef struct
+{
+    SchedulerTaskFunction_t TaskFunction;
+
+    uint32 PeriodMs;
+    uint32 RemainingTimeMs;
+    uint8 Active;
+    uint8 Ready;
+
+} SchedulerTask_t;
+
+
+
+
+STD_ReturnType SCHEDULER_Init(void);
 
 
 
@@ -130,81 +147,61 @@ STD_ReturnType FLOWMETER_Init(void);
 
 
 
-STD_ReturnType FLOWMETER_Update1Hz(void);
-
-
-uint16 FLOWMETER_GetPulsesPerSec(void);
-
-
-uint16 FLOWMETER_GetFlowLpmX10(void);
+STD_ReturnType SCHEDULER_AddTask(
+    SchedulerTaskFunction_t TaskFunction,
+    uint32 PeriodMs);
 
 
 
 
-uint32 FLOWMETER_GetTotalMilliliters(void);
+void SCHEDULER_Tick(void);
 
 
 
 
 
-STD_ReturnType FLOWMETER_ResetTotaliser(void);
-# 77 "main.c" 2
 
+void SCHEDULER_Run(void);
+# 15 "main.c" 2
 
+static uint8 g_u8Count = 0u;
+
+static void Task_Count(void)
+{
+    g_u8Count++;
+}
 
 int main(void)
 {
-    uint8 Local_u8SecInPhase = 0u;
-    uint8 Local_u8Phase = 0u;
-    uint16 Local_u16Value16;
-    uint32 Local_u32Value32;
+    uint16 Local_u16TickIndex;
+    uint8 Local_u8PollIndex;
 
     SPI_InitMaster(1u);
     SHIFTREG_Init();
     TIMER0_Init();
-    FLOWMETER_Init();
+
+    SCHEDULER_Init();
+    SCHEDULER_AddTask(Task_Count, 200u);
 
 
-    SHIFTREG_SendByte(0xFFu);
-    TIMER0_DelayS(1);
-    SHIFTREG_SendByte(0x00u);
-    TIMER0_DelayS(1);
+    for (Local_u16TickIndex = 0u; Local_u16TickIndex < 400u; Local_u16TickIndex++)
+    {
+        TIMER0_DelayMS(10u);
+        SCHEDULER_Tick();
 
+
+        for (Local_u8PollIndex = 0u; Local_u8PollIndex < 4u; Local_u8PollIndex++)
+        {
+            SCHEDULER_Run();
+        }
+    }
+
+
+    SHIFTREG_SendByte(g_u8Count);
 
     while (1)
     {
-        TIMER0_DelayS(1);
-        FLOWMETER_Update1Hz();
 
-        switch (Local_u8Phase)
-        {
-        case 0:
-            Local_u16Value16 = FLOWMETER_GetPulsesPerSec();
-            SHIFTREG_SendByte((uint8)Local_u16Value16);
-            break;
-
-        case 1:
-            Local_u16Value16 = FLOWMETER_GetFlowLpmX10();
-            SHIFTREG_SendByte((uint8)Local_u16Value16);
-            break;
-
-        case 2:
-        default:
-            Local_u32Value32 = FLOWMETER_GetTotalMilliliters();
-            SHIFTREG_SendByte((uint8)Local_u32Value32);
-            break;
-        }
-
-        Local_u8SecInPhase++;
-        if (Local_u8SecInPhase >= 3u)
-        {
-            Local_u8SecInPhase = 0u;
-            Local_u8Phase++;
-            if (Local_u8Phase >= 3u)
-            {
-                Local_u8Phase = 0u;
-            }
-        }
     }
 
     return 0;
