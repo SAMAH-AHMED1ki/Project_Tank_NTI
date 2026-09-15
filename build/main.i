@@ -2,7 +2,7 @@
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "main.c"
-# 10 "main.c"
+# 39 "main.c"
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
 typedef unsigned char uint8;
@@ -21,7 +21,7 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 11 "main.c" 2
+# 40 "main.c" 2
 # 1 "MCAL/SPI/SPI_interface.h" 1
 # 30 "MCAL/SPI/SPI_interface.h"
 STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
@@ -43,7 +43,7 @@ STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received);
 
 STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
 STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
-# 12 "main.c" 2
+# 41 "main.c" 2
 # 1 "HAL/Shiftreg/Shiftreg_interface.h" 1
 
 
@@ -55,7 +55,7 @@ STD_ReturnType SHIFTREG_Init(void);
 
 
 STD_ReturnType SHIFTREG_SendByte(uint8 Copy_u8Data);
-# 13 "main.c" 2
+# 42 "main.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -119,89 +119,32 @@ uint16 TIMER1_GetCounter(void);
 
 
 STD_ReturnType TIMER1_ResetCounter(void);
-# 14 "main.c" 2
-# 1 "Logic/Scheduler/Scheduler_interface.h" 1
-# 12 "Logic/Scheduler/Scheduler_interface.h"
-typedef void (*SchedulerTaskFunction_t)(void);
-
-
-typedef struct
-{
-    SchedulerTaskFunction_t TaskFunction;
-
-    uint32 PeriodMs;
-    uint32 RemainingTimeMs;
-    uint8 Active;
-    uint8 Ready;
-
-} SchedulerTask_t;
-
-
-
-
-STD_ReturnType SCHEDULER_Init(void);
-
-
-
-
-
-
-
-STD_ReturnType SCHEDULER_AddTask(
-    SchedulerTaskFunction_t TaskFunction,
-    uint32 PeriodMs);
-
-
-
-
-void SCHEDULER_Tick(void);
-
-
-
-
-
-
-void SCHEDULER_Run(void);
-# 15 "main.c" 2
-
-static uint8 g_u8Count = 0u;
-
-static void Task_Count(void)
-{
-    g_u8Count++;
-}
+# 43 "main.c" 2
 
 int main(void)
 {
-    uint16 Local_u16TickIndex;
-    uint8 Local_u8PollIndex;
+    uint16 Local_u16Pulses;
+
+
+
+
+
+    TIMER0_Init();
+
 
     SPI_InitMaster(1u);
     SHIFTREG_Init();
-    TIMER0_Init();
 
-    SCHEDULER_Init();
-    SCHEDULER_AddTask(Task_Count, 200u);
-
-
-    for (Local_u16TickIndex = 0u; Local_u16TickIndex < 400u; Local_u16TickIndex++)
-    {
-        TIMER0_DelayMS(10u);
-        SCHEDULER_Tick();
-
-
-        for (Local_u8PollIndex = 0u; Local_u8PollIndex < 4u; Local_u8PollIndex++)
-        {
-            SCHEDULER_Run();
-        }
-    }
-
-
-    SHIFTREG_SendByte(g_u8Count);
+    TIMER1_ExternalCounterInit();
 
     while (1)
     {
+        TIMER1_ResetCounter();
+        TIMER0_DelayS(1);
+        Local_u16Pulses = TIMER1_GetCounter();
 
+
+        SHIFTREG_SendByte((uint8)Local_u16Pulses);
     }
 
     return 0;
