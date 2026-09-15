@@ -317,10 +317,12 @@ main:
 	ldi r25,hi8(.LC9)
 	call UART_SendString
 	call UART_SendNewLine
-	ldi r24,lo8(-48)
-	ldi r25,lo8(7)
+	ldi r24,lo8(-72)
+	ldi r25,lo8(11)
 	call TIMER0_DelayMS
 	call TIMER0_Stop
+	sbi 0x17,3
+	cbi 0x18,3
 	ldi r24,lo8(.LC10)
 	ldi r25,hi8(.LC10)
 	call UART_SendString

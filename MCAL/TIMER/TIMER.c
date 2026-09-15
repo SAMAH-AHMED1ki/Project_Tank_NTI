@@ -97,14 +97,23 @@ STD_ReturnType TIMER0_PWM(uint8 Copy_u8DutyPercent)
     TIMER0_REG_TCCR0 |= (1 << CS01) | (1 << CS00);
     return E_OK;
 }
-
+/*
 STD_ReturnType TIMER0_Stop(void)
 {
     TIMER0_REG_TCCR0 &= ~((1 << CS02) | (1 << CS01) | (1 << CS00));
     TIMER0_REG_TCCR0 &= ~((1 << COM01) | (1 << COM00));
     return E_OK;
-}
+}*/
+STD_ReturnType TIMER0_Stop(void)
+{
+    /* Stop Timer0 */
+    TIMER0_REG_TCCR0 &= ~((1 << CS02) | (1 << CS01) | (1 << CS00));
 
+    /* Disconnect OC0 from Timer0 */
+    TIMER0_REG_TCCR0 &= ~((1 << COM01) | (1 << COM00));
+
+    return E_OK;
+}
 /*==================================================================
  *  Timer1 — 16-bit
  *==================================================================*/

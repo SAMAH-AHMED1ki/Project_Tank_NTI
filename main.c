@@ -6,6 +6,7 @@
  * Layers: LIB (types) -> MCAL (drivers) -> HAL (devices) -> Logic (app) ->
  * main.
  */
+
 #define F_CPU 8000000UL
 
 #include <avr/io.h>
@@ -189,10 +190,12 @@ static void Test_Timer0(void)
     UART_SendString("Timer0 PWM = 50 percent on PB3");
     UART_SendNewLine();
 
-    Test_DelayMS(2000);
+    Test_DelayMS(3000);
 
     TIMER0_Stop();
 
+    DDRB |= (1 << PB3);
+    PORTB &= ~(1 << PB3);
     UART_SendString("TIMER0 PWM TEST FINISHED");
     UART_SendNewLine();
 }

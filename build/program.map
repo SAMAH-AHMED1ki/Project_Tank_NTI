@@ -702,7 +702,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xb60
+.text           0x00000000      0xb68
  *(.vectors)
  .vectors       0x00000000       0x54 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
                 0x00000000                __vector_default
@@ -790,105 +790,105 @@ END GROUP
  .text.UART_SendNumber
                 0x000000c8       0xae build/main.o
  .text.startup.main
-                0x00000176      0x23a build/main.o
+                0x00000176      0x23e build/main.o
                 0x00000176                main
  .text.SHIFTREG_Init
-                0x000003b0       0x1a build/HAL/Shiftreg/Shiftreg.o
-                0x000003b0                SHIFTREG_Init
+                0x000003b4       0x1a build/HAL/Shiftreg/Shiftreg.o
+                0x000003b4                SHIFTREG_Init
  .text.SHIFTREG_SendByte
-                0x000003ca       0x42 build/HAL/Shiftreg/Shiftreg.o
-                0x000003ca                SHIFTREG_SendByte
- .text.RB_Put   0x0000040c       0x4e build/LIB/Ringbuffer/Ringbuffer.o
-                0x0000040c                RB_Put
+                0x000003ce       0x42 build/HAL/Shiftreg/Shiftreg.o
+                0x000003ce                SHIFTREG_SendByte
+ .text.RB_Put   0x00000410       0x4e build/LIB/Ringbuffer/Ringbuffer.o
+                0x00000410                RB_Put
  .text.FLOWMETER_Init
-                0x0000045a       0x34 build/Logic/Flowmeter/Flowmeter.o
-                0x0000045a                FLOWMETER_Init
+                0x0000045e       0x34 build/Logic/Flowmeter/Flowmeter.o
+                0x0000045e                FLOWMETER_Init
  .text.FLOWMETER_Update1Hz
-                0x0000048e       0x52 build/Logic/Flowmeter/Flowmeter.o
-                0x0000048e                FLOWMETER_Update1Hz
+                0x00000492       0x52 build/Logic/Flowmeter/Flowmeter.o
+                0x00000492                FLOWMETER_Update1Hz
  .text.FLOWMETER_GetPulsesPerSec
-                0x000004e0        0xa build/Logic/Flowmeter/Flowmeter.o
-                0x000004e0                FLOWMETER_GetPulsesPerSec
+                0x000004e4        0xa build/Logic/Flowmeter/Flowmeter.o
+                0x000004e4                FLOWMETER_GetPulsesPerSec
  .text.FLOWMETER_GetFlowLpmX10
-                0x000004ea       0x2a build/Logic/Flowmeter/Flowmeter.o
-                0x000004ea                FLOWMETER_GetFlowLpmX10
+                0x000004ee       0x2a build/Logic/Flowmeter/Flowmeter.o
+                0x000004ee                FLOWMETER_GetFlowLpmX10
  .text.FLOWMETER_GetTotalMilliliters
-                0x00000514       0x2a build/Logic/Flowmeter/Flowmeter.o
-                0x00000514                FLOWMETER_GetTotalMilliliters
+                0x00000518       0x2a build/Logic/Flowmeter/Flowmeter.o
+                0x00000518                FLOWMETER_GetTotalMilliliters
  .text.SCHEDULER_Init
-                0x0000053e       0x30 build/Logic/Scheduler/Scheduler.o
-                0x0000053e                SCHEDULER_Init
+                0x00000542       0x30 build/Logic/Scheduler/Scheduler.o
+                0x00000542                SCHEDULER_Init
  .text.SCHEDULER_AddTask
-                0x0000056e       0x9c build/Logic/Scheduler/Scheduler.o
-                0x0000056e                SCHEDULER_AddTask
+                0x00000572       0x9c build/Logic/Scheduler/Scheduler.o
+                0x00000572                SCHEDULER_AddTask
  .text.SCHEDULER_Tick
-                0x0000060a       0x5a build/Logic/Scheduler/Scheduler.o
-                0x0000060a                SCHEDULER_Tick
+                0x0000060e       0x5a build/Logic/Scheduler/Scheduler.o
+                0x0000060e                SCHEDULER_Tick
  .text.SCHEDULER_Run
-                0x00000664       0x34 build/Logic/Scheduler/Scheduler.o
-                0x00000664                SCHEDULER_Run
+                0x00000668       0x34 build/Logic/Scheduler/Scheduler.o
+                0x00000668                SCHEDULER_Run
  .text.GPIO_SetPinDirection
-                0x00000698       0xe4 build/MCAL/GPIO/GPIO.o
-                0x00000698                GPIO_SetPinDirection
+                0x0000069c       0xe4 build/MCAL/GPIO/GPIO.o
+                0x0000069c                GPIO_SetPinDirection
  .text.GPIO_SetPinValue
-                0x0000077c       0x7c build/MCAL/GPIO/GPIO.o
-                0x0000077c                GPIO_SetPinValue
+                0x00000780       0x7c build/MCAL/GPIO/GPIO.o
+                0x00000780                GPIO_SetPinValue
  .text.__vector_1
-                0x000007f8       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000007f8                __vector_1
+                0x000007fc       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000007fc                __vector_1
  .text.__vector_2
-                0x0000084a       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x0000084a                __vector_2
+                0x0000084e       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x0000084e                __vector_2
  .text.__vector_3
-                0x0000089c       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x0000089c                __vector_3
+                0x000008a0       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000008a0                __vector_3
  .text.SPI_InitMaster
-                0x000008ee       0x20 build/MCAL/SPI/SPI.o
-                0x000008ee                SPI_InitMaster
+                0x000008f2       0x20 build/MCAL/SPI/SPI.o
+                0x000008f2                SPI_InitMaster
  .text.SPI_Transceive
-                0x0000090e       0x1e build/MCAL/SPI/SPI.o
-                0x0000090e                SPI_Transceive
+                0x00000912       0x1e build/MCAL/SPI/SPI.o
+                0x00000912                SPI_Transceive
  .text.TIMER0_Init
-                0x0000092c       0x16 build/MCAL/TIMER/TIMER.o
-                0x0000092c                TIMER0_Init
+                0x00000930       0x16 build/MCAL/TIMER/TIMER.o
+                0x00000930                TIMER0_Init
  .text.TIMER0_DelayMS
-                0x00000942       0x30 build/MCAL/TIMER/TIMER.o
-                0x00000942                TIMER0_DelayMS
+                0x00000946       0x30 build/MCAL/TIMER/TIMER.o
+                0x00000946                TIMER0_DelayMS
  .text.TIMER0_PWM
-                0x00000972       0x40 build/MCAL/TIMER/TIMER.o
-                0x00000972                TIMER0_PWM
+                0x00000976       0x40 build/MCAL/TIMER/TIMER.o
+                0x00000976                TIMER0_PWM
  .text.TIMER0_Stop
-                0x000009b2       0x12 build/MCAL/TIMER/TIMER.o
-                0x000009b2                TIMER0_Stop
+                0x000009b6       0x16 build/MCAL/TIMER/TIMER.o
+                0x000009b6                TIMER0_Stop
  .text.TIMER1_PWM
-                0x000009c4       0x90 build/MCAL/TIMER/TIMER.o
-                0x000009c4                TIMER1_PWM
+                0x000009cc       0x90 build/MCAL/TIMER/TIMER.o
+                0x000009cc                TIMER1_PWM
  .text.TIMER1_Stop
-                0x00000a54       0x12 build/MCAL/TIMER/TIMER.o
-                0x00000a54                TIMER1_Stop
+                0x00000a5c       0x12 build/MCAL/TIMER/TIMER.o
+                0x00000a5c                TIMER1_Stop
  .text.TIMER1_ExternalCounterInit
-                0x00000a66       0x22 build/MCAL/TIMER/TIMER.o
-                0x00000a66                TIMER1_ExternalCounterInit
+                0x00000a6e       0x22 build/MCAL/TIMER/TIMER.o
+                0x00000a6e                TIMER1_ExternalCounterInit
  .text.TIMER1_GetCounter
-                0x00000a88        0x6 build/MCAL/TIMER/TIMER.o
-                0x00000a88                TIMER1_GetCounter
+                0x00000a90        0x6 build/MCAL/TIMER/TIMER.o
+                0x00000a90                TIMER1_GetCounter
  .text.__vector_13
-                0x00000a8e       0x56 build/MCAL/UART/UART.o
-                0x00000a8e                __vector_13
+                0x00000a96       0x56 build/MCAL/UART/UART.o
+                0x00000a96                __vector_13
  .text.libgcc.mul
-                0x00000ae4       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
-                0x00000ae4                __umulhisi3
+                0x00000aec       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+                0x00000aec                __umulhisi3
  .text.libgcc.div
-                0x00000b02       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                0x00000b02                __udivmodsi4
+                0x00000b0a       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000b0a                __udivmodsi4
  .text.libgcc.mul
-                0x00000b46       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
-                0x00000b46                __muluhisi3
-                0x00000b5c                        . = ALIGN (0x2)
+                0x00000b4e       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+                0x00000b4e                __muluhisi3
+                0x00000b64                        . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000b5c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
-                0x00000b5c                _exit
-                0x00000b5c                exit
+ .fini9         0x00000b64        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+                0x00000b64                _exit
+                0x00000b64                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -907,18 +907,18 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000b5c        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000b64        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
  *(.hightext)
  *(.hightext*)
  *(.progmemx)
  *(.progmemx.*)
-                0x00000b60                        . = ALIGN (0x2)
+                0x00000b68                        . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
-                0x00000b60                        _etext = .
+                0x00000b68                        _etext = .
 
-.data           0x00800060      0x228 load address 0x00000b60
+.data           0x00800060      0x228 load address 0x00000b68
                 0x00800060                        PROVIDE (__data_start = .)
  *(.data)
  *(.data*)
@@ -963,8 +963,8 @@ END GROUP
                 0x008002f7        0x2 build/MCAL/UART/UART.o
  *(COMMON)
                 0x008002f9                        PROVIDE (__bss_end = .)
-                0x00000b60                        __data_load_start = LOADADDR (.data)
-                0x00000d88                        __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000b68                        __data_load_start = LOADADDR (.data)
+                0x00000d90                        __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x008002f9        0x0
                 [!provide]                        PROVIDE (__noinit_start = .)

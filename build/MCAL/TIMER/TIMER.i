@@ -421,33 +421,62 @@ STD_ReturnType TIMER0_PWM(uint8 Copy_u8DutyPercent)
     return E_OK;
 }
 
+
+
+
+
+
+
 STD_ReturnType TIMER0_Stop(void)
 {
+
     (*(volatile uint8 *)0x53) &= ~((1 << 
-# 103 "MCAL/TIMER/TIMER.c" 3
+# 110 "MCAL/TIMER/TIMER.c" 3
                                2
-# 103 "MCAL/TIMER/TIMER.c"
+# 110 "MCAL/TIMER/TIMER.c"
                                    ) | (1 << 
-# 103 "MCAL/TIMER/TIMER.c" 3
+# 110 "MCAL/TIMER/TIMER.c" 3
                                              1
-# 103 "MCAL/TIMER/TIMER.c"
+# 110 "MCAL/TIMER/TIMER.c"
                                                  ) | (1 << 
-# 103 "MCAL/TIMER/TIMER.c" 3
+# 110 "MCAL/TIMER/TIMER.c" 3
                                                            0
-# 103 "MCAL/TIMER/TIMER.c"
+# 110 "MCAL/TIMER/TIMER.c"
                                                                ));
+
+
     (*(volatile uint8 *)0x53) &= ~((1 << 
-# 104 "MCAL/TIMER/TIMER.c" 3
+# 113 "MCAL/TIMER/TIMER.c" 3
                                5
-# 104 "MCAL/TIMER/TIMER.c"
+# 113 "MCAL/TIMER/TIMER.c"
                                     ) | (1 << 
-# 104 "MCAL/TIMER/TIMER.c" 3
+# 113 "MCAL/TIMER/TIMER.c" 3
                                               4
-# 104 "MCAL/TIMER/TIMER.c"
+# 113 "MCAL/TIMER/TIMER.c"
                                                    ));
+
+
+    
+# 116 "MCAL/TIMER/TIMER.c" 3
+   (*(volatile uint8_t *)((0x17) + 0x20)) 
+# 116 "MCAL/TIMER/TIMER.c"
+        |= (1 << 
+# 116 "MCAL/TIMER/TIMER.c" 3
+                 3
+# 116 "MCAL/TIMER/TIMER.c"
+                    );
+    
+# 117 "MCAL/TIMER/TIMER.c" 3
+   (*(volatile uint8_t *)((0x18) + 0x20)) 
+# 117 "MCAL/TIMER/TIMER.c"
+         &= ~(1 << 
+# 117 "MCAL/TIMER/TIMER.c" 3
+                   3
+# 117 "MCAL/TIMER/TIMER.c"
+                      );
+
     return E_OK;
 }
-
 
 
 
@@ -456,24 +485,24 @@ STD_ReturnType TIMER1_Init(void)
 {
     (*(volatile uint8 *)0x4F) = 0;
     (*(volatile uint8 *)0x4E) = (1 << 
-# 115 "MCAL/TIMER/TIMER.c" 3
+# 128 "MCAL/TIMER/TIMER.c" 3
                              3
-# 115 "MCAL/TIMER/TIMER.c"
+# 128 "MCAL/TIMER/TIMER.c"
                                   );
     (*(volatile uint16 *)0x4A) = 999;
     (*(volatile uint16 *)0x4C) = 0;
     (*(volatile uint8 *)0x4E) &= ~((1 << 
-# 118 "MCAL/TIMER/TIMER.c" 3
+# 131 "MCAL/TIMER/TIMER.c" 3
                                 2
-# 118 "MCAL/TIMER/TIMER.c"
+# 131 "MCAL/TIMER/TIMER.c"
                                     ) | (1 << 
-# 118 "MCAL/TIMER/TIMER.c" 3
+# 131 "MCAL/TIMER/TIMER.c" 3
                                               1
-# 118 "MCAL/TIMER/TIMER.c"
+# 131 "MCAL/TIMER/TIMER.c"
                                                   ) | (1 << 
-# 118 "MCAL/TIMER/TIMER.c" 3
+# 131 "MCAL/TIMER/TIMER.c" 3
                                                             0
-# 118 "MCAL/TIMER/TIMER.c"
+# 131 "MCAL/TIMER/TIMER.c"
                                                                 ));
     return E_OK;
 }
@@ -482,35 +511,35 @@ STD_ReturnType TIMER1_DelayMS(uint16 Copy_u16Milliseconds)
 {
     uint16 Local_u16Counter;
     (*(volatile uint8 *)0x58) = (1 << 
-# 125 "MCAL/TIMER/TIMER.c" 3
+# 138 "MCAL/TIMER/TIMER.c" 3
                     4
-# 125 "MCAL/TIMER/TIMER.c"
+# 138 "MCAL/TIMER/TIMER.c"
                          );
     (*(volatile uint8 *)0x4E) |= (1 << 
-# 126 "MCAL/TIMER/TIMER.c" 3
+# 139 "MCAL/TIMER/TIMER.c" 3
                               1
-# 126 "MCAL/TIMER/TIMER.c"
+# 139 "MCAL/TIMER/TIMER.c"
                                   );
     for (Local_u16Counter = 0; Local_u16Counter < Copy_u16Milliseconds; Local_u16Counter++)
     {
         TIMER_WaitFlag(&(*(volatile uint8 *)0x58), (1 << 
-# 129 "MCAL/TIMER/TIMER.c" 3
+# 142 "MCAL/TIMER/TIMER.c" 3
                                        4
-# 129 "MCAL/TIMER/TIMER.c"
+# 142 "MCAL/TIMER/TIMER.c"
                                             ));
     }
     (*(volatile uint8 *)0x4E) &= ~((1 << 
-# 131 "MCAL/TIMER/TIMER.c" 3
+# 144 "MCAL/TIMER/TIMER.c" 3
                                 2
-# 131 "MCAL/TIMER/TIMER.c"
+# 144 "MCAL/TIMER/TIMER.c"
                                     ) | (1 << 
-# 131 "MCAL/TIMER/TIMER.c" 3
+# 144 "MCAL/TIMER/TIMER.c" 3
                                               1
-# 131 "MCAL/TIMER/TIMER.c"
+# 144 "MCAL/TIMER/TIMER.c"
                                                   ) | (1 << 
-# 131 "MCAL/TIMER/TIMER.c" 3
+# 144 "MCAL/TIMER/TIMER.c" 3
                                                             0
-# 131 "MCAL/TIMER/TIMER.c"
+# 144 "MCAL/TIMER/TIMER.c"
                                                                 ));
     return E_OK;
 }
@@ -527,54 +556,54 @@ STD_ReturnType TIMER1_PWM(uint16 Copy_u16FrequencyHz, uint8 Copy_u8DutyPercent)
         return E_NOK;
     }
     
-# 146 "MCAL/TIMER/TIMER.c" 3
+# 159 "MCAL/TIMER/TIMER.c" 3
    (*(volatile uint8_t *)((0x11) + 0x20)) 
-# 146 "MCAL/TIMER/TIMER.c"
+# 159 "MCAL/TIMER/TIMER.c"
         |= (1 << 
-# 146 "MCAL/TIMER/TIMER.c" 3
+# 159 "MCAL/TIMER/TIMER.c" 3
                  5
-# 146 "MCAL/TIMER/TIMER.c"
+# 159 "MCAL/TIMER/TIMER.c"
                     );
     (*(volatile uint8 *)0x4F) &= ~((1 << 
-# 147 "MCAL/TIMER/TIMER.c" 3
+# 160 "MCAL/TIMER/TIMER.c" 3
                                 1
-# 147 "MCAL/TIMER/TIMER.c"
+# 160 "MCAL/TIMER/TIMER.c"
                                      ) | (1 << 
-# 147 "MCAL/TIMER/TIMER.c" 3
+# 160 "MCAL/TIMER/TIMER.c" 3
                                                0
-# 147 "MCAL/TIMER/TIMER.c"
+# 160 "MCAL/TIMER/TIMER.c"
                                                     ));
     (*(volatile uint8 *)0x4F) |= (1 << 
-# 148 "MCAL/TIMER/TIMER.c" 3
+# 161 "MCAL/TIMER/TIMER.c" 3
                               1
-# 148 "MCAL/TIMER/TIMER.c"
+# 161 "MCAL/TIMER/TIMER.c"
                                    );
     (*(volatile uint8 *)0x4E) |= (1 << 
-# 149 "MCAL/TIMER/TIMER.c" 3
+# 162 "MCAL/TIMER/TIMER.c" 3
                               4
-# 149 "MCAL/TIMER/TIMER.c"
+# 162 "MCAL/TIMER/TIMER.c"
                                    ) | (1 << 
-# 149 "MCAL/TIMER/TIMER.c" 3
+# 162 "MCAL/TIMER/TIMER.c" 3
                                              3
-# 149 "MCAL/TIMER/TIMER.c"
+# 162 "MCAL/TIMER/TIMER.c"
                                                   );
     (*(volatile uint8 *)0x4F) |= (1 << 
-# 150 "MCAL/TIMER/TIMER.c" 3
+# 163 "MCAL/TIMER/TIMER.c" 3
                               7
-# 150 "MCAL/TIMER/TIMER.c"
+# 163 "MCAL/TIMER/TIMER.c"
                                     );
     (*(volatile uint8 *)0x4F) &= ~(1 << 
-# 151 "MCAL/TIMER/TIMER.c" 3
+# 164 "MCAL/TIMER/TIMER.c" 3
                                6
-# 151 "MCAL/TIMER/TIMER.c"
+# 164 "MCAL/TIMER/TIMER.c"
                                      );
     Local_u32Top = (1000000UL / Copy_u16FrequencyHz) - 1;
     (*(volatile uint16 *)0x46) = (uint16)Local_u32Top;
     (*(volatile uint16 *)0x4A) = TIMER_DutyToCompare((*(volatile uint16 *)0x46), Copy_u8DutyPercent);
     (*(volatile uint8 *)0x4E) |= (1 << 
-# 155 "MCAL/TIMER/TIMER.c" 3
+# 168 "MCAL/TIMER/TIMER.c" 3
                               1
-# 155 "MCAL/TIMER/TIMER.c"
+# 168 "MCAL/TIMER/TIMER.c"
                                   );
 
     return E_OK;
@@ -583,27 +612,27 @@ STD_ReturnType TIMER1_PWM(uint16 Copy_u16FrequencyHz, uint8 Copy_u8DutyPercent)
 STD_ReturnType TIMER1_Stop(void)
 {
     (*(volatile uint8 *)0x4E) &= ~((1 << 
-# 162 "MCAL/TIMER/TIMER.c" 3
+# 175 "MCAL/TIMER/TIMER.c" 3
                                 2
-# 162 "MCAL/TIMER/TIMER.c"
+# 175 "MCAL/TIMER/TIMER.c"
                                     ) | (1 << 
-# 162 "MCAL/TIMER/TIMER.c" 3
+# 175 "MCAL/TIMER/TIMER.c" 3
                                               1
-# 162 "MCAL/TIMER/TIMER.c"
+# 175 "MCAL/TIMER/TIMER.c"
                                                   ) | (1 << 
-# 162 "MCAL/TIMER/TIMER.c" 3
+# 175 "MCAL/TIMER/TIMER.c" 3
                                                             0
-# 162 "MCAL/TIMER/TIMER.c"
+# 175 "MCAL/TIMER/TIMER.c"
                                                                 ));
 
     (*(volatile uint8 *)0x4F) &= ~((1 << 
-# 164 "MCAL/TIMER/TIMER.c" 3
+# 177 "MCAL/TIMER/TIMER.c" 3
                                 7
-# 164 "MCAL/TIMER/TIMER.c"
+# 177 "MCAL/TIMER/TIMER.c"
                                       ) | (1 << 
-# 164 "MCAL/TIMER/TIMER.c" 3
+# 177 "MCAL/TIMER/TIMER.c" 3
                                                 6
-# 164 "MCAL/TIMER/TIMER.c"
+# 177 "MCAL/TIMER/TIMER.c"
                                                       ));
 
     return E_OK;
@@ -621,17 +650,17 @@ STD_ReturnType TIMER1_ExternalCounterInit(void)
 
     (*(volatile uint8 *)0x4E) &=
         ~((1 << 
-# 180 "MCAL/TIMER/TIMER.c" 3
+# 193 "MCAL/TIMER/TIMER.c" 3
                2
-# 180 "MCAL/TIMER/TIMER.c"
+# 193 "MCAL/TIMER/TIMER.c"
                    ) | (1 << 
-# 180 "MCAL/TIMER/TIMER.c" 3
+# 193 "MCAL/TIMER/TIMER.c" 3
                              1
-# 180 "MCAL/TIMER/TIMER.c"
+# 193 "MCAL/TIMER/TIMER.c"
                                  ) | (1 << 
-# 180 "MCAL/TIMER/TIMER.c" 3
+# 193 "MCAL/TIMER/TIMER.c" 3
                                            0
-# 180 "MCAL/TIMER/TIMER.c"
+# 193 "MCAL/TIMER/TIMER.c"
                                                ));
 
 
@@ -640,24 +669,24 @@ STD_ReturnType TIMER1_ExternalCounterInit(void)
 
     (*(volatile uint8 *)0x4F) &=
         ~((1 << 
-# 187 "MCAL/TIMER/TIMER.c" 3
+# 200 "MCAL/TIMER/TIMER.c" 3
                1
-# 187 "MCAL/TIMER/TIMER.c"
+# 200 "MCAL/TIMER/TIMER.c"
                     ) | (1 << 
-# 187 "MCAL/TIMER/TIMER.c" 3
+# 200 "MCAL/TIMER/TIMER.c" 3
                               0
-# 187 "MCAL/TIMER/TIMER.c"
+# 200 "MCAL/TIMER/TIMER.c"
                                    ));
 
     (*(volatile uint8 *)0x4E) &=
         ~((1 << 
-# 190 "MCAL/TIMER/TIMER.c" 3
+# 203 "MCAL/TIMER/TIMER.c" 3
                4
-# 190 "MCAL/TIMER/TIMER.c"
+# 203 "MCAL/TIMER/TIMER.c"
                     ) | (1 << 
-# 190 "MCAL/TIMER/TIMER.c" 3
+# 203 "MCAL/TIMER/TIMER.c" 3
                               3
-# 190 "MCAL/TIMER/TIMER.c"
+# 203 "MCAL/TIMER/TIMER.c"
                                    ));
 
 
@@ -670,17 +699,17 @@ STD_ReturnType TIMER1_ExternalCounterInit(void)
 
 
     (*(volatile uint8 *)0x4E) |= (1 << 
-# 201 "MCAL/TIMER/TIMER.c" 3
+# 214 "MCAL/TIMER/TIMER.c" 3
                               2
-# 201 "MCAL/TIMER/TIMER.c"
+# 214 "MCAL/TIMER/TIMER.c"
                                   ) | (1 << 
-# 201 "MCAL/TIMER/TIMER.c" 3
+# 214 "MCAL/TIMER/TIMER.c" 3
                                             1
-# 201 "MCAL/TIMER/TIMER.c"
+# 214 "MCAL/TIMER/TIMER.c"
                                                 ) | (1 << 
-# 201 "MCAL/TIMER/TIMER.c" 3
+# 214 "MCAL/TIMER/TIMER.c" 3
                                                           0
-# 201 "MCAL/TIMER/TIMER.c"
+# 214 "MCAL/TIMER/TIMER.c"
                                                               );
 
     return E_OK;

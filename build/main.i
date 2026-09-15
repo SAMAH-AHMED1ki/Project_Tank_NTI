@@ -2,7 +2,7 @@
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "main.c"
-# 11 "main.c"
+# 12 "main.c"
 # 1 "C:/avr-gcc/avr/include/avr/io.h" 1 3
 # 99 "C:/avr-gcc/avr/include/avr/io.h" 3
 # 1 "C:/avr-gcc/avr/include/avr/sfr_defs.h" 1 3
@@ -192,7 +192,7 @@ typedef struct
 
 # 1 "C:/avr-gcc/avr/include/avr/lock.h" 1 3
 # 800 "C:/avr-gcc/avr/include/avr/io.h" 2 3
-# 12 "main.c" 2
+# 13 "main.c" 2
 
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
@@ -214,7 +214,7 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 14 "main.c" 2
+# 15 "main.c" 2
 # 1 "MCAL/GPIO/GPIO_interface.h" 1
 # 41 "MCAL/GPIO/GPIO_interface.h"
 STD_ReturnType GPIO_SetPinDirection(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Direction);
@@ -248,7 +248,7 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 
 
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 15 "main.c" 2
+# 16 "main.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -312,7 +312,7 @@ uint16 TIMER1_GetCounter(void);
 
 
 STD_ReturnType TIMER1_ResetCounter(void);
-# 16 "main.c" 2
+# 17 "main.c" 2
 # 1 "MCAL/SPI/SPI_interface.h" 1
 # 30 "MCAL/SPI/SPI_interface.h"
 STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
@@ -334,7 +334,7 @@ STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received);
 
 STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
 STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
-# 17 "main.c" 2
+# 18 "main.c" 2
 # 1 "Logic/Flowmeter/Flowmeter_interface.h" 1
 # 11 "Logic/Flowmeter/Flowmeter_interface.h"
 STD_ReturnType FLOWMETER_Init(void);
@@ -363,7 +363,7 @@ uint32 FLOWMETER_GetTotalMilliliters(void);
 
 
 STD_ReturnType FLOWMETER_ResetTotaliser(void);
-# 18 "main.c" 2
+# 19 "main.c" 2
 # 1 "Logic/Scheduler/Scheduler_interface.h" 1
 # 12 "Logic/Scheduler/Scheduler_interface.h"
 typedef void (*SchedulerTaskFunction_t)(void);
@@ -406,7 +406,7 @@ void SCHEDULER_Tick(void);
 
 
 void SCHEDULER_Run(void);
-# 19 "main.c" 2
+# 20 "main.c" 2
 # 1 "HAL/Shiftreg/Shiftreg_interface.h" 1
 
 
@@ -418,7 +418,7 @@ STD_ReturnType SHIFTREG_Init(void);
 
 
 STD_ReturnType SHIFTREG_SendByte(uint8 Copy_u8Data);
-# 20 "main.c" 2
+# 21 "main.c" 2
 
 
 
@@ -430,72 +430,72 @@ static void UART_Init(void)
 
 
     
-# 30 "main.c" 3
+# 31 "main.c" 3
    (*(volatile uint8_t *)((0x20) + 0x20)) 
-# 30 "main.c"
+# 31 "main.c"
          = (uint8)(Local_u16BaudRate >> 8);
     
-# 31 "main.c" 3
+# 32 "main.c" 3
    (*(volatile uint8_t *)((0x09) + 0x20)) 
-# 31 "main.c"
+# 32 "main.c"
          = (uint8)Local_u16BaudRate;
 
 
     
-# 34 "main.c" 3
+# 35 "main.c" 3
    (*(volatile uint8_t *)((0x0A) + 0x20)) 
-# 34 "main.c"
+# 35 "main.c"
          = (1u << 
-# 34 "main.c" 3
+# 35 "main.c" 3
                   3
-# 34 "main.c"
+# 35 "main.c"
                       ) | (1u << 
-# 34 "main.c" 3
+# 35 "main.c" 3
                                  4
-# 34 "main.c"
+# 35 "main.c"
                                      );
 
 
     
-# 37 "main.c" 3
+# 38 "main.c" 3
    (*(volatile uint8_t *)((0x20) + 0x20)) 
-# 37 "main.c"
+# 38 "main.c"
          =
         (1u << 
-# 38 "main.c" 3
-              7
-# 38 "main.c"
-                   ) |
-        (1u << 
 # 39 "main.c" 3
-              2
+              7
 # 39 "main.c"
                    ) |
         (1u << 
 # 40 "main.c" 3
-              1
+              2
 # 40 "main.c"
+                   ) |
+        (1u << 
+# 41 "main.c" 3
+              1
+# 41 "main.c"
                    );
 }
 
 static void UART_SendChar(uint8 Copy_u8Data)
 {
     while ((
-# 45 "main.c" 3
+# 46 "main.c" 3
            (*(volatile uint8_t *)((0x0B) + 0x20)) 
-# 45 "main.c"
+# 46 "main.c"
                  & (1u << 
-# 45 "main.c" 3
+# 46 "main.c" 3
                           5
-# 45 "main.c"
+# 46 "main.c"
                               )) == 0u)
     {
     }
 
     
-# 49 "main.c" 3
+# 50 "main.c" 3
    (*(volatile uint8_t *)((0x0C) + 0x20)) 
-# 49 "main.c"
+# 50 "main.c"
        = Copy_u8Data;
 }
 
@@ -639,10 +639,28 @@ static void Test_Timer0(void)
     UART_SendString("Timer0 PWM = 50 percent on PB3");
     UART_SendNewLine();
 
-    Test_DelayMS(2000);
+    Test_DelayMS(3000);
 
     TIMER0_Stop();
 
+    
+# 197 "main.c" 3
+   (*(volatile uint8_t *)((0x17) + 0x20)) 
+# 197 "main.c"
+        |= (1 << 
+# 197 "main.c" 3
+                 3
+# 197 "main.c"
+                    );
+    
+# 198 "main.c" 3
+   (*(volatile uint8_t *)((0x18) + 0x20)) 
+# 198 "main.c"
+         &= ~(1 << 
+# 198 "main.c" 3
+                   3
+# 198 "main.c"
+                      );
     UART_SendString("TIMER0 PWM TEST FINISHED");
     UART_SendNewLine();
 }

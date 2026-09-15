@@ -166,6 +166,8 @@ TIMER0_Stop:
 	in r24,0x33
 	andi r24,lo8(-49)
 	out 0x33,r24
+	sbi 0x17,3
+	cbi 0x18,3
 	ldi r24,0
 	ldi r25,0
 /* epilogue start */
