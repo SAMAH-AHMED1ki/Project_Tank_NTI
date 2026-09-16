@@ -59,21 +59,24 @@ STD_ReturnType I2C_SendByte(uint8 Copy_u8Data);
 STD_ReturnType I2C_ReceiveByte(uint8 *Copy_pu8Data, uint8 Copy_u8SendAck);
 # 3 "HAL/lcd_i2c/lcd_i2c.c" 2
 # 1 "HAL/lcd_i2c/LCD_I2C_interface.h" 1
-# 15 "HAL/lcd_i2c/LCD_I2C_interface.h"
+# 30 "HAL/lcd_i2c/LCD_I2C_interface.h"
 STD_ReturnType LCD_I2C_Init(void);
 
 STD_ReturnType LCD_I2C_SendCommand(uint8 Copy_u8Command);
 
+STD_ReturnType LCD_I2C_SendData(uint8 Copy_u8Data);
+
 STD_ReturnType LCD_I2C_SendChar(uint8 Copy_u8Char);
 
-STD_ReturnType LCD_I2C_SendString(const char *Copy_pStr);
+STD_ReturnType LCD_I2C_SendString(const char *Copy_pcString);
+
+STD_ReturnType LCD_I2C_SetCursor(uint8 Copy_u8Row, uint8 Copy_u8Column);
 
 STD_ReturnType LCD_I2C_Clear(void);
 
-STD_ReturnType LCD_I2C_SetCursor(uint8 Copy_u8Row, uint8 Copy_u8Col);
-
-STD_ReturnType LCD_I2C_SendNumber(uint16 Copy_u16Value);
+STD_ReturnType LCD_I2C_SendNumber(uint16 Copy_u16Number);
 # 4 "HAL/lcd_i2c/lcd_i2c.c" 2
+
 # 1 "C:/avr-gcc/avr/include/util/delay.h" 1 3
 # 49 "C:/avr-gcc/avr/include/util/delay.h" 3
 # 1 "C:/avr-gcc/lib/gcc/avr/15.2.0/include/stdint.h" 1 3 4
@@ -278,149 +281,243 @@ _delay_us(double __us)
  __builtin_avr_delay_cycles(__ticks_dc);
 # 281 "C:/avr-gcc/avr/include/util/delay.h" 3
 }
-# 5 "HAL/lcd_i2c/lcd_i2c.c" 2
-# 13 "HAL/lcd_i2c/lcd_i2c.c"
+# 6 "HAL/lcd_i2c/lcd_i2c.c" 2
 
-# 13 "HAL/lcd_i2c/lcd_i2c.c"
-static STD_ReturnType LCD_I2C_WriteNibble(uint8 Copy_u8Nibble, uint8 Copy_u8ControlFlags);
+
+
+
+
+
+# 11 "HAL/lcd_i2c/lcd_i2c.c"
+static STD_ReturnType LCD_I2C_Write(uint8 Copy_u8Control,
+                                    uint8 Copy_u8Data)
+{
+    STD_ReturnType Local_u8Error;
+
+    Local_u8Error = I2C_SendStart();
+    if (Local_u8Error != E_OK)
+    {
+        return E_NOK;
+    }
+
+    Local_u8Error = I2C_SendSlaveAddressWithWrite(0x3E);
+    if (Local_u8Error != E_OK)
+    {
+        I2C_SendStop();
+        return E_NOK;
+    }
+
+    Local_u8Error = I2C_SendByte(Copy_u8Control);
+    if (Local_u8Error != E_OK)
+    {
+        I2C_SendStop();
+        return E_NOK;
+    }
+
+    Local_u8Error = I2C_SendByte(Copy_u8Data);
+    if (Local_u8Error != E_OK)
+    {
+        I2C_SendStop();
+        return E_NOK;
+    }
+
+    I2C_SendStop();
+
+    return E_OK;
+}
+
+
+
+
+
+STD_ReturnType LCD_I2C_SendCommand(uint8 Copy_u8Command)
+{
+    STD_ReturnType Local_u8Error;
+
+    Local_u8Error = LCD_I2C_Write(0x00, Copy_u8Command);
+
+    _delay_ms(2);
+
+    return Local_u8Error;
+}
+
+
+
+
+
+STD_ReturnType LCD_I2C_SendData(uint8 Copy_u8Data)
+{
+    STD_ReturnType Local_u8Error;
+
+    Local_u8Error = LCD_I2C_Write(0x40, Copy_u8Data);
+
+    _delay_ms(1);
+
+    return Local_u8Error;
+}
+
+
+
+
 
 STD_ReturnType LCD_I2C_Init(void)
 {
-    STD_ReturnType Local_u8Status = E_OK;
-
-
-    Local_u8Status |= I2C_InitMaster(100000UL);
+    STD_ReturnType Local_u8Error;
 
     _delay_ms(50);
 
 
-    Local_u8Status |= LCD_I2C_WriteNibble(0x30, 0);
-    _delay_ms(5);
-    Local_u8Status |= LCD_I2C_WriteNibble(0x30, 0);
-    _delay_us(150);
-    Local_u8Status |= LCD_I2C_WriteNibble(0x30, 0);
-    Local_u8Status |= LCD_I2C_WriteNibble(0x20, 0);
-
-
-    Local_u8Status |= LCD_I2C_SendCommand(0x28);
-    Local_u8Status |= LCD_I2C_SendCommand(0x0C);
-    Local_u8Status |= LCD_I2C_Clear();
-    Local_u8Status |= LCD_I2C_SendCommand(0x06);
-
-    return Local_u8Status;
-}
-
-STD_ReturnType LCD_I2C_SendCommand(uint8 Copy_u8Command)
-{
-    STD_ReturnType Local_u8Status = E_OK;
-
-
-    Local_u8Status |= LCD_I2C_WriteNibble(Copy_u8Command & 0xF0u, 0);
-    Local_u8Status |= LCD_I2C_WriteNibble((uint8)(Copy_u8Command << 4u) & 0xF0u, 0);
-
-    return Local_u8Status;
-}
-
-STD_ReturnType LCD_I2C_SendChar(uint8 Copy_u8Char)
-{
-    STD_ReturnType Local_u8Status = E_OK;
-
-
-    Local_u8Status |= LCD_I2C_WriteNibble(Copy_u8Char & 0xF0u, 0x01u);
-    Local_u8Status |= LCD_I2C_WriteNibble((uint8)(Copy_u8Char << 4u) & 0xF0u, 0x01u);
-
-    return Local_u8Status;
-}
-
-STD_ReturnType LCD_I2C_SendString(const char *Copy_pStr)
-{
-    if (Copy_pStr == ((void *)0))
+    Local_u8Error = LCD_I2C_SendCommand(0x38);
+    if (Local_u8Error != E_OK)
     {
         return E_NOK;
     }
 
-    while (*Copy_pStr != '\0')
+    _delay_ms(5);
+
+
+    Local_u8Error = LCD_I2C_SendCommand(0x39);
+    if (Local_u8Error != E_OK)
     {
-        if (LCD_I2C_SendChar((uint8)(*Copy_pStr)) != E_OK)
-        {
-            return E_NOK;
-        }
-        Copy_pStr++;
+        return E_NOK;
+    }
+
+    _delay_ms(1);
+
+
+    Local_u8Error = LCD_I2C_SendCommand(0x14);
+    if (Local_u8Error != E_OK)
+    {
+        return E_NOK;
+    }
+
+
+    LCD_I2C_SendCommand(0x70);
+    LCD_I2C_SendCommand(0x56);
+    LCD_I2C_SendCommand(0x6C);
+
+    _delay_ms(200);
+
+
+    LCD_I2C_SendCommand(0x38);
+
+
+    LCD_I2C_SendCommand(0x0C);
+
+
+    LCD_I2C_SendCommand(0x01);
+
+    _delay_ms(5);
+
+
+    LCD_I2C_SendCommand(0x06);
+
+    return E_OK;
+}
+
+
+
+
+
+STD_ReturnType LCD_I2C_SendChar(uint8 Copy_u8Char)
+{
+    return LCD_I2C_SendData(Copy_u8Char);
+}
+
+
+
+
+
+STD_ReturnType LCD_I2C_SendString(const char *Copy_pcString)
+{
+    if (Copy_pcString == ((void *)0))
+    {
+        return E_NOK;
+    }
+
+    while (*Copy_pcString != '\0')
+    {
+        LCD_I2C_SendChar((uint8)*Copy_pcString);
+        Copy_pcString++;
     }
 
     return E_OK;
 }
 
-STD_ReturnType LCD_I2C_Clear(void)
-{
-    STD_ReturnType Local_u8Status = LCD_I2C_SendCommand(0x01);
-    _delay_ms(2);
-    return Local_u8Status;
-}
 
-STD_ReturnType LCD_I2C_SetCursor(uint8 Copy_u8Row, uint8 Copy_u8Col)
+
+
+
+STD_ReturnType LCD_I2C_SetCursor(uint8 Copy_u8Row,
+                                 uint8 Copy_u8Column)
 {
-    if ((Copy_u8Row > 1u) || (Copy_u8Col > 15u))
+    uint8 Local_u8Address;
+
+    if (Copy_u8Row > 1u)
     {
         return E_NOK;
     }
 
+    if (Copy_u8Column > 15u)
+    {
+        return E_NOK;
+    }
 
-    uint8 Local_u8Address = (Copy_u8Row == 0u) ? (0x80u + Copy_u8Col) : (0xC0u + Copy_u8Col);
+    if (Copy_u8Row == 0u)
+    {
+        Local_u8Address = 0x00u + Copy_u8Column;
+    }
+    else
+    {
+        Local_u8Address = 0x40u + Copy_u8Column;
+    }
 
-    return LCD_I2C_SendCommand(Local_u8Address);
+    return LCD_I2C_SendCommand(0x80u | Local_u8Address);
 }
 
-STD_ReturnType LCD_I2C_SendNumber(uint16 Copy_u16Value)
-{
-    char Local_au8Buffer[6];
-    sint8 Local_s8Index = 0;
 
-    if (Copy_u16Value == 0u)
+
+
+
+STD_ReturnType LCD_I2C_Clear(void)
+{
+    STD_ReturnType Local_u8Error;
+
+    Local_u8Error = LCD_I2C_SendCommand(0x01);
+
+    _delay_ms(5);
+
+    return Local_u8Error;
+}
+
+
+
+
+
+STD_ReturnType LCD_I2C_SendNumber(uint16 Copy_u16Number)
+{
+    char Local_acNumber[6];
+    uint8 Local_u8Index = 0;
+    uint8 Local_u8i;
+
+    if (Copy_u16Number == 0)
     {
         return LCD_I2C_SendChar('0');
     }
 
-
-    while (Copy_u16Value > 0u)
+    while (Copy_u16Number > 0)
     {
-        Local_au8Buffer[Local_s8Index++] = (char)('0' + (Copy_u16Value % 10u));
-        Copy_u16Value /= 10u;
+        Local_acNumber[Local_u8Index] =
+            (char)((Copy_u16Number % 10u) + '0');
+
+        Copy_u16Number /= 10u;
+        Local_u8Index++;
     }
 
-
-    while (--Local_s8Index >= 0)
+    for (Local_u8i = Local_u8Index; Local_u8i > 0; Local_u8i--)
     {
-        if (LCD_I2C_SendChar((uint8)Local_au8Buffer[Local_s8Index]) != E_OK)
-        {
-            return E_NOK;
-        }
+        LCD_I2C_SendChar((uint8)Local_acNumber[Local_u8i - 1u]);
     }
 
     return E_OK;
-}
-
-static STD_ReturnType LCD_I2C_WriteNibble(uint8 Copy_u8Nibble, uint8 Copy_u8ControlFlags)
-{
-    STD_ReturnType Local_u8Status = E_OK;
-    uint8 Local_u8Payload = Copy_u8Nibble | Copy_u8ControlFlags | 0x08u;
-
-
-    Local_u8Status |= I2C_SendStart();
-
-
-    Local_u8Status |= I2C_SendSlaveAddressWithWrite(0x27);
-
-
-    Local_u8Status |= I2C_SendByte(Local_u8Payload | 0x04u);
-    _delay_us(1);
-
-
-    Local_u8Status |= I2C_SendByte(Local_u8Payload & ~0x04u);
-    _delay_us(50);
-
-
-    I2C_SendStop();
-
-    return Local_u8Status;
 }
