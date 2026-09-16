@@ -145,12 +145,12 @@ drivers are used as-is.
 
 #### Main control and remaining HAL owner
 
-- `interlocks.c/.h`
-- `demand.c/.h`
-- `tank_fsm.c/.h`
-- `main.c/.h`
-- `current.c/.h`
-- `floats.c/.h`
+- `interlocks.c/.h`(Implemented and tested)
+- `demand.c/.h`(Implemented and tested)
+- `tank_fsm.c/.h`(Implemented and tested)
+- `main.c/.h`(Implemented )
+- `current.c/.h`(Implemented and tested)
+- `floats.c/.h`(Implemented and tested)
 
 **What Samah will do:** Implement the control decision order so interlocks are
 checked before demand, write the pump state machine, and enforce hysteresis and
@@ -195,7 +195,7 @@ functions for the application layer.
 - `lcd_i2c.c/.h` (Implemented and tested)
 - `buttons.c/.h` (Implemented and tested)
 - `bargraph.c/.h` (Implemented and tested)
-- `level.c/.h` (Implemented)
+- `level.c/.h` (Implemented and tested)
 - Verify TWI transactions, LCD initialization, cursor/write operations, and
   display error handling, button debounce, bargraph levels, and tank-level
   scaling
