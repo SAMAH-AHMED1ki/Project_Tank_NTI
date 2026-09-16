@@ -1,4 +1,3 @@
-
 #define F_CPU 8000000UL
 #include <avr/io.h>
 #include "STD_TYPES.h"
@@ -11,6 +10,7 @@
 #include "SPI_interface.h"
 #include "I2C_interface.h"
 #include "Scheduler_interface.h"
+#include "UART_interface.h"
 /* ========================== HAL ========================== */
 #include "LCD_I2C_interface.h"
 #include "Flowmeter_interface.h"

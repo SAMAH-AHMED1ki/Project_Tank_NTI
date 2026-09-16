@@ -70,6 +70,8 @@ FSM_Ack:
 .global	FSM_Run
 	.type	FSM_Run, @function
 FSM_Run:
+	push r14
+	push r15
 	push r16
 	push r17
 	push r28
@@ -81,8 +83,8 @@ FSM_Run:
 	in r29,__SP_H__
 /* prologue: function */
 /* frame size = 6 */
-/* stack size = 10 */
-.L__stack_usage = 10
+/* stack size = 12 */
+.L__stack_usage = 12
 	movw r16,r24
 	std Y+5,__zero_reg__
 	std Y+6,__zero_reg__
@@ -130,58 +132,65 @@ FSM_Run:
 	call BTN_GetEvent
 	movw r24,r16
 	call ILK_Evaluate
+	movw r14,r24
 	or r24,r25
 	breq .L10
-.L17:
 	call FSM_StopOutputs
 	ldi r24,lo8(5)
-	rjmp .L44
-.L8:
-	sts Global_u16MinOffTicks,__zero_reg__
-	sts Global_u16MinOffTicks+1,__zero_reg__
-	rjmp .L9
+	sts Global_eCurrentState,r24
+	sts Global_eCurrentState+1,__zero_reg__
 .L10:
 	ldd r24,Y+1
 	ldd r25,Y+2
 	sbiw r24,3
 	sbiw r24,2
-	brsh .L12
+	brsh .L11
 	call FSM_Ack
+.L11:
+	or r14,r15
+	breq .L12
+.L19:
+	call FSM_StopOutputs
+	rjmp .L13
+.L8:
+	sts Global_u16MinOffTicks,__zero_reg__
+	sts Global_u16MinOffTicks+1,__zero_reg__
+	rjmp .L9
 .L12:
 	lds r30,Global_eCurrentState
 	lds r31,Global_eCurrentState+1
 	ldd r24,Y+5
 	ldd r25,Y+6
 	sbiw r24,3
-	brne .L13
+	brne .L14
 	cpi r30,6
 	cpc r31,__zero_reg__
-	brne .L14
+	brne .L15
 	call FSM_StopOutputs
 	ldi r24,lo8(1)
 	sts Global_eCurrentState,r24
 	sts Global_eCurrentState+1,__zero_reg__
-.L15:
+.L16:
 	call FSM_StopOutputs
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
 	movw r30,r16
 	ldd r24,Z+7
 	cpi r24,lo8(25)
-	brsh .L25
+	brsh .L26
 .L47:
 	ldi r24,lo8(4)
 	rjmp .L44
-.L14:
+.L15:
 	movw r24,r30
 	sbiw r24,1
 	sbiw r24,2
-	brsh .L13
+	brsh .L14
 	call FSM_StopOutputs
 	ldi r24,lo8(6)
 	sts Global_eCurrentState,r24
 	sts Global_eCurrentState+1,__zero_reg__
-.L16:
+.L17:
 	ldd r24,Y+3
 	ldd r25,Y+4
 	sbiw r24,3
@@ -199,42 +208,42 @@ FSM_Run:
 	movw r30,r16
 	ldd r24,Z+17
 	sbrs r24,0
-	rjmp .L11
-	rjmp .L46
-.L13:
+	rjmp .L13
+	rjmp .L45
+.L14:
 	cpi r30,8
 	cpc r31,__zero_reg__
 	brlo .+2
-	rjmp .L17
-	subi r30,lo8(-(gs(.L19)))
-	sbci r31,hi8(-(gs(.L19)))
+	rjmp .L18
+	subi r30,lo8(-(gs(.L20)))
+	sbci r31,hi8(-(gs(.L20)))
 	jmp __tablejump2__
 	.section	.jumptables.gcc.FSM_Run,"a",@progbits
 	.p2align	1
-	.type	.L19, @object
-.L19:
+	.type	.L20, @object
+.L20:
+	.word gs(.L25)
+	.word gs(.L16)
 	.word gs(.L24)
-	.word gs(.L15)
 	.word gs(.L23)
 	.word gs(.L22)
 	.word gs(.L21)
-	.word gs(.L20)
-	.word gs(.L16)
-	.word gs(.L18)
+	.word gs(.L17)
+	.word gs(.L19)
 	.section	.text.FSM_Run
-.L24:
+.L25:
 	call FSM_StopOutputs
-.L31:
+.L32:
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
-.L45:
+.L46:
 	ldi r24,lo8(1)
 	rjmp .L44
-.L25:
+.L26:
 	call DEM_GetPumpDemand
 	cpse r24,__zero_reg__
-	rjmp .L26
-.L11:
+	rjmp .L27
+.L13:
 	ldi r24,0
 	ldi r25,0
 .L6:
@@ -249,42 +258,44 @@ FSM_Run:
 	pop r28
 	pop r17
 	pop r16
+	pop r15
+	pop r14
 	ret
-.L26:
+.L27:
 	lds r24,Global_u16MinOffTicks
 	lds r25,Global_u16MinOffTicks+1
 	cpi r24,112
 	sbci r25,23
-	brlo .L11
+	brlo .L13
 	ldi r24,lo8(2)
 .L44:
 	sts Global_eCurrentState,r24
 	sts Global_eCurrentState+1,__zero_reg__
-	rjmp .L11
-.L23:
+	rjmp .L13
+.L24:
 	movw r30,r16
 	ldd r24,Z+7
 	cpi r24,lo8(25)
-	brsh .L28
+	brsh .L29
 	call FSM_StopOutputs
 	rjmp .L47
-.L28:
+.L29:
 	call DEM_GetPumpDemand
 	cpse r24,__zero_reg__
-	rjmp .L29
+	rjmp .L30
 	call FSM_StopOutputs
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
 	ldi r24,lo8(3)
 	rjmp .L44
-.L29:
+.L30:
 	ldi r24,lo8(1)
 	call PMP_Set
-.L46:
+.L45:
 	ldi r24,lo8(1)
 	call Valve_Set
-	rjmp .L11
-.L22:
+	rjmp .L13
+.L23:
 	call FSM_StopOutputs
 	lds r24,Global_u16SettlingTicks
 	lds r25,Global_u16SettlingTicks+1
@@ -292,34 +303,30 @@ FSM_Run:
 	ldi r31,1
 	cpc r25,r31
 	brlo .+2
-	rjmp .L31
+	rjmp .L32
 	adiw r24,1
 	sts Global_u16SettlingTicks,r24
 	sts Global_u16SettlingTicks+1,r25
 	cpi r24,-12
 	sbci r25,1
 	breq .+2
-	rjmp .L11
-	rjmp .L31
-.L21:
+	rjmp .L13
+	rjmp .L32
+.L22:
 	call FSM_StopOutputs
 	movw r30,r16
 	ldd r24,Z+7
 	cpi r24,lo8(25)
 	brsh .+2
-	rjmp .L11
-	rjmp .L45
-.L20:
+	rjmp .L13
+	rjmp .L46
+.L21:
 	call FSM_StopOutputs
-	movw r24,r16
-	call ILK_Evaluate
-	or r24,r25
-	brne .+2
-	rjmp .L45
-	rjmp .L11
+	rjmp .L46
 .L18:
 	call FSM_StopOutputs
-	rjmp .L11
+	ldi r24,lo8(5)
+	rjmp .L44
 	.size	FSM_Run, .-FSM_Run
 	.section	.data.Global_u16MinOffTicks,"aw"
 	.type	Global_u16MinOffTicks, @object

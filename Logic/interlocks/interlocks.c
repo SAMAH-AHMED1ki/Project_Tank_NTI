@@ -39,9 +39,16 @@ static uint16 Global_u16NoRiseTicks = 0u;
 static uint8 Global_u8LeakStartLevel = 0u;
 static uint8 Global_u8NoRiseStartLevel = 0u;
 
+/*
+ * ACK is kept pending until the current latched
+ * fault is actually safe to clear.
+ */
 static uint8 Global_u8Ack = 0u;
 
-/* Reset temporary timers */
+/* ---------------------------------------------------------- */
+/* Reset all temporary detection timers                       */
+/* ---------------------------------------------------------- */
+
 static void ResetTimers(void)
 {
     Global_u16OverflowTicks = 0u;
@@ -49,11 +56,18 @@ static void ResetTimers(void)
     Global_u16NoCurrentTicks = 0u;
     Global_u16DryRunTicks = 0u;
     Global_u16LevelSensorTicks = 0u;
+
     Global_u16LeakTicks = 0u;
     Global_u16NoRiseTicks = 0u;
+
+    Global_u8LeakStartLevel = 0u;
+    Global_u8NoRiseStartLevel = 0u;
 }
 
-/* Check if Leak / No-Rise should be disabled */
+/* ---------------------------------------------------------- */
+/* Leak / No-rise are not evaluated in these states           */
+/* ---------------------------------------------------------- */
+
 static uint8 IsSuppressed(uint8 state)
 {
     if ((state == ST_MANUAL) ||
@@ -66,42 +80,66 @@ static uint8 IsSuppressed(uint8 state)
     return 0u;
 }
 
-/* Check if the latched trip can be cleared */
+/* ---------------------------------------------------------- */
+/* Check whether the latched fault is currently safe to clear */
+/* ---------------------------------------------------------- */
+
 static uint8 CanClear(Trip_t trip, const TankData_t *data)
 {
+    if (data == NULL)
+    {
+        return 0u;
+    }
+
     switch (trip)
     {
     case TRIP_OVERFLOW:
+
         return ((data->levelPct <= OVERFLOW_CLEAR_LEVEL) &&
                 (data->highFloat == 0u));
 
     case TRIP_OVERCURRENT:
+
         return ((data->currentmA < OVERCURRENT_CLEAR_MA) &&
                 (data->pumpOn == 0u));
 
     case TRIP_DRY_RESERVOIR:
+
         return ((data->reservoirPct >= DRY_RESERVOIR_CLEAR) &&
                 (data->lowFloat == 0u));
 
     case TRIP_DRY_RUN:
+
         return (data->reservoirPct >= DRY_RESERVOIR_CLEAR);
 
     case TRIP_NO_CURRENT:
-    case TRIP_LEAK:
-    case TRIP_NO_RISE:
-        return 1u;
+
+        return (data->pumpOn == 0u);
 
     case TRIP_MAX_RUNTIME:
+
         return (data->pumpOn == 0u);
 
     case TRIP_LEVEL_SENSOR:
+
         return ((data->levelRaw > 0u) &&
                 (data->levelRaw < 1023u));
 
+    case TRIP_LEAK:
+    case TRIP_NO_RISE:
+
+        return (data->pumpOn == 0u);
+
+    case TRIP_NONE:
     default:
+
         return 1u;
     }
 }
+
+/* ---------------------------------------------------------- */
+/* Initialization                                              */
+/* ---------------------------------------------------------- */
 
 STD_ReturnType INT_Init(void)
 {
@@ -110,66 +148,107 @@ STD_ReturnType INT_Init(void)
 
     ResetTimers();
 
-    Global_u8LeakStartLevel = 0u;
-    Global_u8NoRiseStartLevel = 0u;
-
     return E_OK;
 }
+
+/* ---------------------------------------------------------- */
+/* Request ACK from application                                */
+/* ---------------------------------------------------------- */
 
 STD_ReturnType ILK_Reset(void)
 {
-    Global_u8Ack = 1u;
+    /*
+     * Do not immediately clear the fault.
+     * Just remember that the operator acknowledged it.
+     *
+     * The fault is cleared only when CanClear() becomes true.
+     */
+    if (Global_eTrip != TRIP_NONE)
+    {
+        Global_u8Ack = 1u;
+    }
 
     return E_OK;
 }
+
+/* ---------------------------------------------------------- */
+/* Main interlock evaluation                                   */
+/* ---------------------------------------------------------- */
 
 Trip_t ILK_Evaluate(const TankData_t *data)
 {
     Trip_t newTrip = TRIP_NONE;
     uint8 Local_u8Rise = 0u;
 
-    /* Existing latched fault */
+    if (data == NULL)
+    {
+        return Global_eTrip;
+    }
+
+    /* ====================================================== */
+    /* Existing latched fault                                  */
+    /* ====================================================== */
+
     if (Global_eTrip != TRIP_NONE)
     {
-        if (Global_u8Ack != 0u)
+        /*
+         * ACK is NOT consumed while the fault is unsafe.
+         *
+         * This means:
+         *   Fault -> ACK -> condition still unsafe
+         *   condition becomes safe -> fault clears
+         *
+         * The operator does not need to press ACK twice.
+         */
+        if ((Global_u8Ack != 0u) &&
+            (CanClear(Global_eTrip, data) != 0u))
         {
-            /*
-             * ACK is consumed whether the condition
-             * is clear or still active.
-             */
+            Global_eTrip = TRIP_NONE;
             Global_u8Ack = 0u;
 
-            if (CanClear(Global_eTrip, data) != 0u)
-            {
-                Global_eTrip = TRIP_NONE;
-                ResetTimers();
-            }
+            ResetTimers();
         }
 
         return Global_eTrip;
     }
 
-    /* 1. Overflow */
+    /* ====================================================== */
+    /* 1. OVERFLOW                                             */
+    /* ====================================================== */
+
     if (data->highFloat != 0u)
     {
-        /* High float causes immediate trip */
+        /*
+         * Hardware high-float protection:
+         * immediate overflow trip.
+         */
         newTrip = TRIP_OVERFLOW;
     }
     else if (data->levelPct >= OVERFLOW_LEVEL)
     {
-        /* Analog overflow must remain for 2 seconds */
+        /*
+         * Analog overflow:
+         * level >= 99% continuously for 2 seconds.
+         */
         if (Global_u16OverflowTicks < OVERFLOW_DELAY_TICKS)
+        {
             Global_u16OverflowTicks++;
+        }
 
         if (Global_u16OverflowTicks >= OVERFLOW_DELAY_TICKS)
+        {
             newTrip = TRIP_OVERFLOW;
+        }
     }
     else
     {
         Global_u16OverflowTicks = 0u;
     }
 
-    /* 2. Overcurrent */
+    /* ====================================================== */
+    /* 2. OVERCURRENT                                          */
+    /* ====================================================== */
+
     if (newTrip == TRIP_NONE)
     {
         if (data->currentmA > OVERCURRENT_LIMIT_MA)
@@ -192,24 +271,40 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         }
     }
 
-    /* 3. Dry reservoir */
+    /* ====================================================== */
+    /* 3. DRY RESERVOIR                                        */
+    /* ====================================================== */
+
     if (newTrip == TRIP_NONE)
     {
         if ((data->lowFloat != 0u) ||
             (data->reservoirPct < DRY_RESERVOIR_LIMIT))
         {
+            /*
+             * Low float OR reservoir below 10%
+             * causes immediate dry-reservoir trip.
+             */
             newTrip = TRIP_DRY_RESERVOIR;
         }
     }
 
-    /* 4. Dry run */
+    /* ====================================================== */
+    /* 4. DRY RUN                                              */
+    /* ====================================================== */
+
     if (newTrip == TRIP_NONE)
     {
         if ((data->pumpOn != 0u) &&
             (data->flowLpmX10 < DRY_RUN_FLOW_X10))
         {
+            /*
+             * Pump ON + flow < 1.0 L/min
+             * continuously for 10 seconds.
+             */
             if (Global_u16DryRunTicks < DRY_RUN_DELAY_TICKS)
+            {
                 Global_u16DryRunTicks++;
+            }
 
             if (Global_u16DryRunTicks >=
                 DRY_RUN_DELAY_TICKS)
@@ -223,12 +318,19 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         }
     }
 
-    /* 5. No current */
+    /* ====================================================== */
+    /* 5. NO CURRENT                                           */
+    /* ====================================================== */
+
     if (newTrip == TRIP_NONE)
     {
         if ((data->pumpOn != 0u) &&
             (data->currentmA < NO_CURRENT_LIMIT_MA))
         {
+            /*
+             * Pump ON + current < 0.5 A
+             * continuously for 3 seconds.
+             */
             if (Global_u16NoCurrentTicks <
                 NO_CURRENT_DELAY_TICKS)
             {
@@ -247,19 +349,33 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         }
     }
 
-    /* 6. Maximum runtime */
+    /* ====================================================== */
+    /* 6. MAXIMUM RUNTIME                                      */
+    /* ====================================================== */
+
     if ((newTrip == TRIP_NONE) &&
         (data->pumpRunSec > MAX_RUNTIME_SEC))
     {
+        /*
+         * Requirement:
+         * trip when runtime > 15 minutes.
+         */
         newTrip = TRIP_MAX_RUNTIME;
     }
 
-    /* 7. Level sensor */
+    /* ====================================================== */
+    /* 7. LEVEL SENSOR FAULT                                   */
+    /* ====================================================== */
+
     if (newTrip == TRIP_NONE)
     {
         if ((data->levelRaw == 0u) ||
             (data->levelRaw == 1023u))
         {
+            /*
+             * Sensor stuck at either ADC rail
+             * for 5 seconds.
+             */
             if (Global_u16LevelSensorTicks <
                 LEVEL_SENSOR_DELAY_TICKS)
             {
@@ -278,20 +394,34 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         }
     }
 
-    /* 8. Leak */
+    /* ====================================================== */
+    /* 8. LEAK                                                 */
+    /* ====================================================== */
+
     if ((newTrip == TRIP_NONE) &&
         (IsSuppressed(data->state) == 0u))
     {
         if (data->pumpOn == 0u)
         {
+            /*
+             * Start a 60-second observation window.
+             */
             if (Global_u16LeakTicks == 0u)
+            {
                 Global_u8LeakStartLevel = data->levelPct;
+            }
 
             if (Global_u16LeakTicks < LEAK_DELAY_TICKS)
+            {
                 Global_u16LeakTicks++;
+            }
 
             if (Global_u16LeakTicks >= LEAK_DELAY_TICKS)
             {
+                /*
+                 * Requirement:
+                 * pump OFF and level dropped by >5%.
+                 */
                 if ((Global_u8LeakStartLevel > data->levelPct) &&
                     ((Global_u8LeakStartLevel -
                       data->levelPct) > LEAK_DROP_PERCENT))
@@ -312,28 +442,44 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         Global_u16LeakTicks = 0u;
     }
 
-    /* 9. No rise */
+    /* ====================================================== */
+    /* 9. NO RISE                                              */
+    /* ====================================================== */
+
     if ((newTrip == TRIP_NONE) &&
         (IsSuppressed(data->state) == 0u))
     {
         if (data->pumpOn != 0u)
         {
+            /*
+             * Start the 120-second observation window.
+             */
             if (Global_u16NoRiseTicks == 0u)
+            {
                 Global_u8NoRiseStartLevel = data->levelPct;
+            }
 
             if (Global_u16NoRiseTicks < NO_RISE_DELAY_TICKS)
+            {
                 Global_u16NoRiseTicks++;
+            }
 
             if (data->levelPct > Global_u8NoRiseStartLevel)
             {
                 Local_u8Rise =
-                    data->levelPct - Global_u8NoRiseStartLevel;
+                    data->levelPct -
+                    Global_u8NoRiseStartLevel;
             }
             else
             {
                 Local_u8Rise = 0u;
             }
 
+            /*
+             * Requirement:
+             * pump ON for 120 seconds
+             * and level rise <2%.
+             */
             if ((Global_u16NoRiseTicks >= NO_RISE_DELAY_TICKS) &&
                 (Local_u8Rise < NO_RISE_PERCENT))
             {
@@ -350,10 +496,19 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         Global_u16NoRiseTicks = 0u;
     }
 
-    /* Latch trip */
+    /* ====================================================== */
+    /* LATCH NEW FAULT                                         */
+    /* ====================================================== */
+
     if (newTrip != TRIP_NONE)
     {
         Global_eTrip = newTrip;
+
+        /*
+         * A new fault must never inherit an old ACK.
+         */
+        Global_u8Ack = 0u;
+
         ResetTimers();
     }
 

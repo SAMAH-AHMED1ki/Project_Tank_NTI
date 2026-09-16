@@ -278,6 +278,8 @@ static uint16 Global_u16MinOffTicks = 6000u;
 
 
 
+
+
 static void FSM_StopOutputs(void)
 {
     PMP_Set(0u);
@@ -286,11 +288,15 @@ static void FSM_StopOutputs(void)
 
 
 
+
+
 static void FSM_StartFilling(void)
 {
     PMP_Set(1u);
     Valve_Set(1u);
 }
+
+
 
 
 
@@ -305,9 +311,15 @@ static void FSM_UpdateMinOffTimer(uint8 Copy_u8PumpOn)
     }
     else
     {
+
+
+
+
         Global_u16MinOffTicks = 0u;
     }
 }
+
+
 
 
 
@@ -321,12 +333,14 @@ STD_ReturnType FSM_Init(void)
     Global_u16MinOffTicks = 6000u;
 
     Local_Status = PMP_Set(0u);
+
     if (Local_Status != E_OK)
     {
         return Local_Status;
     }
 
     Local_Status = Valve_Set(0u);
+
     if (Local_Status != E_OK)
     {
         return Local_Status;
@@ -337,9 +351,12 @@ STD_ReturnType FSM_Init(void)
 
 
 
+
+
 STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 {
     Trip_t Local_eTrip = TRIP_NONE;
+
     ButtonEvent_t Local_eModeEvent = BTN_EVENT_NONE;
     ButtonEvent_t Local_eManualEvent = BTN_EVENT_NONE;
     ButtonEvent_t Local_eAckEvent = BTN_EVENT_NONE;
@@ -351,7 +368,11 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
+
+
     FSM_UpdateMinOffTimer(Copy_pstData->pumpOn);
+
+
 
 
 
@@ -361,16 +382,27 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
+
+
     Local_eTrip = ILK_Evaluate(Copy_pstData);
 
     if (Local_eTrip != TRIP_NONE)
     {
+
+
+
         FSM_StopOutputs();
 
         Global_eCurrentState = ST_TRIPPED;
 
-        return E_OK;
+
+
+
+
+
     }
+
+
 
 
 
@@ -382,20 +414,45 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
+
+
+
+    if (Local_eTrip != TRIP_NONE)
+    {
+
+
+
+
+
+
+
+        FSM_StopOutputs();
+
+        return E_OK;
+    }
+
+
+
+
+
     if (Local_eModeEvent == BTN_EVENT_SHORT_PRESS)
     {
         if (Global_eCurrentState == ST_MANUAL)
         {
             FSM_StopOutputs();
+
             Global_eCurrentState = ST_IDLE;
         }
         else if ((Global_eCurrentState == ST_IDLE) ||
                  (Global_eCurrentState == ST_FILLING))
         {
             FSM_StopOutputs();
+
             Global_eCurrentState = ST_MANUAL;
         }
     }
+
+
 
 
 
@@ -407,10 +464,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
         Global_u16SettlingTicks = 0u;
 
-        if (Local_eTrip == TRIP_NONE)
-        {
-            Global_eCurrentState = ST_IDLE;
-        }
+        Global_eCurrentState = ST_IDLE;
 
         break;
 
@@ -428,6 +482,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         {
             Global_eCurrentState = ST_RESERVOIR_WAIT;
         }
+
 
 
 
@@ -451,7 +506,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
             Global_eCurrentState = ST_RESERVOIR_WAIT;
         }
-
 
 
 
@@ -505,18 +559,18 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         break;
 
     case ST_TRIPPED:
-
+# 314 "Logic/tank_fsm/tank_fsm.c"
         FSM_StopOutputs();
-# 262 "Logic/tank_fsm/tank_fsm.c"
-        if (ILK_Evaluate(Copy_pstData) == TRIP_NONE)
-        {
-            Global_eCurrentState = ST_IDLE;
-        }
+
+
+
+
+
+        Global_eCurrentState = ST_IDLE;
 
         break;
 
     case ST_MANUAL:
-
 
 
 
@@ -549,7 +603,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
-
         FSM_StopOutputs();
 
         break;
@@ -567,10 +620,15 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 }
 
 
+
+
+
 TankState_t FSM_GetState(void)
 {
     return Global_eCurrentState;
 }
+
+
 
 
 

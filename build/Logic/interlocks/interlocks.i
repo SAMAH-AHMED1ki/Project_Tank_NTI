@@ -161,7 +161,14 @@ static uint16 Global_u16NoRiseTicks = 0u;
 static uint8 Global_u8LeakStartLevel = 0u;
 static uint8 Global_u8NoRiseStartLevel = 0u;
 
+
+
+
+
 static uint8 Global_u8Ack = 0u;
+
+
+
 
 
 static void ResetTimers(void)
@@ -171,9 +178,16 @@ static void ResetTimers(void)
     Global_u16NoCurrentTicks = 0u;
     Global_u16DryRunTicks = 0u;
     Global_u16LevelSensorTicks = 0u;
+
     Global_u16LeakTicks = 0u;
     Global_u16NoRiseTicks = 0u;
+
+    Global_u8LeakStartLevel = 0u;
+    Global_u8NoRiseStartLevel = 0u;
 }
+
+
+
 
 
 static uint8 IsSuppressed(uint8 state)
@@ -189,41 +203,65 @@ static uint8 IsSuppressed(uint8 state)
 }
 
 
+
+
+
 static uint8 CanClear(Trip_t trip, const TankData_t *data)
 {
+    if (data == ((void *)0))
+    {
+        return 0u;
+    }
+
     switch (trip)
     {
     case TRIP_OVERFLOW:
+
         return ((data->levelPct <= 95u) &&
                 (data->highFloat == 0u));
 
     case TRIP_OVERCURRENT:
+
         return ((data->currentmA < 1000u) &&
                 (data->pumpOn == 0u));
 
     case TRIP_DRY_RESERVOIR:
+
         return ((data->reservoirPct >= 25u) &&
                 (data->lowFloat == 0u));
 
     case TRIP_DRY_RUN:
+
         return (data->reservoirPct >= 25u);
 
     case TRIP_NO_CURRENT:
-    case TRIP_LEAK:
-    case TRIP_NO_RISE:
-        return 1u;
+
+        return (data->pumpOn == 0u);
 
     case TRIP_MAX_RUNTIME:
+
         return (data->pumpOn == 0u);
 
     case TRIP_LEVEL_SENSOR:
+
         return ((data->levelRaw > 0u) &&
                 (data->levelRaw < 1023u));
 
+    case TRIP_LEAK:
+    case TRIP_NO_RISE:
+
+        return (data->pumpOn == 0u);
+
+    case TRIP_NONE:
     default:
+
         return 1u;
     }
 }
+
+
+
+
 
 STD_ReturnType INT_Init(void)
 {
@@ -232,64 +270,97 @@ STD_ReturnType INT_Init(void)
 
     ResetTimers();
 
-    Global_u8LeakStartLevel = 0u;
-    Global_u8NoRiseStartLevel = 0u;
-
     return E_OK;
 }
+
+
+
+
 
 STD_ReturnType ILK_Reset(void)
 {
-    Global_u8Ack = 1u;
+
+
+
+
+
+
+    if (Global_eTrip != TRIP_NONE)
+    {
+        Global_u8Ack = 1u;
+    }
 
     return E_OK;
 }
+
+
+
+
 
 Trip_t ILK_Evaluate(const TankData_t *data)
 {
     Trip_t newTrip = TRIP_NONE;
     uint8 Local_u8Rise = 0u;
 
+    if (data == ((void *)0))
+    {
+        return Global_eTrip;
+    }
+
+
+
+
 
     if (Global_eTrip != TRIP_NONE)
     {
-        if (Global_u8Ack != 0u)
+# 203 "Logic/interlocks/interlocks.c"
+        if ((Global_u8Ack != 0u) &&
+            (CanClear(Global_eTrip, data) != 0u))
         {
-
-
-
-
+            Global_eTrip = TRIP_NONE;
             Global_u8Ack = 0u;
 
-            if (CanClear(Global_eTrip, data) != 0u)
-            {
-                Global_eTrip = TRIP_NONE;
-                ResetTimers();
-            }
+            ResetTimers();
         }
 
         return Global_eTrip;
     }
 
 
+
+
+
     if (data->highFloat != 0u)
     {
+
+
+
 
         newTrip = TRIP_OVERFLOW;
     }
     else if (data->levelPct >= 99u)
     {
 
+
+
+
         if (Global_u16OverflowTicks < 200u)
+        {
             Global_u16OverflowTicks++;
+        }
 
         if (Global_u16OverflowTicks >= 200u)
+        {
             newTrip = TRIP_OVERFLOW;
+        }
     }
     else
     {
         Global_u16OverflowTicks = 0u;
     }
+
+
+
 
 
     if (newTrip == TRIP_NONE)
@@ -315,14 +386,24 @@ Trip_t ILK_Evaluate(const TankData_t *data)
     }
 
 
+
+
+
     if (newTrip == TRIP_NONE)
     {
         if ((data->lowFloat != 0u) ||
             (data->reservoirPct < 10u))
         {
+
+
+
+
             newTrip = TRIP_DRY_RESERVOIR;
         }
     }
+
+
+
 
 
     if (newTrip == TRIP_NONE)
@@ -330,8 +411,14 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         if ((data->pumpOn != 0u) &&
             (data->flowLpmX10 < 10u))
         {
+
+
+
+
             if (Global_u16DryRunTicks < 1000u)
+            {
                 Global_u16DryRunTicks++;
+            }
 
             if (Global_u16DryRunTicks >=
                 1000u)
@@ -346,11 +433,18 @@ Trip_t ILK_Evaluate(const TankData_t *data)
     }
 
 
+
+
+
     if (newTrip == TRIP_NONE)
     {
         if ((data->pumpOn != 0u) &&
             (data->currentmA < 500u))
         {
+
+
+
+
             if (Global_u16NoCurrentTicks <
                 300u)
             {
@@ -370,11 +464,21 @@ Trip_t ILK_Evaluate(const TankData_t *data)
     }
 
 
+
+
+
     if ((newTrip == TRIP_NONE) &&
         (data->pumpRunSec > 900u))
     {
+
+
+
+
         newTrip = TRIP_MAX_RUNTIME;
     }
+
+
+
 
 
     if (newTrip == TRIP_NONE)
@@ -382,6 +486,10 @@ Trip_t ILK_Evaluate(const TankData_t *data)
         if ((data->levelRaw == 0u) ||
             (data->levelRaw == 1023u))
         {
+
+
+
+
             if (Global_u16LevelSensorTicks <
                 500u)
             {
@@ -401,19 +509,33 @@ Trip_t ILK_Evaluate(const TankData_t *data)
     }
 
 
+
+
+
     if ((newTrip == TRIP_NONE) &&
         (IsSuppressed(data->state) == 0u))
     {
         if (data->pumpOn == 0u)
         {
+
+
+
             if (Global_u16LeakTicks == 0u)
+            {
                 Global_u8LeakStartLevel = data->levelPct;
+            }
 
             if (Global_u16LeakTicks < 6000u)
+            {
                 Global_u16LeakTicks++;
+            }
 
             if (Global_u16LeakTicks >= 6000u)
             {
+
+
+
+
                 if ((Global_u8LeakStartLevel > data->levelPct) &&
                     ((Global_u8LeakStartLevel -
                       data->levelPct) > 5u))
@@ -435,26 +557,42 @@ Trip_t ILK_Evaluate(const TankData_t *data)
     }
 
 
+
+
+
     if ((newTrip == TRIP_NONE) &&
         (IsSuppressed(data->state) == 0u))
     {
         if (data->pumpOn != 0u)
         {
+
+
+
             if (Global_u16NoRiseTicks == 0u)
+            {
                 Global_u8NoRiseStartLevel = data->levelPct;
+            }
 
             if (Global_u16NoRiseTicks < 12000u)
+            {
                 Global_u16NoRiseTicks++;
+            }
 
             if (data->levelPct > Global_u8NoRiseStartLevel)
             {
                 Local_u8Rise =
-                    data->levelPct - Global_u8NoRiseStartLevel;
+                    data->levelPct -
+                    Global_u8NoRiseStartLevel;
             }
             else
             {
                 Local_u8Rise = 0u;
             }
+
+
+
+
+
 
             if ((Global_u16NoRiseTicks >= 12000u) &&
                 (Local_u8Rise < 2u))
@@ -473,9 +611,18 @@ Trip_t ILK_Evaluate(const TankData_t *data)
     }
 
 
+
+
+
     if (newTrip != TRIP_NONE)
     {
         Global_eTrip = newTrip;
+
+
+
+
+        Global_u8Ack = 0u;
+
         ResetTimers();
     }
 

@@ -3,7 +3,6 @@
 # 0 "<command-line>"
 # 1 "main.c"
 
-
 # 1 "C:/avr-gcc/avr/include/avr/io.h" 1 3
 # 99 "C:/avr-gcc/avr/include/avr/io.h" 3
 # 1 "C:/avr-gcc/avr/include/avr/sfr_defs.h" 1 3
@@ -193,7 +192,7 @@ typedef struct
 
 # 1 "C:/avr-gcc/avr/include/avr/lock.h" 1 3
 # 800 "C:/avr-gcc/avr/include/avr/io.h" 2 3
-# 4 "main.c" 2
+# 3 "main.c" 2
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
 
@@ -214,7 +213,7 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 5 "main.c" 2
+# 4 "main.c" 2
 
 
 # 1 "MCAL/GPIO/GPIO_interface.h" 1
@@ -250,7 +249,7 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 
 
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 8 "main.c" 2
+# 7 "main.c" 2
 # 1 "MCAL/ADC/ADC_interface.h" 1
 # 46 "MCAL/ADC/ADC_interface.h"
 STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler);
@@ -277,7 +276,7 @@ STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
 
 
 STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
-# 9 "main.c" 2
+# 8 "main.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -341,7 +340,7 @@ uint16 TIMER1_GetCounter(void);
 
 
 STD_ReturnType TIMER1_ResetCounter(void);
-# 10 "main.c" 2
+# 9 "main.c" 2
 # 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
 # 30 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType INTERRUPT_EnableGlobal(void);
@@ -376,7 +375,7 @@ STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
 typedef void (*EXTI_CallbackType)(void);
 
 STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
-# 11 "main.c" 2
+# 10 "main.c" 2
 # 1 "MCAL/SPI/SPI_interface.h" 1
 # 30 "MCAL/SPI/SPI_interface.h"
 STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
@@ -398,7 +397,7 @@ STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received);
 
 STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
 STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
-# 12 "main.c" 2
+# 11 "main.c" 2
 # 1 "MCAL/I2C/I2C_interface.h" 1
 # 32 "MCAL/I2C/I2C_interface.h"
 STD_ReturnType I2C_InitMaster(uint32 Copy_u32SclHz);
@@ -435,7 +434,7 @@ STD_ReturnType I2C_SendByte(uint8 Copy_u8Data);
 
 
 STD_ReturnType I2C_ReceiveByte(uint8 *Copy_pu8Data, uint8 Copy_u8SendAck);
-# 13 "main.c" 2
+# 12 "main.c" 2
 # 1 "Logic/Scheduler/Scheduler_interface.h" 1
 # 12 "Logic/Scheduler/Scheduler_interface.h"
 typedef void (*SchedulerTaskFunction_t)(void);
@@ -478,6 +477,75 @@ void SCHEDULER_Tick(void);
 
 
 void SCHEDULER_Run(void);
+# 13 "main.c" 2
+# 1 "MCAL/UART/UART_interface.h" 1
+# 15 "MCAL/UART/UART_interface.h"
+# 1 "LIB/Ringbuffer/Ringbuffer.h" 1
+# 19 "LIB/Ringbuffer/Ringbuffer.h"
+typedef struct
+{
+    uint8 buffer[64U];
+    volatile uint8 head;
+    volatile uint8 tail;
+    volatile uint8 count;
+} RingBuffer_t;
+
+
+
+
+
+void RB_Init(RingBuffer_t *pRb);
+# 40 "LIB/Ringbuffer/Ringbuffer.h"
+STD_ReturnType RB_Put(RingBuffer_t *pRb, uint8 data);
+# 49 "LIB/Ringbuffer/Ringbuffer.h"
+STD_ReturnType RB_Get(RingBuffer_t *pRb, uint8 *pData);
+
+
+uint8 RB_IsEmpty(const RingBuffer_t *pRb);
+
+
+uint8 RB_IsFull(const RingBuffer_t *pRb);
+# 16 "MCAL/UART/UART_interface.h" 2
+
+
+
+
+
+STD_ReturnType UART_Init(uint32 Copy_u32BaudRate);
+
+
+
+
+
+STD_ReturnType UART_SetRxBuffer(RingBuffer_t *Copy_pRxBuffer);
+
+
+
+
+STD_ReturnType UART_SendByte(uint8 Copy_u8Data);
+
+
+
+
+STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data);
+
+
+
+
+STD_ReturnType UART_SendString(const uint8 *Copy_pu8String);
+
+
+
+
+
+STD_ReturnType UART_IsDataReady(void);
+
+
+
+
+
+STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State);
+STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State);
 # 14 "main.c" 2
 
 # 1 "HAL/lcd_i2c/LCD_I2C_interface.h" 1
