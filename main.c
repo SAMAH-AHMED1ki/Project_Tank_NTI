@@ -1,338 +1,530 @@
-/*
- * Author: Ahmed Ellamie
- * Email:  ahmed.ellamiee@gmail.com
- *
- * AVR_NTI application entry.
- * Layers: LIB (types) -> MCAL (drivers) -> HAL (devices) -> Logic (app) ->
- * main.
- */
-
 #define F_CPU 8000000UL
 
 #include <avr/io.h>
 
 #include "STD_TYPES.h"
+
+/* ========================= MCAL ========================= */
 #include "GPIO_interface.h"
 #include "TIMER_interface.h"
-#include "SPI_interface.h"
-#include "Flowmeter_interface.h"
+#include "INTERRUPT_interface.h"
 #include "Scheduler_interface.h"
+
+/* ========================== HAL ========================== */
+#include "LCD_I2C_interface.h"
+#include "Flowmeter_interface.h"
 #include "Shiftreg_interface.h"
 
-/*==========================================================
- *                    UART DRIVER
- *==========================================================*/
+/* ========================== APP ========================== */
+#include "tank_types.h"
+#include "level_interface.h"
+#include "current.h"
+#include "floats.h"
+#include "buttons_interface.h"
+#include "Pump_interface.h"
+#include "Valve_interface.h"
+#include "demand.h"
+#include "interlocks.h"
+#include "tank_fsm.h"
+#include "faultlog.h"
+#include "console.h"
 
-static void UART_Init(void)
+/* =========================================================
+ * Global application data
+ * ========================================================= */
+
+static TankData_t Global_stTankData;
+
+static FLG_Buffer_t Global_stFaultLog;
+
+/* =========================================================
+ * INT0 callback
+ *
+ * High-float emergency hardware guard.
+ * Pump and inlet valve are switched OFF immediately.
+ * ========================================================= */
+
+static void APP_HighFloatISR(void)
 {
-    uint16 Local_u16BaudRate = 51u;
-
-    /* Baud rate = 9600 at F_CPU = 8 MHz */
-    UBRRH = (uint8)(Local_u16BaudRate >> 8);
-    UBRRL = (uint8)Local_u16BaudRate;
-
-    /* Enable transmitter and receiver */
-    UCSRB = (1u << TXEN) | (1u << RXEN);
-
-    /* 8 data bits, 1 stop bit, no parity */
-    UCSRC =
-        (1u << URSEL) |
-        (1u << UCSZ1) |
-        (1u << UCSZ0);
+    PMP_Set(0u);
+    Valve_Set(0u);
 }
 
-static void UART_SendChar(uint8 Copy_u8Data)
+/* =========================================================
+ * Read / update all application data
+ * ========================================================= */
+
+static void APP_UpdateData(void)
 {
-    while ((UCSRA & (1u << UDRE)) == 0u)
+    uint16 Local_u16Raw;
+    uint8 Local_u8Value;
+    uint8 Local_u8Pump;
+    uint8 Local_u8Valve;
+    uint32 Local_u32Value;
+
+    /* ---------------- Roof level raw ---------------- */
+
+    if (ADC_ReadChannel(
+            ADC_CHANNEL_0,
+            &Local_u16Raw) == E_OK)
     {
+        Global_stTankData.levelRaw = Local_u16Raw;
     }
 
-    UDR = Copy_u8Data;
+    /* ---------------- Reservoir raw ---------------- */
+
+    if (ADC_ReadChannel(
+            ADC_CHANNEL_1,
+            &Local_u16Raw) == E_OK)
+    {
+        Global_stTankData.reservoirRaw = Local_u16Raw;
+    }
+
+    /* ---------------- Roof level percentage ---------------- */
+
+    if (LEVEL_ReadPercentage(
+            ADC_CHANNEL_0,
+            &Local_u8Value) == E_OK)
+    {
+        Global_stTankData.levelPct = Local_u8Value;
+    }
+
+    /* ---------------- Reservoir percentage ---------------- */
+
+    if (LEVEL_ReadPercentage(
+            ADC_CHANNEL_1,
+            &Local_u8Value) == E_OK)
+    {
+        Global_stTankData.reservoirPct = Local_u8Value;
+    }
+
+    /* ---------------- Current ---------------- */
+
+    if (CUR_GetmA(
+            &Global_stTankData.currentmA) != E_OK)
+    {
+        Global_stTankData.currentmA = 0u;
+    }
+
+    /* ---------------- Flow ---------------- */
+
+    Global_stTankData.flowLpmX10 =
+        FLOWMETER_GetFlowLpmX10();
+
+    /* ---------------- Floats ---------------- */
+
+    Global_stTankData.highFloat =
+        FLT_IsHighActive();
+
+    Global_stTankData.lowFloat =
+        FLT_IsLowActive();
+
+    /* ---------------- Pump state ---------------- */
+
+    if (PMP_GetState(&Local_u8Pump) == E_OK)
+    {
+        Global_stTankData.pumpOn =
+            Local_u8Pump;
+    }
+    else
+    {
+        Global_stTankData.pumpOn = 0u;
+    }
+
+    /* ---------------- Valve state ---------------- */
+
+    if (Valve_GetState(&Local_u8Valve) == E_OK)
+    {
+        Global_stTankData.valveOn =
+            Local_u8Valve;
+    }
+    else
+    {
+        Global_stTankData.valveOn = 0u;
+    }
+
+    /* ---------------- Pump run time ---------------- */
+
+    if (PMP_RunSeconds(&Local_u32Value) == E_OK)
+    {
+        Global_stTankData.pumpRunSec =
+            (uint16)Local_u32Value;
+    }
+    else
+    {
+        Global_stTankData.pumpRunSec = 0u;
+    }
+
+    /* ---------------- Pump total time ---------------- */
+
+    if (PMP_TotalSeconds(
+            &Global_stTankData.pumpTotalSec) != E_OK)
+    {
+        Global_stTankData.pumpTotalSec = 0UL;
+    }
+
+    /* ---------------- Pump cycles ---------------- */
+
+    if (PMP_Cycles(&Local_u32Value) == E_OK)
+    {
+        Global_stTankData.pumpCycles =
+            (uint16)Local_u32Value;
+    }
+    else
+    {
+        Global_stTankData.pumpCycles = 0u;
+    }
+
+    /* ---------------- State ---------------- */
+
+    Global_stTankData.state =
+        (uint8)FSM_GetState();
 }
 
-static void UART_SendString(const char *Copy_pcString)
+/* =========================================================
+ * 10 ms application task
+ *
+ * Important:
+ * FSM_Run() internally calls ILK_Evaluate().
+ * Therefore ILK_Evaluate() is NOT called again here.
+ * ========================================================= */
+
+static void APP_Task10ms(void)
 {
-    while (*Copy_pcString != '\0')
+    /* Update input drivers */
+    BTN_Update10ms(GPIO_PORTD);
+
+    FLT_Update();
+
+    CUR_Update();
+
+    /* Collect current sensor data */
+    APP_UpdateData();
+
+    /* Update automatic demand */
+    DEM_Update(&Global_stTankData);
+
+    /*
+     * FSM handles:
+     * - interlock evaluation
+     * - trip handling
+     * - automatic filling
+     * - manual mode
+     * - service mode
+     */
+    FSM_Run(&Global_stTankData);
+
+    /* Refresh state after FSM execution */
+    Global_stTankData.state =
+        (uint8)FSM_GetState();
+}
+
+/* =========================================================
+ * 500 ms task
+ *
+ * LCD display
+ * ========================================================= */
+
+static void APP_Task500ms(void)
+{
+    uint16 Local_u16FlowInteger;
+    uint8 Local_u8FlowDecimal;
+
+    Local_u16FlowInteger =
+        Global_stTankData.flowLpmX10 / 10u;
+
+    Local_u8FlowDecimal =
+        Global_stTankData.flowLpmX10 % 10u;
+
+    LCD_I2C_Clear();
+
+    /* ---------- Line 1 ---------- */
+
+    LCD_I2C_SetCursor(
+        LCD_ROW_1,
+        LCD_COL_1);
+
+    LCD_I2C_SendString("L:");
+
+    LCD_I2C_SendNumber(
+        Global_stTankData.levelPct);
+
+    LCD_I2C_SendString("% R:");
+
+    LCD_I2C_SendNumber(
+        Global_stTankData.reservoirPct);
+
+    LCD_I2C_SendString("%");
+
+    /* ---------- Line 2 ---------- */
+
+    LCD_I2C_SetCursor(
+        LCD_ROW_2,
+        LCD_COL_1);
+
+    LCD_I2C_SendString("F:");
+
+    LCD_I2C_SendNumber(
+        Local_u16FlowInteger);
+
+    LCD_I2C_SendString(".");
+
+    LCD_I2C_SendNumber(
+        Local_u8FlowDecimal);
+
+    LCD_I2C_SendString("L/m ");
+
+    if (Global_stTankData.pumpOn)
     {
-        UART_SendChar((uint8)*Copy_pcString);
-        Copy_pcString++;
+        LCD_I2C_SendString("RUN");
+    }
+    else
+    {
+        LCD_I2C_SendString("OFF");
     }
 }
 
-static void UART_SendNumber(uint32 Copy_u32Number)
-{
-    char Local_acNumber[11];
-    uint8 Local_u8Index = 0u;
+/* =========================================================
+ * 1 second task
+ * ========================================================= */
 
-    if (Copy_u32Number == 0u)
+static void APP_Task1s(void)
+{
+    PMP_Update1s();
+
+    FLOWMETER_Update1Hz();
+
+    Global_stTankData.upTimeSec++;
+
+    APP_UpdateData();
+}
+
+/* =========================================================
+ * Shift register status
+ *
+ * Byte assignment:
+ *
+ * bit 0 -> Pump
+ * bit 1 -> Valve
+ * bit 2 -> High float
+ * bit 3 -> Low float
+ * bit 4 -> FSM tripped
+ * bit 5 -> Manual
+ * bit 6 -> Service
+ * bit 7 -> reserved
+ * ========================================================= */
+
+static void APP_UpdateShiftRegister(void)
+{
+    uint8 Local_u8Status = 0u;
+
+    TankState_t Local_enState;
+
+    Local_enState =
+        FSM_GetState();
+
+    /* Pump */
+    if (Global_stTankData.pumpOn)
     {
-        UART_SendChar('0');
-        return;
+        Local_u8Status |= (1u << 0);
     }
 
-    while (Copy_u32Number > 0u)
+    /* Valve */
+    if (Global_stTankData.valveOn)
     {
-        Local_acNumber[Local_u8Index] =
-            (char)('0' + (Copy_u32Number % 10u));
-
-        Copy_u32Number /= 10u;
-        Local_u8Index++;
+        Local_u8Status |= (1u << 1);
     }
 
-    while (Local_u8Index > 0u)
+    /* High float */
+    if (Global_stTankData.highFloat)
     {
-        Local_u8Index--;
-        UART_SendChar((uint8)Local_acNumber[Local_u8Index]);
+        Local_u8Status |= (1u << 2);
     }
+
+    /* Low float */
+    if (Global_stTankData.lowFloat)
+    {
+        Local_u8Status |= (1u << 3);
+    }
+
+    /* System is tripped */
+    if (Local_enState == ST_TRIPPED)
+    {
+        Local_u8Status |= (1u << 4);
+    }
+
+    /* Manual mode */
+    if (Local_enState == ST_MANUAL)
+    {
+        Local_u8Status |= (1u << 5);
+    }
+
+    /* Service mode */
+    if (Local_enState == ST_SERVICE)
+    {
+        Local_u8Status |= (1u << 6);
+    }
+
+    SHIFTREG_SendByte(Local_u8Status);
 }
 
-static void UART_SendNewLine(void)
+/* =========================================================
+ * MAIN
+ * ========================================================= */
+
+int main(void)
 {
-    UART_SendString("\r\n");
-}
+    /* =====================================================
+     * Initial application data
+     * ===================================================== */
 
-/*==========================================================
- *                 SCHEDULER TEST TASK
- *==========================================================*/
+    Global_stTankData.levelRaw = 0u;
+    Global_stTankData.reservoirRaw = 0u;
+    Global_stTankData.currentRaw = 0u;
 
-static void TestTask(void)
-{
-    UART_SendString("Scheduler Task Running");
-    UART_SendNewLine();
-}
+    Global_stTankData.levelPct = 0u;
+    Global_stTankData.reservoirPct = 0u;
 
-/*==========================================================
- *                 DELAY HELPER
- *==========================================================*/
+    Global_stTankData.currentmA = 0u;
+    Global_stTankData.flowLpmX10 = 0u;
 
-static void Test_DelayMS(uint16 Copy_u16Milliseconds)
-{
-    TIMER0_DelayMS(Copy_u16Milliseconds);
-}
+    Global_stTankData.totalLitres = 0UL;
+    Global_stTankData.levelRatePctMin = 0;
 
-/*==========================================================
- *                 SPI + 74HC595 TEST
- *==========================================================*/
+    Global_stTankData.pumpOn = 0u;
+    Global_stTankData.valveOn = 0u;
 
-static void Test_SPI_ShiftRegister(void)
-{
-    UART_SendString("SPI + 74HC595 TEST START");
-    UART_SendNewLine();
+    Global_stTankData.highFloat = 0u;
+    Global_stTankData.lowFloat = 0u;
 
-    SPI_InitMaster(SPI_PRESC_16);
-    SHIFTREG_Init();
+    Global_stTankData.state =
+        (uint8)ST_INIT;
 
-    /* Send different patterns to the LEDs */
+    Global_stTankData.activeTrip =
+        (uint8)TRIP_NONE;
 
-    SHIFTREG_SendByte(0x01);
-    Test_DelayMS(500);
+    Global_stTankData.pumpRunSec = 0u;
+    Global_stTankData.pumpTotalSec = 0UL;
+    Global_stTankData.pumpCycles = 0u;
 
-    SHIFTREG_SendByte(0x03);
-    Test_DelayMS(500);
+    Global_stTankData.upTimeSec = 0UL;
 
-    SHIFTREG_SendByte(0x07);
-    Test_DelayMS(500);
-
-    SHIFTREG_SendByte(0x0F);
-    Test_DelayMS(500);
-
-    SHIFTREG_SendByte(0xFF);
-    Test_DelayMS(500);
-
-    SHIFTREG_SendByte(0x00);
-    Test_DelayMS(500);
-
-    UART_SendString("SPI + 74HC595 TEST FINISHED");
-    UART_SendNewLine();
-}
-
-/*==========================================================
- *                    TIMER0 TEST
- *==========================================================*/
-
-static void Test_Timer0(void)
-{
-    UART_SendString("TIMER0 DELAY TEST START");
-    UART_SendNewLine();
-
-    GPIO_SetPinDirection(
-        GPIO_PORTC,
-        GPIO_PIN0,
-        GPIO_OUTPUT);
-
-    GPIO_SetPinValue(
-        GPIO_PORTC,
-        GPIO_PIN0,
-        GPIO_LOW);
+    /* =====================================================
+     * Hardware initialization
+     * ===================================================== */
 
     TIMER0_Init();
 
-    GPIO_SetPinValue(
-        GPIO_PORTC,
-        GPIO_PIN0,
-        GPIO_HIGH);
+    SHIFTREG_Init();
 
-    TIMER0_DelayMS(1000);
+    LEVEL_Init(ADC_CHANNEL_0);
 
-    GPIO_SetPinValue(
-        GPIO_PORTC,
-        GPIO_PIN0,
-        GPIO_LOW);
+    PMP_Init();
 
-    UART_SendString("TIMER0 DELAY TEST FINISHED");
-    UART_SendNewLine();
+    Valve_Init();
 
-    UART_SendString("TIMER0 PWM TEST START");
-    UART_SendNewLine();
+    FLT_Init();
 
-    TIMER0_PWM(50);
+    CUR_Init();
 
-    UART_SendString("Timer0 PWM = 50 percent on PB3");
-    UART_SendNewLine();
+    BTN_Init(GPIO_PORTD);
 
-    Test_DelayMS(3000);
-
-    TIMER0_Stop();
-
-    DDRB |= (1 << PB3);
-    PORTB &= ~(1 << PB3);
-    UART_SendString("TIMER0 PWM TEST FINISHED");
-    UART_SendNewLine();
-}
-
-/*==========================================================
- *                    TIMER1 PWM TEST
- *==========================================================*/
-
-static void Test_Timer1_PWM(void)
-{
-    UART_SendString("TIMER1 PWM TEST START");
-    UART_SendNewLine();
-
-    TIMER1_PWM(50, 50);
-
-    UART_SendString("Timer1 PWM = 50 Hz, 50 percent on PD5");
-    UART_SendNewLine();
-
-    Test_DelayMS(3000);
-
-    TIMER1_Stop();
-
-    UART_SendString("TIMER1 PWM TEST FINISHED");
-    UART_SendNewLine();
-}
-
-/*==========================================================
- *                    FLOWMETER TEST
- *==========================================================*/
-
-static void Test_Flowmeter(void)
-{
-    uint8 Local_u8Counter;
-
-    UART_SendString("FLOWMETER TEST START");
-    UART_SendNewLine();
+    TIMER1_ExternalCounterInit();
 
     FLOWMETER_Init();
 
-    UART_SendString("Generate pulses on PB1 / T1");
-    UART_SendNewLine();
+    LCD_I2C_Init();
 
-    for (Local_u8Counter = 0u; Local_u8Counter < 10u; Local_u8Counter++)
-    {
-        /*
-         * Wait approximately one second.
-         * During this time Timer1 counts external pulses.
-         */
+    /* =====================================================
+     * Application initialization
+     * ===================================================== */
 
-        TIMER0_DelayMS(1000);
+    DEM_Init();
 
-        FLOWMETER_Update1Hz();
+    INT_Init();
 
-        UART_SendString("Pulses per second = ");
-        UART_SendNumber(FLOWMETER_GetPulsesPerSec());
-        UART_SendNewLine();
+    FSM_Init();
 
-        UART_SendString("Flow L/min x10 = ");
-        UART_SendNumber(FLOWMETER_GetFlowLpmX10());
-        UART_SendNewLine();
+    FLG_Init(&Global_stFaultLog);
 
-        UART_SendString("Total milliliters = ");
-        UART_SendNumber(FLOWMETER_GetTotalMilliliters());
-        UART_SendNewLine();
+    CON_Init();
 
-        UART_SendNewLine();
-    }
+    /* =====================================================
+     * INT0 HIGH FLOAT emergency protection
+     * ===================================================== */
 
-    UART_SendString("FLOWMETER TEST FINISHED");
-    UART_SendNewLine();
-}
+    EXTI_SetCallback(
+        EXTI_INT0,
+        APP_HighFloatISR);
 
-/*==========================================================
- *                    SCHEDULER TEST
- *==========================================================*/
+    EXTI_SetSense(
+        EXTI_INT0,
+        EXTI_FALLING_EDGE);
 
-static void Test_Scheduler(void)
-{
-    uint8 Local_u8Counter;
+    EXTI_ClearFlag(
+        EXTI_INT0);
 
-    UART_SendString("SCHEDULER TEST START");
-    UART_SendNewLine();
+    EXTI_Enable(
+        EXTI_INT0);
+
+    INTERRUPT_EnableGlobal();
+
+    /* =====================================================
+     * Scheduler
+     *
+     * Base tick = 10 ms
+     * ===================================================== */
 
     SCHEDULER_Init();
 
-    SCHEDULER_AddTask(TestTask, 100u);
+    SCHEDULER_AddTask(
+        APP_Task10ms,
+        10u);
 
-    /*
-     * Temporary software tick test.
-     * Each loop represents 10 ms.
-     */
+    SCHEDULER_AddTask(
+        APP_Task500ms,
+        500u);
 
-    for (Local_u8Counter = 0u; Local_u8Counter < 100u; Local_u8Counter++)
+    SCHEDULER_AddTask(
+        APP_Task1s,
+        1000u);
+
+    /* =====================================================
+     * First sensor update
+     * ===================================================== */
+
+    APP_UpdateData();
+
+    Global_stTankData.state =
+        (uint8)FSM_GetState();
+
+    /* =====================================================
+     * Main loop
+     * ===================================================== */
+
+    while (1)
     {
-        TIMER0_DelayMS(10);
+        /*
+         * Generate 10 ms scheduler tick.
+         *
+         * This follows the same software-tick mechanism
+         * used by the provided scheduler test.
+         */
+        TIMER0_DelayMS(10u);
 
         SCHEDULER_Tick();
 
         SCHEDULER_Run();
-    }
 
-    UART_SendString("SCHEDULER TEST FINISHED");
-    UART_SendNewLine();
-}
+        /*
+         * Process UART console commands.
+         */
+        CON_Run();
 
-/*==========================================================
- *                         MAIN
- *==========================================================*/
-
-int main(void)
-{
-    UART_Init();
-
-    UART_SendString("================================");
-    UART_SendNewLine();
-
-    UART_SendString("ATmega32 DRIVER TEST PROGRAM");
-    UART_SendNewLine();
-
-    UART_SendString("================================");
-    UART_SendNewLine();
-
-    Test_SPI_ShiftRegister();
-
-    Test_Timer0();
-
-    Test_Timer1_PWM();
-
-    Test_Flowmeter();
-
-    Test_Scheduler();
-
-    UART_SendString("ALL TESTS FINISHED");
-    UART_SendNewLine();
-
-    while (1)
-    {
+        /*
+         * Update 74HC595 status display.
+         */
+        APP_UpdateShiftRegister();
     }
 
     return 0;
