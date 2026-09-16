@@ -11,7 +11,7 @@ __zero_reg__ = 1
 .LC1:
 	.string	"% R:"
 .LC2:
-	.string	"%"
+	.string	"% "
 .LC3:
 	.string	"F:"
 .LC4:
@@ -44,7 +44,6 @@ APP_Task500ms:
 	std Y+2,r23
 	std Y+3,r24
 	std Y+4,r25
-	call LCD_I2C_Clear
 	ldi r22,0
 	ldi r24,0
 	call LCD_I2C_SetCursor
@@ -347,8 +346,6 @@ main:
 	sts Global_stTankData+1,__zero_reg__
 	sts Global_stTankData+2,__zero_reg__
 	sts Global_stTankData+3,__zero_reg__
-	sts Global_stTankData+4,__zero_reg__
-	sts Global_stTankData+5,__zero_reg__
 	sts Global_stTankData+6,__zero_reg__
 	sts Global_stTankData+7,__zero_reg__
 	sts Global_stTankData+8,__zero_reg__
@@ -359,12 +356,6 @@ main:
 	sts Global_stTankData+13,__zero_reg__
 	sts Global_stTankData+14,__zero_reg__
 	sts Global_stTankData+15,__zero_reg__
-	sts Global_stTankData+16,__zero_reg__
-	lds r24,Global_stTankData+17
-	andi r24,lo8(-16)
-	sts Global_stTankData+17,r24
-	sts Global_stTankData+18,__zero_reg__
-	sts Global_stTankData+19,__zero_reg__
 	sts Global_stTankData+20,__zero_reg__
 	sts Global_stTankData+21,__zero_reg__
 	sts Global_stTankData+22,__zero_reg__
@@ -377,6 +368,10 @@ main:
 	sts Global_stTankData+29,__zero_reg__
 	sts Global_stTankData+30,__zero_reg__
 	sts Global_stTankData+31,__zero_reg__
+	lds r24,Global_stTankData+17
+	andi r24,lo8(-16)
+	sts Global_stTankData+17,r24
+	sts Global_stTankData+18,__zero_reg__
 	call TIMER0_Init
 	ldi r24,0
 	call LEVEL_Init
