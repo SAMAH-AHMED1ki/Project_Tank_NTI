@@ -112,6 +112,8 @@ STD_ReturnType TIMER0_Stop(void)
     /* Disconnect OC0 from Timer0 */
     TIMER0_REG_TCCR0 &= ~((1 << COM01) | (1 << COM00));
 
+    DDRB |= (1 << PB3);
+    PORTB &= ~(1 << PB3);
     return E_OK;
 }
 /*==================================================================
