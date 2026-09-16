@@ -5,7 +5,6 @@ __SREG__ = 0x3f
 __tmp_reg__ = 0
 __zero_reg__ = 1
 	.text
-<<<<<<< HEAD
 	.section	.text.UART_SendChar,"ax",@progbits
 	.type	UART_SendChar, @function
 UART_SendChar:
@@ -212,15 +211,6 @@ UART_SendNumber:
 	.string	"SCHEDULER TEST FINISHED"
 .LC22:
 	.string	"ALL TESTS FINISHED"
-=======
-	.section	.rodata.main.str1.1,"aMS",@progbits,1
-.LC0:
-	.string	"Hello"
-.LC1:
-	.string	"LCD Test"
-.LC2:
-	.string	"Working!"
->>>>>>> eaa1cf8 (Update LCD I2C integration)
 	.section	.text.startup.main,"ax",@progbits
 .global	main
 	.type	main, @function
@@ -229,7 +219,6 @@ main:
 /* frame size = 0 */
 /* stack size = 0 */
 .L__stack_usage = 0
-<<<<<<< HEAD
 	out 0x20,__zero_reg__
 	ldi r24,lo8(51)
 	out 0x9,r24
@@ -435,45 +424,6 @@ main:
 	call UART_SendNewLine
 .L19:
 	rjmp .L19
-=======
-	ldi r22,lo8(-96)
-	ldi r23,lo8(-122)
-	ldi r24,lo8(1)
-	ldi r25,0
-	call I2C_InitMaster
-	call LCD_I2C_Init
-	call LCD_I2C_Clear
-	ldi r22,0
-	ldi r24,0
-	call LCD_I2C_SetCursor
-	ldi r24,lo8(.LC0)
-	ldi r25,hi8(.LC0)
-	call LCD_I2C_SendString
-	ldi r18,lo8(3199999)
-	ldi r24,hi8(3199999)
-	ldi r25,hlo8(3199999)
-1:	subi r18,1
-	sbci r24,0
-	sbci r25,0
-	brne 1b
-	rjmp .
-	nop
-	call LCD_I2C_Clear
-	ldi r22,0
-	ldi r24,0
-	call LCD_I2C_SetCursor
-	ldi r24,lo8(.LC1)
-	ldi r25,hi8(.LC1)
-	call LCD_I2C_SendString
-	ldi r22,0
-	ldi r24,lo8(1)
-	call LCD_I2C_SetCursor
-	ldi r24,lo8(.LC2)
-	ldi r25,hi8(.LC2)
-	call LCD_I2C_SendString
-.L2:
-	rjmp .L2
->>>>>>> eaa1cf8 (Update LCD I2C integration)
 	.size	main, .-main
 	.ident	"GCC: (GNU) 15.2.0"
 .global __do_copy_data
