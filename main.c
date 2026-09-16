@@ -8,6 +8,8 @@
 #include "GPIO_interface.h"
 #include "TIMER_interface.h"
 #include "INTERRUPT_interface.h"
+#include "SPI_interface.h"
+#include "I2C_interface.h"
 #include "Scheduler_interface.h"
 
 /* ========================== HAL ========================== */
@@ -415,26 +417,22 @@ int main(void)
 
     TIMER0_Init();
 
+    SPI_InitMaster(SPI_PRESC_16);
     SHIFTREG_Init();
 
     LEVEL_Init(ADC_CHANNEL_0);
 
     PMP_Init();
-
     Valve_Init();
-
     FLT_Init();
-
     CUR_Init();
-
     BTN_Init(GPIO_PORTD);
 
     TIMER1_ExternalCounterInit();
-
     FLOWMETER_Init();
 
+    I2C_InitMaster(100000UL);
     LCD_I2C_Init();
-
     /* =====================================================
      * Application initialization
      * ===================================================== */
