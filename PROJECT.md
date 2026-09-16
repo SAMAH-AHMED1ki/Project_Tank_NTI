@@ -196,7 +196,6 @@ functions for the application layer.
 - `buttons.c/.h` (Implemented and tested)
 - `bargraph.c/.h` (Implemented and tested)
 - `level.c/.h` (Implemented)
-- `reservoir.c/.h`
 - Verify TWI transactions, LCD initialization, cursor/write operations, and
   display error handling, button debounce, bargraph levels, and tank-level
   scaling

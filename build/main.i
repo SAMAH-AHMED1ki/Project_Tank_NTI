@@ -479,6 +479,75 @@ void SCHEDULER_Tick(void);
 
 void SCHEDULER_Run(void);
 # 14 "main.c" 2
+# 1 "MCAL/UART/UART_interface.h" 1
+# 15 "MCAL/UART/UART_interface.h"
+# 1 "LIB/Ringbuffer/Ringbuffer.h" 1
+# 19 "LIB/Ringbuffer/Ringbuffer.h"
+typedef struct
+{
+    uint8 buffer[64U];
+    volatile uint8 head;
+    volatile uint8 tail;
+    volatile uint8 count;
+} RingBuffer_t;
+
+
+
+
+
+void RB_Init(RingBuffer_t *pRb);
+# 40 "LIB/Ringbuffer/Ringbuffer.h"
+STD_ReturnType RB_Put(RingBuffer_t *pRb, uint8 data);
+# 49 "LIB/Ringbuffer/Ringbuffer.h"
+STD_ReturnType RB_Get(RingBuffer_t *pRb, uint8 *pData);
+
+
+uint8 RB_IsEmpty(const RingBuffer_t *pRb);
+
+
+uint8 RB_IsFull(const RingBuffer_t *pRb);
+# 16 "MCAL/UART/UART_interface.h" 2
+
+
+
+
+
+STD_ReturnType UART_Init(uint32 Copy_u32BaudRate);
+
+
+
+
+
+STD_ReturnType UART_SetRxBuffer(RingBuffer_t *Copy_pRxBuffer);
+
+
+
+
+STD_ReturnType UART_SendByte(uint8 Copy_u8Data);
+
+
+
+
+STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data);
+
+
+
+
+STD_ReturnType UART_SendString(const uint8 *Copy_pu8String);
+
+
+
+
+
+STD_ReturnType UART_IsDataReady(void);
+
+
+
+
+
+STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State);
+STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State);
+# 15 "main.c" 2
 
 # 1 "HAL/lcd_i2c/LCD_I2C_interface.h" 1
 # 30 "HAL/lcd_i2c/LCD_I2C_interface.h"
@@ -497,7 +566,7 @@ STD_ReturnType LCD_I2C_SetCursor(uint8 Copy_u8Row, uint8 Copy_u8Column);
 STD_ReturnType LCD_I2C_Clear(void);
 
 STD_ReturnType LCD_I2C_SendNumber(uint16 Copy_u16Number);
-# 16 "main.c" 2
+# 17 "main.c" 2
 # 1 "Logic/Flowmeter/Flowmeter_interface.h" 1
 # 11 "Logic/Flowmeter/Flowmeter_interface.h"
 STD_ReturnType FLOWMETER_Init(void);
@@ -526,7 +595,7 @@ uint32 FLOWMETER_GetTotalMilliliters(void);
 
 
 STD_ReturnType FLOWMETER_ResetTotaliser(void);
-# 17 "main.c" 2
+# 18 "main.c" 2
 # 1 "HAL/Shiftreg/Shiftreg_interface.h" 1
 
 
@@ -538,7 +607,7 @@ STD_ReturnType SHIFTREG_Init(void);
 
 
 STD_ReturnType SHIFTREG_SendByte(uint8 Copy_u8Data);
-# 18 "main.c" 2
+# 19 "main.c" 2
 
 # 1 "Logic/interlocks/tank_types.h" 1
 
@@ -646,7 +715,7 @@ typedef struct
     uint8 checksum;
 
 } TankCfg_t;
-# 20 "main.c" 2
+# 21 "main.c" 2
 # 1 "HAL/Level/level_interface.h" 1
 
 
@@ -668,14 +737,14 @@ STD_ReturnType LEVEL_Init(uint8 adcChannel);
 STD_ReturnType LEVEL_ReadPercentage(uint8 adcChannel, uint8 *pPercentage);
 
 STD_ReturnType LEVEL_GetBand(uint8 levelPercent, LevelBand_t *pBand);
-# 21 "main.c" 2
+# 22 "main.c" 2
 # 1 "HAL/current/current.h" 1
 # 12 "HAL/current/current.h"
 STD_ReturnType CUR_Init(void);
 STD_ReturnType CUR_Update(void);
 STD_ReturnType CUR_GetmA(uint16 *Copy_pu16CurrentmA);
 uint8 CUR_IsOverLimit(uint16 Copy_u16LimitmA);
-# 22 "main.c" 2
+# 23 "main.c" 2
 # 1 "HAL/floats/floats.h" 1
 # 11 "HAL/floats/floats.h"
 STD_ReturnType FLT_Init(void);
@@ -683,7 +752,7 @@ STD_ReturnType FLT_Update(void);
 
 uint8 FLT_IsHighActive(void);
 uint8 FLT_IsLowActive(void);
-# 23 "main.c" 2
+# 24 "main.c" 2
 # 1 "HAL/Buttons/buttons_interface.h" 1
 # 12 "HAL/Buttons/buttons_interface.h"
 typedef enum
@@ -716,7 +785,7 @@ STD_ReturnType BTN_GetEvent(ButtonID_t btn, ButtonEvent_t *pEvent);
 STD_ReturnType BTN_IsPressed(uint8 port,
                              ButtonID_t btn,
                              uint8 *pIsPressed);
-# 24 "main.c" 2
+# 25 "main.c" 2
 # 1 "HAL/Pump/Pump_interface.h" 1
 
 
@@ -730,7 +799,7 @@ STD_ReturnType PMP_RunSeconds(uint32 *Copy_pu32Seconds);
 STD_ReturnType PMP_TotalSeconds(uint32 *Copy_pu32Seconds);
 STD_ReturnType PMP_Cycles(uint32 *Copy_pu32Cycles);
 STD_ReturnType PMP_Update1s(void);
-# 25 "main.c" 2
+# 26 "main.c" 2
 # 1 "HAL/Valve/Valve_interface.h" 1
 
 
@@ -740,7 +809,7 @@ STD_ReturnType PMP_Update1s(void);
 STD_ReturnType Valve_Init(void);
 STD_ReturnType Valve_Set(uint8 Copy_u8State);
 STD_ReturnType Valve_GetState(uint8 *Copy_pu8State);
-# 26 "main.c" 2
+# 27 "main.c" 2
 # 1 "Logic/demand/demand.h" 1
 
 
@@ -751,7 +820,7 @@ STD_ReturnType Valve_GetState(uint8 *Copy_pu8State);
 STD_ReturnType DEM_Init(void);
 STD_ReturnType DEM_Update(const TankData_t *Copy_pstData);
 uint8 DEM_GetPumpDemand(void);
-# 27 "main.c" 2
+# 28 "main.c" 2
 # 1 "Logic/interlocks/interlocks.h" 1
 
 
@@ -771,7 +840,7 @@ Trip_t ILK_Evaluate(const TankData_t *Copy_pstData);
 
 
 STD_ReturnType ILK_Reset(void);
-# 28 "main.c" 2
+# 29 "main.c" 2
 # 1 "Logic/tank_fsm/tank_fsm.h" 1
 # 13 "Logic/tank_fsm/tank_fsm.h"
 STD_ReturnType FSM_Init(void);
@@ -784,7 +853,7 @@ TankState_t FSM_GetState(void);
 
 
 STD_ReturnType FSM_Ack(void);
-# 29 "main.c" 2
+# 30 "main.c" 2
 # 1 "Logic/FaultLog/faultlog.h" 1
 # 10 "Logic/FaultLog/faultlog.h"
 # 1 "LIB/DATA.h" 1
@@ -842,7 +911,7 @@ void FLG_Clear(FLG_Buffer_t *pLog);
 
 
 void FLG_Dump(const FLG_Buffer_t *pLog, void (*WriteChar)(char));
-# 30 "main.c" 2
+# 31 "main.c" 2
 # 1 "Logic/Console/console.h" 1
 # 16 "Logic/Console/console.h"
 typedef enum
@@ -874,7 +943,7 @@ void CON_SendHelp(void);
 
 
 STD_ReturnType CON_SendFaults(void);
-# 31 "main.c" 2
+# 32 "main.c" 2
 
 
 
@@ -882,7 +951,7 @@ STD_ReturnType CON_SendFaults(void);
 static TankData_t Global_stTankData;
 
 static FLG_Buffer_t Global_stFaultLog;
-# 47 "main.c"
+# 48 "main.c"
 static void APP_HighFloatISR(void)
 {
     PMP_Set(0u);
@@ -1054,7 +1123,7 @@ static void APP_UpdateData(void)
     Global_stTankData.state =
         (uint8)FSM_GetState();
 }
-# 234 "main.c"
+# 235 "main.c"
 static void APP_Task10ms(void)
 {
 
@@ -1071,7 +1140,7 @@ static void APP_Task10ms(void)
 
 
     DEM_Update(&Global_stTankData);
-# 260 "main.c"
+# 261 "main.c"
     FSM_Run(&Global_stTankData);
 
 
@@ -1169,7 +1238,7 @@ static void APP_Task1s(void)
 
     APP_UpdateData();
 }
-# 373 "main.c"
+# 374 "main.c"
 static void APP_UpdateShiftRegister(void)
 {
     uint8 Local_u8Status = 0u;
