@@ -191,9 +191,9 @@ functions for the application layer.
 
 #### I2C and display owner
 
-- `i2c.c/.h` (Implemented)
-- `lcd_i2c.c/.h` (Implemented)
-- `buttons.c/.h` (Implemented)
+- `i2c.c/.h` (Implemented and tested)
+- `lcd_i2c.c/.h` (Implemented and tested)
+- `buttons.c/.h` (Implemented and tested)
 - `bargraph.c/.h` (Implemented)
 - `level.c/.h` (Implemented)
 - Verify TWI transactions, LCD initialization, cursor/write operations, and

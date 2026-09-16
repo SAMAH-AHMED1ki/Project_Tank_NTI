@@ -85,6 +85,7 @@ BTN_Init:
 .global	BTN_Update10ms
 	.type	BTN_Update10ms, @function
 BTN_Update10ms:
+	push r15
 	push r16
 	push r17
 	push r28
@@ -94,11 +95,12 @@ BTN_Update10ms:
 	in r29,__SP_H__
 /* prologue: function */
 /* frame size = 2 */
-/* stack size = 6 */
-.L__stack_usage = 6
+/* stack size = 7 */
+.L__stack_usage = 7
 	std Y+2,r24
 	ldi r16,lo8(s_buttons)
 	ldi r17,hi8(s_buttons)
+	mov r15,__zero_reg__
 .L14:
 	movw r20,r28
 	subi r20,-1
@@ -113,71 +115,83 @@ BTN_Update10ms:
 	ldi r25,0
 .L3:
 	movw r30,r16
-	ldd r24,Z+2
+	ldd r24,Z+1
 	cpse r24,r25
 	rjmp .L4
-	ldd r24,Z+1
+	ldd r24,Z+4
 	cpi r24,lo8(5)
-	brsh .L6
+	brsh .L5
 	subi r24,lo8(-(1))
-	std Z+1,r24
+	std Z+4,r24
 	cpi r24,lo8(5)
-	brne .L6
-	std Z+3,r25
+	breq .L5
 .L6:
 	movw r30,r16
-	ldd r24,Z+3
-	ldd r25,Z+4
+	ldd r24,Z+2
+	ldd r25,Z+3
 	cp r24,r25
-	breq .L8
-	cp r24, __zero_reg__
-	breq .L9
+	brne .+2
+	rjmp .L7
+	cpi r24,lo8(1)
+	brne .L8
 	ldi r18,lo8(1)
 	std Z+8,r18
 	std Z+9,__zero_reg__
 	std Z+5,__zero_reg__
 	std Z+6,__zero_reg__
 	std Z+7,__zero_reg__
-	std Z+4,r24
-.L10:
+	std Z+3,r24
+.L9:
 	movw r30,r16
 	ldd r24,Z+5
 	ldd r25,Z+6
+	cpi r24,100
+	cpc r25,__zero_reg__
+	brsh .L12
 	adiw r24,1
 	std Z+5,r24
 	std Z+6,r25
+.L12:
+	ldi r31,lo8(2)
+	cpse r15,r31
+	rjmp .L11
+	lds r24,s_buttons+25
+	lds r25,s_buttons+26
 	cpi r24,100
 	cpc r25,__zero_reg__
-	brlo .L12
-	ldd r24,Z+7
-	cpse r24,__zero_reg__
-	rjmp .L12
-	ldi r24,lo8(4)
-	std Z+8,r24
-	std Z+9,__zero_reg__
-	ldi r24,lo8(1)
-	std Z+7,r24
-	rjmp .L12
-.L4:
-	std Z+2,r25
-	std Z+1,__zero_reg__
-	rjmp .L6
-.L9:
-	ldd r24,Z+7
+	brlo .L11
+	lds r24,s_buttons+27
 	cpse r24,__zero_reg__
 	rjmp .L11
-	ldi r24,lo8(3)
-.L19:
-	std Z+8,r24
-	std Z+9,__zero_reg__
+	ldi r24,lo8(4)
+	sts s_buttons+28,r24
+	sts s_buttons+29,__zero_reg__
+	ldi r24,lo8(1)
+	sts s_buttons+27,r24
+	rjmp .L11
+.L4:
+	std Z+1,r25
 	std Z+4,__zero_reg__
-.L12:
+	rjmp .L6
+.L5:
+	movw r30,r16
+	std Z+2,r25
+	rjmp .L6
+.L8:
+	ldd r25,Z+7
+	ldi r18,lo8(3)
+	cpse r25,__zero_reg__
+	ldi r18,lo8(2)
+.L25:
+	std Z+8,r18
+	std Z+9,__zero_reg__
+	std Z+3,r24
+.L11:
+	inc r15
 	subi r16,-10
 	sbci r17,-1
-	ldi r31,hi8(s_buttons+30)
-	cpi r16,lo8(s_buttons+30)
-	cpc r17,r31
-	breq .+2
+	ldi r24,lo8(3)
+	cpse r15,r24
 	rjmp .L14
 /* epilogue start */
 	pop __tmp_reg__
@@ -186,14 +200,12 @@ BTN_Update10ms:
 	pop r28
 	pop r17
 	pop r16
+	pop r15
 	ret
-.L11:
-	ldi r24,lo8(2)
-	rjmp .L19
-.L8:
-	cpse r24,__zero_reg__
-	rjmp .L10
-	rjmp .L12
+.L7:
+	cpi r24,lo8(1)
+	brne .L11
+	rjmp .L9
 	.size	BTN_Update10ms, .-BTN_Update10ms
 	.section	.text.BTN_GetEvent,"ax",@progbits
 .global	BTN_GetEvent
@@ -205,10 +217,10 @@ BTN_GetEvent:
 .L__stack_usage = 0
 	cpi r24,3
 	cpc r25,__zero_reg__
-	brsh .L23
+	brsh .L29
 	cp r22,__zero_reg__
 	cpc r23,__zero_reg__
-	breq .L23
+	breq .L29
 	ldi r18,lo8(10)
 	mul r18,r24
 	movw r30,r0
@@ -227,7 +239,7 @@ BTN_GetEvent:
 	ldi r24,0
 	ldi r25,0
 	ret
-.L23:
+.L29:
 	ldi r24,lo8(1)
 	ldi r25,0
 /* epilogue start */
@@ -243,10 +255,10 @@ BTN_IsPressed:
 .L__stack_usage = 0
 	cpi r22,3
 	cpc r23,__zero_reg__
-	brsh .L27
+	brsh .L33
 	cp r20,__zero_reg__
 	cpc r21,__zero_reg__
-	breq .L27
+	breq .L33
 	ldi r18,lo8(10)
 	mul r18,r22
 	movw r24,r0
@@ -256,13 +268,13 @@ BTN_IsPressed:
 	subi r24,lo8(-(s_buttons))
 	sbci r25,hi8(-(s_buttons))
 	movw r30,r24
-	ldd r24,Z+3
+	ldd r24,Z+2
 	movw r30,r20
 	st Z,r24
 	ldi r24,0
 	ldi r25,0
 	ret
-.L27:
+.L33:
 	ldi r24,lo8(1)
 	ldi r25,0
 /* epilogue start */
