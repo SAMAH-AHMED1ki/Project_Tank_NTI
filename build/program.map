@@ -5,7 +5,7 @@ C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
                               build/main.o (__udivmodhi4)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                              build/HAL/current/current.o (__udivmodsi4)
+                              build/main.o (__udivmodsi4)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
                               C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o (exit)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
@@ -109,8 +109,6 @@ Discarded input sections
  .bss           0x00000000        0x0 build/Logic/Flowmeter/Flowmeter.o
  .text.FLOWMETER_GetPulsesPerSec
                 0x00000000        0xa build/Logic/Flowmeter/Flowmeter.o
- .text.FLOWMETER_GetTotalMilliliters
-                0x00000000       0x2a build/Logic/Flowmeter/Flowmeter.o
  .text.FLOWMETER_ResetTotaliser
                 0x00000000       0x16 build/Logic/Flowmeter/Flowmeter.o
  .text          0x00000000        0x0 build/Logic/interlocks/interlocks.o
@@ -301,8 +299,6 @@ Discarded input sections
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .text.libgcc.mul
-                0x00000000       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc.div
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc   0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
@@ -314,14 +310,6 @@ Discarded input sections
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc.fixed
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .debug_line    0x00000000       0x81 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .debug_line_str
-                0x00000000       0x5c C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .debug_info    0x00000000       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .debug_abbrev  0x00000000       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .debug_aranges
-                0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .debug_str     0x00000000       0x68 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
 
 Memory Configuration
 
@@ -471,7 +459,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x23e4
+.text           0x00000000     0x2440
  *(.vectors)
  .vectors       0x00000000       0x54 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
                 0x00000000                __vector_default
@@ -553,313 +541,319 @@ END GROUP
  .text.APP_HighFloatISR
                 0x00000140        0xc build/main.o
  .text.APP_UpdateData
-                0x0000014c      0x174 build/main.o
+                0x0000014c      0x194 build/main.o
  .text.APP_Task1s
-                0x000002c0       0x32 build/main.o
+                0x000002e0       0x32 build/main.o
  .text.APP_Task10ms
-                0x000002f2       0x2c build/main.o
+                0x00000312       0x2c build/main.o
  .text.startup.main
-                0x0000031e      0x192 build/main.o
-                0x0000031e                main
+                0x0000033e      0x18e build/main.o
+                0x0000033e                main
  .text.BTN_Init
-                0x000004b0       0x90 build/HAL/Buttons/buttons.o
-                0x000004b0                BTN_Init
+                0x000004cc       0x90 build/HAL/Buttons/buttons.o
+                0x000004cc                BTN_Init
  .text.BTN_Update10ms
-                0x00000540       0xe0 build/HAL/Buttons/buttons.o
-                0x00000540                BTN_Update10ms
+                0x0000055c       0xe0 build/HAL/Buttons/buttons.o
+                0x0000055c                BTN_Update10ms
  .text.BTN_GetEvent
-                0x00000620       0x36 build/HAL/Buttons/buttons.o
-                0x00000620                BTN_GetEvent
+                0x0000063c       0x36 build/HAL/Buttons/buttons.o
+                0x0000063c                BTN_GetEvent
  .text.CUR_Init
-                0x00000656       0x42 build/HAL/current/current.o
-                0x00000656                CUR_Init
+                0x00000672       0x42 build/HAL/current/current.o
+                0x00000672                CUR_Init
  .text.CUR_Update
-                0x00000698       0xe6 build/HAL/current/current.o
-                0x00000698                CUR_Update
+                0x000006b4       0xe6 build/HAL/current/current.o
+                0x000006b4                CUR_Update
  .text.CUR_GetmA
-                0x0000077e       0x1e build/HAL/current/current.o
-                0x0000077e                CUR_GetmA
+                0x0000079a       0x1e build/HAL/current/current.o
+                0x0000079a                CUR_GetmA
  .text.FLT_Init
-                0x0000079c       0x2c build/HAL/floats/floats.o
-                0x0000079c                FLT_Init
+                0x000007b8       0x2c build/HAL/floats/floats.o
+                0x000007b8                FLT_Init
  .text.FLT_Update
-                0x000007c8       0x50 build/HAL/floats/floats.o
-                0x000007c8                FLT_Update
+                0x000007e4       0x50 build/HAL/floats/floats.o
+                0x000007e4                FLT_Update
  .text.FLT_IsHighActive
-                0x00000818        0x6 build/HAL/floats/floats.o
-                0x00000818                FLT_IsHighActive
+                0x00000834        0x6 build/HAL/floats/floats.o
+                0x00000834                FLT_IsHighActive
  .text.FLT_IsLowActive
-                0x0000081e        0x6 build/HAL/floats/floats.o
-                0x0000081e                FLT_IsLowActive
+                0x0000083a        0x6 build/HAL/floats/floats.o
+                0x0000083a                FLT_IsLowActive
  .text.LCD_I2C_Write
-                0x00000824       0x46 build/HAL/lcd_i2c/lcd_i2c.o
+                0x00000840       0x46 build/HAL/lcd_i2c/lcd_i2c.o
  .text.LCD_I2C_SendCommand
-                0x0000086a       0x16 build/HAL/lcd_i2c/lcd_i2c.o
-                0x0000086a                LCD_I2C_SendCommand
+                0x00000886       0x16 build/HAL/lcd_i2c/lcd_i2c.o
+                0x00000886                LCD_I2C_SendCommand
  .text.LCD_I2C_SendData
-                0x00000880       0x16 build/HAL/lcd_i2c/lcd_i2c.o
-                0x00000880                LCD_I2C_SendData
+                0x0000089c       0x16 build/HAL/lcd_i2c/lcd_i2c.o
+                0x0000089c                LCD_I2C_SendData
  .text.LCD_I2C_Init
-                0x00000896       0xa4 build/HAL/lcd_i2c/lcd_i2c.o
-                0x00000896                LCD_I2C_Init
+                0x000008b2       0xa4 build/HAL/lcd_i2c/lcd_i2c.o
+                0x000008b2                LCD_I2C_Init
  .text.LCD_I2C_SendChar
-                0x0000093a        0x4 build/HAL/lcd_i2c/lcd_i2c.o
-                0x0000093a                LCD_I2C_SendChar
+                0x00000956        0x4 build/HAL/lcd_i2c/lcd_i2c.o
+                0x00000956                LCD_I2C_SendChar
  .text.LCD_I2C_SendString
-                0x0000093e       0x26 build/HAL/lcd_i2c/lcd_i2c.o
-                0x0000093e                LCD_I2C_SendString
+                0x0000095a       0x26 build/HAL/lcd_i2c/lcd_i2c.o
+                0x0000095a                LCD_I2C_SendString
  .text.LCD_I2C_SetCursor
-                0x00000964       0x1a build/HAL/lcd_i2c/lcd_i2c.o
-                0x00000964                LCD_I2C_SetCursor
+                0x00000980       0x1a build/HAL/lcd_i2c/lcd_i2c.o
+                0x00000980                LCD_I2C_SetCursor
  .text.LCD_I2C_Clear
-                0x0000097e       0x14 build/HAL/lcd_i2c/lcd_i2c.o
-                0x0000097e                LCD_I2C_Clear
+                0x0000099a       0x14 build/HAL/lcd_i2c/lcd_i2c.o
+                0x0000099a                LCD_I2C_Clear
  .text.LCD_I2C_SendNumber
-                0x00000992       0x9a build/HAL/lcd_i2c/lcd_i2c.o
-                0x00000992                LCD_I2C_SendNumber
+                0x000009ae       0x9a build/HAL/lcd_i2c/lcd_i2c.o
+                0x000009ae                LCD_I2C_SendNumber
  .text.LEVEL_Init
-                0x00000a2c        0x8 build/HAL/Level/level.o
-                0x00000a2c                LEVEL_Init
+                0x00000a48        0x8 build/HAL/Level/level.o
+                0x00000a48                LEVEL_Init
  .text.LEVEL_ReadPercentage
-                0x00000a34       0xc6 build/HAL/Level/level.o
-                0x00000a34                LEVEL_ReadPercentage
+                0x00000a50       0xc6 build/HAL/Level/level.o
+                0x00000a50                LEVEL_ReadPercentage
  .text.PMP_Init
-                0x00000afa       0x52 build/HAL/Pump/Pump.o
-                0x00000afa                PMP_Init
- .text.PMP_Set  0x00000b4c       0x6e build/HAL/Pump/Pump.o
-                0x00000b4c                PMP_Set
+                0x00000b16       0x52 build/HAL/Pump/Pump.o
+                0x00000b16                PMP_Init
+ .text.PMP_Set  0x00000b68       0x6e build/HAL/Pump/Pump.o
+                0x00000b68                PMP_Set
  .text.PMP_GetState
-                0x00000bba       0x18 build/HAL/Pump/Pump.o
-                0x00000bba                PMP_GetState
+                0x00000bd6       0x18 build/HAL/Pump/Pump.o
+                0x00000bd6                PMP_GetState
  .text.PMP_RunSeconds
-                0x00000bd2       0x2a build/HAL/Pump/Pump.o
-                0x00000bd2                PMP_RunSeconds
+                0x00000bee       0x2a build/HAL/Pump/Pump.o
+                0x00000bee                PMP_RunSeconds
  .text.PMP_TotalSeconds
-                0x00000bfc       0x2a build/HAL/Pump/Pump.o
-                0x00000bfc                PMP_TotalSeconds
+                0x00000c18       0x2a build/HAL/Pump/Pump.o
+                0x00000c18                PMP_TotalSeconds
  .text.PMP_Cycles
-                0x00000c26       0x2a build/HAL/Pump/Pump.o
-                0x00000c26                PMP_Cycles
+                0x00000c42       0x2a build/HAL/Pump/Pump.o
+                0x00000c42                PMP_Cycles
  .text.PMP_Update1s
-                0x00000c50       0x5a build/HAL/Pump/Pump.o
-                0x00000c50                PMP_Update1s
+                0x00000c6c       0x5a build/HAL/Pump/Pump.o
+                0x00000c6c                PMP_Update1s
  .text.SHIFTREG_Init
-                0x00000caa       0x1a build/HAL/Shiftreg/Shiftreg.o
-                0x00000caa                SHIFTREG_Init
+                0x00000cc6       0x1a build/HAL/Shiftreg/Shiftreg.o
+                0x00000cc6                SHIFTREG_Init
  .text.SHIFTREG_SendByte
-                0x00000cc4       0x42 build/HAL/Shiftreg/Shiftreg.o
-                0x00000cc4                SHIFTREG_SendByte
+                0x00000ce0       0x42 build/HAL/Shiftreg/Shiftreg.o
+                0x00000ce0                SHIFTREG_SendByte
  .text.Valve_Init
-                0x00000d06       0x22 build/HAL/Valve/Valve.o
-                0x00000d06                Valve_Init
+                0x00000d22       0x22 build/HAL/Valve/Valve.o
+                0x00000d22                Valve_Init
  .text.Valve_Set
-                0x00000d28       0x22 build/HAL/Valve/Valve.o
-                0x00000d28                Valve_Set
+                0x00000d44       0x22 build/HAL/Valve/Valve.o
+                0x00000d44                Valve_Set
  .text.Valve_GetState
-                0x00000d4a       0x18 build/HAL/Valve/Valve.o
-                0x00000d4a                Valve_GetState
- .text.RB_Init  0x00000d62       0x16 build/LIB/Ringbuffer/Ringbuffer.o
-                0x00000d62                RB_Init
- .text.RB_Put   0x00000d78       0x4e build/LIB/Ringbuffer/Ringbuffer.o
-                0x00000d78                RB_Put
- .text.RB_Get   0x00000dc6       0x58 build/LIB/Ringbuffer/Ringbuffer.o
-                0x00000dc6                RB_Get
+                0x00000d66       0x18 build/HAL/Valve/Valve.o
+                0x00000d66                Valve_GetState
+ .text.RB_Init  0x00000d7e       0x16 build/LIB/Ringbuffer/Ringbuffer.o
+                0x00000d7e                RB_Init
+ .text.RB_Put   0x00000d94       0x4e build/LIB/Ringbuffer/Ringbuffer.o
+                0x00000d94                RB_Put
+ .text.RB_Get   0x00000de2       0x58 build/LIB/Ringbuffer/Ringbuffer.o
+                0x00000de2                RB_Get
  .text.RB_IsEmpty
-                0x00000e1e       0x20 build/LIB/Ringbuffer/Ringbuffer.o
-                0x00000e1e                RB_IsEmpty
+                0x00000e3a       0x20 build/LIB/Ringbuffer/Ringbuffer.o
+                0x00000e3a                RB_IsEmpty
  .text.CON_CompareNoCase
-                0x00000e3e       0x50 build/Logic/Console/console.o
+                0x00000e5a       0x50 build/Logic/Console/console.o
  .text.CON_SkipSpaces
-                0x00000e8e       0x2a build/Logic/Console/console.o
+                0x00000eaa       0x2a build/Logic/Console/console.o
  .text.CON_WriteByte
-                0x00000eb8        0x4 build/Logic/Console/console.o
+                0x00000ed4        0x4 build/Logic/Console/console.o
  .text.CON_Init
-                0x00000ebc       0x46 build/Logic/Console/console.o
-                0x00000ebc                CON_Init
+                0x00000ed8       0x46 build/Logic/Console/console.o
+                0x00000ed8                CON_Init
  .text.CON_SendHelp
-                0x00000f02       0x50 build/Logic/Console/console.o
-                0x00000f02                CON_SendHelp
+                0x00000f1e       0x50 build/Logic/Console/console.o
+                0x00000f1e                CON_SendHelp
  .text.CON_SendFaults
-                0x00000f52       0x28 build/Logic/Console/console.o
-                0x00000f52                CON_SendFaults
+                0x00000f6e       0x28 build/Logic/Console/console.o
+                0x00000f6e                CON_SendFaults
  .text.CON_ProcessCommand
-                0x00000f7a      0x26c build/Logic/Console/console.o
-                0x00000f7a                CON_ProcessCommand
- .text.CON_Run  0x000011e6       0xb2 build/Logic/Console/console.o
-                0x000011e6                CON_Run
+                0x00000f96      0x26c build/Logic/Console/console.o
+                0x00000f96                CON_ProcessCommand
+ .text.CON_Run  0x00001202       0xb2 build/Logic/Console/console.o
+                0x00001202                CON_Run
  .text.DEM_Init
-                0x00001298        0xa build/Logic/demand/demand.o
-                0x00001298                DEM_Init
+                0x000012b4        0xa build/Logic/demand/demand.o
+                0x000012b4                DEM_Init
  .text.DEM_Update
-                0x000012a2       0x28 build/Logic/demand/demand.o
-                0x000012a2                DEM_Update
+                0x000012be       0x28 build/Logic/demand/demand.o
+                0x000012be                DEM_Update
  .text.DEM_GetPumpDemand
-                0x000012ca        0x6 build/Logic/demand/demand.o
-                0x000012ca                DEM_GetPumpDemand
+                0x000012e6        0x6 build/Logic/demand/demand.o
+                0x000012e6                DEM_GetPumpDemand
  .text.FLG_WriteUint32
-                0x000012d0       0xd6 build/Logic/FaultLog/faultlog.o
+                0x000012ec       0xd6 build/Logic/FaultLog/faultlog.o
  .text.FLG_Init
-                0x000013a6       0x34 build/Logic/FaultLog/faultlog.o
-                0x000013a6                FLG_Init
+                0x000013c2       0x34 build/Logic/FaultLog/faultlog.o
+                0x000013c2                FLG_Init
  .text.FLG_GetCount
-                0x000013da       0x12 build/Logic/FaultLog/faultlog.o
-                0x000013da                FLG_GetCount
+                0x000013f6       0x12 build/Logic/FaultLog/faultlog.o
+                0x000013f6                FLG_GetCount
  .text.FLG_Clear
-                0x000013ec        0xa build/Logic/FaultLog/faultlog.o
-                0x000013ec                FLG_Clear
+                0x00001408        0xa build/Logic/FaultLog/faultlog.o
+                0x00001408                FLG_Clear
  .text.FLG_Dump
-                0x000013f6      0x172 build/Logic/FaultLog/faultlog.o
-                0x000013f6                FLG_Dump
+                0x00001412      0x172 build/Logic/FaultLog/faultlog.o
+                0x00001412                FLG_Dump
  .text.FLOWMETER_Init
-                0x00001568       0x34 build/Logic/Flowmeter/Flowmeter.o
-                0x00001568                FLOWMETER_Init
+                0x00001584       0x34 build/Logic/Flowmeter/Flowmeter.o
+                0x00001584                FLOWMETER_Init
  .text.FLOWMETER_Update1Hz
-                0x0000159c       0x52 build/Logic/Flowmeter/Flowmeter.o
-                0x0000159c                FLOWMETER_Update1Hz
+                0x000015b8       0x52 build/Logic/Flowmeter/Flowmeter.o
+                0x000015b8                FLOWMETER_Update1Hz
  .text.FLOWMETER_GetFlowLpmX10
-                0x000015ee       0x2a build/Logic/Flowmeter/Flowmeter.o
-                0x000015ee                FLOWMETER_GetFlowLpmX10
+                0x0000160a       0x2a build/Logic/Flowmeter/Flowmeter.o
+                0x0000160a                FLOWMETER_GetFlowLpmX10
+ .text.FLOWMETER_GetTotalMilliliters
+                0x00001634       0x2a build/Logic/Flowmeter/Flowmeter.o
+                0x00001634                FLOWMETER_GetTotalMilliliters
  .text.ResetTimers
-                0x00001618       0x3a build/Logic/interlocks/interlocks.o
+                0x0000165e       0x3a build/Logic/interlocks/interlocks.o
  .text.INT_Init
-                0x00001652       0x1e build/Logic/interlocks/interlocks.o
-                0x00001652                INT_Init
+                0x00001698       0x1e build/Logic/interlocks/interlocks.o
+                0x00001698                INT_Init
  .text.ILK_Reset
-                0x00001670        0xc build/Logic/interlocks/interlocks.o
-                0x00001670                ILK_Reset
+                0x000016b6        0xc build/Logic/interlocks/interlocks.o
+                0x000016b6                ILK_Reset
  .text.ILK_Evaluate
-                0x0000167c      0x2dc build/Logic/interlocks/interlocks.o
-                0x0000167c                ILK_Evaluate
+                0x000016c2      0x2dc build/Logic/interlocks/interlocks.o
+                0x000016c2                ILK_Evaluate
  .text.SCHEDULER_Init
-                0x00001958       0x30 build/Logic/Scheduler/Scheduler.o
-                0x00001958                SCHEDULER_Init
+                0x0000199e       0x30 build/Logic/Scheduler/Scheduler.o
+                0x0000199e                SCHEDULER_Init
  .text.SCHEDULER_AddTask
-                0x00001988       0x9c build/Logic/Scheduler/Scheduler.o
-                0x00001988                SCHEDULER_AddTask
+                0x000019ce       0x9c build/Logic/Scheduler/Scheduler.o
+                0x000019ce                SCHEDULER_AddTask
  .text.SCHEDULER_Tick
-                0x00001a24       0x5a build/Logic/Scheduler/Scheduler.o
-                0x00001a24                SCHEDULER_Tick
+                0x00001a6a       0x5a build/Logic/Scheduler/Scheduler.o
+                0x00001a6a                SCHEDULER_Tick
  .text.SCHEDULER_Run
-                0x00001a7e       0x34 build/Logic/Scheduler/Scheduler.o
-                0x00001a7e                SCHEDULER_Run
+                0x00001ac4       0x34 build/Logic/Scheduler/Scheduler.o
+                0x00001ac4                SCHEDULER_Run
  .text.FSM_StopOutputs
-                0x00001ab2        0xc build/Logic/tank_fsm/tank_fsm.o
+                0x00001af8        0xc build/Logic/tank_fsm/tank_fsm.o
  .text.FSM_Init
-                0x00001abe       0x2e build/Logic/tank_fsm/tank_fsm.o
-                0x00001abe                FSM_Init
+                0x00001b04       0x2e build/Logic/tank_fsm/tank_fsm.o
+                0x00001b04                FSM_Init
  .text.FSM_GetState
-                0x00001aec        0xa build/Logic/tank_fsm/tank_fsm.o
-                0x00001aec                FSM_GetState
- .text.FSM_Ack  0x00001af6        0x4 build/Logic/tank_fsm/tank_fsm.o
-                0x00001af6                FSM_Ack
- .text.FSM_Run  0x00001afa      0x202 build/Logic/tank_fsm/tank_fsm.o
-                0x00001afa                FSM_Run
+                0x00001b32        0xa build/Logic/tank_fsm/tank_fsm.o
+                0x00001b32                FSM_GetState
+ .text.FSM_Ack  0x00001b3c        0x4 build/Logic/tank_fsm/tank_fsm.o
+                0x00001b3c                FSM_Ack
+ .text.FSM_Run  0x00001b40      0x202 build/Logic/tank_fsm/tank_fsm.o
+                0x00001b40                FSM_Run
  .text.ADC_Init
-                0x00001cfc       0x2a build/MCAL/ADC/ADC.o
-                0x00001cfc                ADC_Init
+                0x00001d42       0x2a build/MCAL/ADC/ADC.o
+                0x00001d42                ADC_Init
  .text.ADC_ReadChannel
-                0x00001d26       0x30 build/MCAL/ADC/ADC.o
-                0x00001d26                ADC_ReadChannel
+                0x00001d6c       0x30 build/MCAL/ADC/ADC.o
+                0x00001d6c                ADC_ReadChannel
  .text.GPIO_SetPinDirection
-                0x00001d56       0xe4 build/MCAL/GPIO/GPIO.o
-                0x00001d56                GPIO_SetPinDirection
+                0x00001d9c       0xe4 build/MCAL/GPIO/GPIO.o
+                0x00001d9c                GPIO_SetPinDirection
  .text.GPIO_SetPinValue
-                0x00001e3a       0x7c build/MCAL/GPIO/GPIO.o
-                0x00001e3a                GPIO_SetPinValue
+                0x00001e80       0x7c build/MCAL/GPIO/GPIO.o
+                0x00001e80                GPIO_SetPinValue
  .text.GPIO_GetPinValue
-                0x00001eb6       0x44 build/MCAL/GPIO/GPIO.o
-                0x00001eb6                GPIO_GetPinValue
+                0x00001efc       0x44 build/MCAL/GPIO/GPIO.o
+                0x00001efc                GPIO_GetPinValue
  .text.I2C_InitMaster
-                0x00001efa       0x42 build/MCAL/I2C/I2C.o
-                0x00001efa                I2C_InitMaster
+                0x00001f40       0x42 build/MCAL/I2C/I2C.o
+                0x00001f40                I2C_InitMaster
  .text.I2C_SendStart
-                0x00001f3c       0x1c build/MCAL/I2C/I2C.o
-                0x00001f3c                I2C_SendStart
+                0x00001f82       0x1c build/MCAL/I2C/I2C.o
+                0x00001f82                I2C_SendStart
  .text.I2C_SendStop
-                0x00001f58        0x6 build/MCAL/I2C/I2C.o
-                0x00001f58                I2C_SendStop
+                0x00001f9e        0x6 build/MCAL/I2C/I2C.o
+                0x00001f9e                I2C_SendStop
  .text.I2C_SendSlaveAddressWithWrite
-                0x00001f5e       0x20 build/MCAL/I2C/I2C.o
-                0x00001f5e                I2C_SendSlaveAddressWithWrite
+                0x00001fa4       0x20 build/MCAL/I2C/I2C.o
+                0x00001fa4                I2C_SendSlaveAddressWithWrite
  .text.I2C_SendByte
-                0x00001f7e       0x1e build/MCAL/I2C/I2C.o
-                0x00001f7e                I2C_SendByte
+                0x00001fc4       0x1e build/MCAL/I2C/I2C.o
+                0x00001fc4                I2C_SendByte
  .text.INTERRUPT_EnableGlobal
-                0x00001f9c        0xc build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00001f9c                INTERRUPT_EnableGlobal
+                0x00001fe2        0xc build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00001fe2                INTERRUPT_EnableGlobal
  .text.EXTI_SetSense
-                0x00001fa8       0x54 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00001fa8                EXTI_SetSense
+                0x00001fee       0x54 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00001fee                EXTI_SetSense
  .text.EXTI_ClearFlag
-                0x00001ffc       0x2a build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00001ffc                EXTI_ClearFlag
+                0x00002042       0x2a build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00002042                EXTI_ClearFlag
  .text.EXTI_Enable
-                0x00002026       0x3c build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00002026                EXTI_Enable
+                0x0000206c       0x3c build/MCAL/INTERRUPT/INTERRUPT.o
+                0x0000206c                EXTI_Enable
  .text.EXTI_SetCallback
-                0x00002062       0x3a build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00002062                EXTI_SetCallback
+                0x000020a8       0x3a build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000020a8                EXTI_SetCallback
  .text.__vector_1
-                0x0000209c       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x0000209c                __vector_1
+                0x000020e2       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000020e2                __vector_1
  .text.__vector_2
-                0x000020ee       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000020ee                __vector_2
+                0x00002134       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00002134                __vector_2
  .text.__vector_3
-                0x00002140       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00002140                __vector_3
+                0x00002186       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00002186                __vector_3
  .text.SPI_InitMaster
-                0x00002192       0x20 build/MCAL/SPI/SPI.o
-                0x00002192                SPI_InitMaster
+                0x000021d8       0x20 build/MCAL/SPI/SPI.o
+                0x000021d8                SPI_InitMaster
  .text.SPI_Transceive
-                0x000021b2       0x1e build/MCAL/SPI/SPI.o
-                0x000021b2                SPI_Transceive
+                0x000021f8       0x1e build/MCAL/SPI/SPI.o
+                0x000021f8                SPI_Transceive
  .text.TIMER0_Init
-                0x000021d0       0x16 build/MCAL/TIMER/TIMER.o
-                0x000021d0                TIMER0_Init
+                0x00002216       0x16 build/MCAL/TIMER/TIMER.o
+                0x00002216                TIMER0_Init
  .text.TIMER0_DelayMS
-                0x000021e6       0x30 build/MCAL/TIMER/TIMER.o
-                0x000021e6                TIMER0_DelayMS
+                0x0000222c       0x30 build/MCAL/TIMER/TIMER.o
+                0x0000222c                TIMER0_DelayMS
  .text.TIMER1_ExternalCounterInit
-                0x00002216       0x22 build/MCAL/TIMER/TIMER.o
-                0x00002216                TIMER1_ExternalCounterInit
+                0x0000225c       0x22 build/MCAL/TIMER/TIMER.o
+                0x0000225c                TIMER1_ExternalCounterInit
  .text.TIMER1_GetCounter
-                0x00002238        0x6 build/MCAL/TIMER/TIMER.o
-                0x00002238                TIMER1_GetCounter
+                0x0000227e        0x6 build/MCAL/TIMER/TIMER.o
+                0x0000227e                TIMER1_GetCounter
  .text.__vector_13
-                0x0000223e       0x56 build/MCAL/UART/UART.o
-                0x0000223e                __vector_13
+                0x00002284       0x56 build/MCAL/UART/UART.o
+                0x00002284                __vector_13
  .text.UART_Init
-                0x00002294       0x42 build/MCAL/UART/UART.o
-                0x00002294                UART_Init
+                0x000022da       0x42 build/MCAL/UART/UART.o
+                0x000022da                UART_Init
  .text.UART_SendByte
-                0x000022d6        0xc build/MCAL/UART/UART.o
-                0x000022d6                UART_SendByte
+                0x0000231c        0xc build/MCAL/UART/UART.o
+                0x0000231c                UART_SendByte
  .text.UART_SendString
-                0x000022e2       0x32 build/MCAL/UART/UART.o
-                0x000022e2                UART_SendString
+                0x00002328       0x32 build/MCAL/UART/UART.o
+                0x00002328                UART_SendString
  .text.UART_SetRxInterrupt
-                0x00002314       0x18 build/MCAL/UART/UART.o
-                0x00002314                UART_SetRxInterrupt
+                0x0000235a       0x18 build/MCAL/UART/UART.o
+                0x0000235a                UART_SetRxInterrupt
  .text.UART_SetRxBuffer
-                0x0000232c        0xe build/MCAL/UART/UART.o
-                0x0000232c                UART_SetRxBuffer
+                0x00002372        0xe build/MCAL/UART/UART.o
+                0x00002372                UART_SetRxBuffer
  .text.libgcc.mul
-                0x0000233a       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
-                0x0000233a                __umulhisi3
+                0x00002380       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+                0x00002380                __umulhisi3
  .text.libgcc.div
-                0x00002358       0x28 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
-                0x00002358                __udivmodhi4
+                0x0000239e       0x28 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+                0x0000239e                __udivmodhi4
  .text.libgcc.div
-                0x00002380       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                0x00002380                __udivmodsi4
- .text.libgcc   0x000023c4        0xc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
-                0x000023c4                __tablejump2__
-                0x000023d0                        . = ALIGN (0x2)
+                0x000023c6       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+                0x000023c6                __udivmodsi4
+ .text.libgcc   0x0000240a        0xc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
+                0x0000240a                __tablejump2__
+ .text.libgcc.mul
+                0x00002416       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+                0x00002416                __muluhisi3
+                0x0000242c                        . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000023d0        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
-                0x000023d0                _exit
-                0x000023d0                exit
+ .fini9         0x0000242c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+                0x0000242c                _exit
+                0x0000242c                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -878,20 +872,20 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000023d0        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x0000242c        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
  *(.hightext)
  *(.hightext*)
  *(.progmemx)
  *(.progmemx.*)
-                0x000023d4                        . = ALIGN (0x2)
+                0x00002430                        . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
  .jumptables.gcc.FSM_Run
-                0x000023d4       0x10 build/Logic/tank_fsm/tank_fsm.o
-                0x000023e4                        _etext = .
+                0x00002430       0x10 build/Logic/tank_fsm/tank_fsm.o
+                0x00002440                        _etext = .
 
-.data           0x00800060      0x1f2 load address 0x000023e4
+.data           0x00800060      0x1f2 load address 0x00002440
                 0x00800060                        PROVIDE (__data_start = .)
  *(.data)
  *(.data*)
@@ -1011,8 +1005,8 @@ END GROUP
                 0x008004ab        0x2 build/MCAL/UART/UART.o
  *(COMMON)
                 0x008004ad                        PROVIDE (__bss_end = .)
-                0x000023e4                        __data_load_start = LOADADDR (.data)
-                0x000025d6                        __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00002440                        __data_load_start = LOADADDR (.data)
+                0x00002632                        __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x008004ad        0x0
                 [!provide]                        PROVIDE (__noinit_start = .)
@@ -1131,7 +1125,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0xe0
+.debug_aranges  0x00000000      0x100
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
@@ -1147,11 +1141,13 @@ END GROUP
                 0x000000a0       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
  .debug_aranges
                 0x000000c0       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
+ .debug_aranges
+                0x000000e0       0x20 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x5e2
+.debug_info     0x00000000      0x606
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x4e6 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
  .debug_info    0x000004e6       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
@@ -1161,8 +1157,9 @@ END GROUP
  .debug_info    0x00000576       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
  .debug_info    0x0000059a       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
  .debug_info    0x000005be       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
+ .debug_info    0x000005e2       0x24 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
 
-.debug_abbrev   0x00000000      0x52f
+.debug_abbrev   0x00000000      0x543
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x4a3 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
  .debug_abbrev  0x000004a3       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
@@ -1172,8 +1169,9 @@ END GROUP
  .debug_abbrev  0x000004f3       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
  .debug_abbrev  0x00000507       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
  .debug_abbrev  0x0000051b       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
+ .debug_abbrev  0x0000052f       0x14 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
 
-.debug_line     0x00000000      0x440
+.debug_line     0x00000000      0x4c1
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000       0x1d C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
  .debug_line    0x0000001d       0x9f C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
@@ -1183,6 +1181,7 @@ END GROUP
  .debug_line    0x000002db       0x69 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
  .debug_line    0x00000344       0x87 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
  .debug_line    0x000003cb       0x75 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
+ .debug_line    0x00000440       0x81 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
 
 .debug_frame
  *(.debug_frame)
@@ -1202,6 +1201,8 @@ END GROUP
  .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
                                  0x68 (size before relaxing)
  .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
+                                 0x68 (size before relaxing)
+ .debug_str     0x000001fe        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                                  0x68 (size before relaxing)
 
 .debug_loc
@@ -1253,6 +1254,9 @@ END GROUP
                                  0x5c (size before relaxing)
  .debug_line_str
                 0x0000005c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
+                                 0x5c (size before relaxing)
+ .debug_line_str
+                0x0000005c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                                  0x5c (size before relaxing)
 
 .debug_loclists

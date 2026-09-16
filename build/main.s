@@ -184,6 +184,16 @@ APP_UpdateData:
 	call FLOWMETER_GetFlowLpmX10
 	sts Global_stTankData+10,r24
 	sts Global_stTankData+11,r25
+	call FLOWMETER_GetTotalMilliliters
+	ldi r18,lo8(-24)
+	ldi r19,lo8(3)
+	ldi r20,0
+	ldi r21,0
+	call __udivmodsi4
+	sts Global_stTankData+12,r18
+	sts Global_stTankData+13,r19
+	sts Global_stTankData+14,r20
+	sts Global_stTankData+15,r21
 	call FLT_IsHighActive
 	lds r25,Global_stTankData+17
 	bst r24,0
@@ -368,18 +378,17 @@ main:
 	sts Global_stTankData+30,__zero_reg__
 	sts Global_stTankData+31,__zero_reg__
 	call TIMER0_Init
+	ldi r24,0
+	call LEVEL_Init
 	ldi r24,lo8(1)
 	call SPI_InitMaster
 	call SHIFTREG_Init
-	ldi r24,0
-	call LEVEL_Init
 	call PMP_Init
 	call Valve_Init
 	call FLT_Init
 	call CUR_Init
 	ldi r24,lo8(3)
 	call BTN_Init
-	call TIMER1_ExternalCounterInit
 	call FLOWMETER_Init
 	ldi r22,lo8(-96)
 	ldi r23,lo8(-122)

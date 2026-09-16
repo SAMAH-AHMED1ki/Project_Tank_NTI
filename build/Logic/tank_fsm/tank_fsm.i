@@ -85,28 +85,37 @@ STD_ReturnType Valve_Set(uint8 Copy_u8State);
 STD_ReturnType Valve_GetState(uint8 *Copy_pu8State);
 # 10 "Logic/tank_fsm/tank_fsm.c" 2
 # 1 "HAL/Buttons/Buttons_interface.h" 1
-# 11 "HAL/Buttons/Buttons_interface.h"
+# 12 "HAL/Buttons/Buttons_interface.h"
 typedef enum
 {
     BTN_MODE = 0,
-    BTN_MANUAL_START = 1,
-    BTN_ACK = 2,
-    BTN_COUNT = 3
+    BTN_MANUAL_START,
+    BTN_ACK,
+    BTN_COUNT
 } ButtonID_t;
 
 typedef enum
 {
     BTN_EVENT_NONE = 0,
-    BTN_EVENT_PRESSED = 1,
-    BTN_EVENT_RELEASED = 2,
-    BTN_EVENT_SHORT_PRESS = 3,
-    BTN_EVENT_LONG_HOLD_1S = 4
+    BTN_EVENT_PRESSED,
+    BTN_EVENT_RELEASED,
+    BTN_EVENT_SHORT_PRESS,
+    BTN_EVENT_LONG_HOLD_1S
 } ButtonEvent_t;
 
+
 STD_ReturnType BTN_Init(uint8 port);
+
+
 void BTN_Update10ms(uint8 port);
+
+
 STD_ReturnType BTN_GetEvent(ButtonID_t btn, ButtonEvent_t *pEvent);
-STD_ReturnType BTN_IsPressed(uint8 port, ButtonID_t btn, uint8 *pIsPressed);
+
+
+STD_ReturnType BTN_IsPressed(uint8 port,
+                             ButtonID_t btn,
+                             uint8 *pIsPressed);
 # 11 "Logic/tank_fsm/tank_fsm.c" 2
 # 1 "Logic/interlocks/interlocks.h" 1
 
@@ -117,12 +126,9 @@ STD_ReturnType BTN_IsPressed(uint8 port, ButtonID_t btn, uint8 *pIsPressed);
 
 
 
-# 1 "LIB/DATA.h" 1
 
 
 
-# 1 "LIB/STD_TYPES.h" 1
-# 5 "LIB/DATA.h" 2
 
 typedef enum
 {
@@ -134,11 +140,15 @@ typedef enum
     ST_TRIPPED,
     ST_MANUAL,
     ST_SERVICE
+
 } TankState_t;
+
+
 
 typedef enum
 {
     TRIP_NONE = 0,
+
     TRIP_OVERFLOW,
     TRIP_OVERCURRENT,
     TRIP_DRY_RESERVOIR,
@@ -148,16 +158,45 @@ typedef enum
     TRIP_LEVEL_SENSOR,
     TRIP_LEAK,
     TRIP_NO_RISE
+
 } Trip_t;
+
+
 
 typedef struct
 {
-    uint8 trip;
-    uint32 timeSec;
+    uint16 levelRaw;
+    uint16 reservoirRaw;
+    uint16 currentRaw;
+
     uint8 levelPct;
     uint8 reservoirPct;
+
     uint16 currentmA;
-} FaultRec_t;
+    uint16 flowLpmX10;
+
+    uint32 totalLitres;
+
+    sint8 levelRatePctMin;
+
+    uint8 pumpOn : 1;
+    uint8 valveOn : 1;
+    uint8 highFloat : 1;
+    uint8 lowFloat : 1;
+    uint8 reserved : 4;
+
+    uint8 state;
+    uint8 activeTrip;
+
+    uint16 pumpRunSec;
+    uint32 pumpTotalSec;
+    uint16 pumpCycles;
+
+    uint32 upTimeSec;
+
+} TankData_t;
+
+
 
 
 
@@ -166,47 +205,29 @@ typedef struct
 {
     uint16 magic;
     uint8 version;
+
     uint8 startPct;
     uint8 stopPct;
     uint8 reserveMinPct;
     uint8 overflowPct;
+
     uint8 overCurrentA_X10;
     uint8 minCurrentA_X10;
     uint8 minFlowLpm;
+
     uint16 maxRunSec;
     uint16 minOffSec;
+
     uint8 leakDropPct;
+
     uint32 totalLitres;
     uint32 pumpTotalSec;
     uint16 pumpCycles;
+
     uint8 faultHead;
     uint8 checksum;
-} TankCfg_t;
 
-typedef struct
-{
-    uint16 levelRaw;
-    uint16 reservoirRaw;
-    uint16 currentRaw;
-    uint8 levelPct;
-    uint8 reservoirPct;
-    uint16 currentmA;
-    uint16 flowLpmX10;
-    uint32 totalLitres;
-    uint8 levelRatePctMin;
-    uint8 pumpOn : 1;
-    uint8 valveOn : 1;
-    uint8 highFloat : 1;
-    uint8 lowFloat : 1;
-    uint8 reserved : 4;
-    uint8 state;
-    uint8 activeTrip;
-    uint16 pumpRunSec;
-    uint32 pumpTotalSec;
-    uint16 pumpCycles;
-    uint32 upTimeSec;
-} TankData_t;
-# 5 "Logic/interlocks/tank_types.h" 2
+} TankCfg_t;
 # 6 "Logic/interlocks/interlocks.h" 2
 
 STD_ReturnType INT_Init(void);
