@@ -195,7 +195,7 @@ functions for the application layer.
 - `lcd_i2c.c/.h` (Implemented and tested)
 - `buttons.c/.h` (Implemented and tested)
 - `bargraph.c/.h` (Implemented and tested)
-- `level.c/.h` (Implemented)
+- `level.c/.h` (Implemented and tested)
 - Verify TWI transactions, LCD initialization, cursor/write operations, and
   display error handling, button debounce, bargraph levels, and tank-level
   scaling
