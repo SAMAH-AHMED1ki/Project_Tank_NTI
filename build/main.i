@@ -963,7 +963,9 @@ TankData_t Global_stTankData;
 
 static FLG_Buffer_t Global_stFaultLog;
 static void APP_UpdateBuzzer(void);
-# 49 "main.c"
+static TankState_t Global_eLastFSMState = ST_INIT;
+static uint8 Global_u8ModeDisplayTicks = 0u;
+# 51 "main.c"
 static void APP_HighFloatISR(void)
 {
     PMP_Set(0u);
@@ -1135,7 +1137,7 @@ static void APP_UpdateData(void)
     Global_stTankData.state =
         (uint8)FSM_GetState();
 }
-# 236 "main.c"
+# 238 "main.c"
 static void APP_Task10ms(void)
 {
 
@@ -1152,7 +1154,7 @@ static void APP_Task10ms(void)
 
 
     DEM_Update(&Global_stTankData);
-# 262 "main.c"
+# 264 "main.c"
     FSM_Run(&Global_stTankData);
 
 
@@ -1160,6 +1162,25 @@ static void APP_Task10ms(void)
         (uint8)FSM_GetState();
 
     APP_UpdateBuzzer();
+
+    if (Global_stTankData.pumpOn == 1u)
+    {
+        GPIO_SetPinValue(2u, 6u, 1u);
+    }
+    else
+    {
+        GPIO_SetPinValue(2u, 6u, 0u);
+    }
+
+
+    if (FSM_GetState() == ST_TRIPPED)
+    {
+        GPIO_SetPinValue(2u, 7u, 1u);
+    }
+    else
+    {
+        GPIO_SetPinValue(2u, 7u, 0u);
+    }
 }
 
 
@@ -1172,12 +1193,38 @@ static void APP_Task500ms(void)
 {
     uint16 Local_u16FlowInteger;
     uint8 Local_u8FlowDecimal;
+    TankState_t Local_eCurrentState;
 
     Local_u16FlowInteger =
         Global_stTankData.flowLpmX10 / 10u;
 
     Local_u8FlowDecimal =
         Global_stTankData.flowLpmX10 % 10u;
+
+    Local_eCurrentState =
+        FSM_GetState();
+
+
+
+
+
+    if ((Local_eCurrentState == ST_MANUAL) &&
+        (Global_eLastFSMState != ST_MANUAL))
+    {
+
+        Global_u8ModeDisplayTicks = 2u;
+    }
+    else if ((Local_eCurrentState != ST_MANUAL) &&
+             (Global_eLastFSMState == ST_MANUAL))
+    {
+
+        Global_u8ModeDisplayTicks = 2u;
+    }
+
+    Global_eLastFSMState = Local_eCurrentState;
+
+
+
 
 
     LCD_I2C_Clear();
@@ -1186,6 +1233,26 @@ static void APP_Task500ms(void)
 
 
 
+    if (Global_u8ModeDisplayTicks > 0u)
+    {
+        LCD_I2C_SetCursor(
+            0u,
+            0u);
+
+        if (Local_eCurrentState == ST_MANUAL)
+        {
+            LCD_I2C_SendString("MODE: MANUAL");
+        }
+        else
+        {
+            LCD_I2C_SendString("MODE: AUTO");
+        }
+
+        Global_u8ModeDisplayTicks--;
+
+        return;
+    }
+# 370 "main.c"
     LCD_I2C_SetCursor(
         0u,
         0u);
@@ -1252,7 +1319,7 @@ static void APP_Task1s(void)
 
     APP_UpdateData();
 }
-# 377 "main.c"
+# 452 "main.c"
 static void APP_UpdateShiftRegister(void)
 {
     uint8 Local_u8Status = 0u;
@@ -1376,6 +1443,12 @@ int main(void)
     Global_stTankData.pumpCycles = 0u;
 
     Global_stTankData.upTimeSec = 0UL;
+
+    GPIO_SetPinDirection(2u, 6u, 1u);
+    GPIO_SetPinValue(2u, 6u, 0u);
+
+    GPIO_SetPinDirection(2u, 7u, 1u);
+    GPIO_SetPinValue(2u, 7u, 0u);
 
 
 

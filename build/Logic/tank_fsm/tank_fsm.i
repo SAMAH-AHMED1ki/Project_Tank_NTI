@@ -277,9 +277,9 @@ uint8 FSM_IsBuzzerEnabled(void);
 static TankState_t Global_eCurrentState = ST_INIT;
 
 static uint16 Global_u16SettlingTicks = 0u;
-static uint16 Global_u16MinOffTicks = 6000u;
+static uint16 Global_u16MinOffTicks = 500u;
 static uint8 Global_u8BuzzerSilenced = 0u;
-
+static uint8 Global_u8ManualPumpOn = 0u;
 
 
 
@@ -308,7 +308,7 @@ static void FSM_UpdateMinOffTimer(uint8 Copy_u8PumpOn)
 {
     if (Copy_u8PumpOn == 0u)
     {
-        if (Global_u16MinOffTicks < 6000u)
+        if (Global_u16MinOffTicks < 500u)
         {
             Global_u16MinOffTicks++;
         }
@@ -334,7 +334,7 @@ STD_ReturnType FSM_Init(void)
     Global_eCurrentState = ST_INIT;
 
     Global_u16SettlingTicks = 0u;
-    Global_u16MinOffTicks = 6000u;
+    Global_u16MinOffTicks = 500u;
     Global_u8BuzzerSilenced = 0u;
 
     Local_Status = PMP_Set(0u);
@@ -449,13 +449,16 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
     {
         if (Global_eCurrentState == ST_MANUAL)
         {
-            FSM_StopOutputs();
 
+            Global_u8ManualPumpOn = 0u;
+            FSM_StopOutputs();
             Global_eCurrentState = ST_IDLE;
         }
         else if ((Global_eCurrentState == ST_IDLE) ||
                  (Global_eCurrentState == ST_FILLING))
         {
+
+            Global_u8ManualPumpOn = 0u;
             FSM_StopOutputs();
 
             Global_eCurrentState = ST_MANUAL;
@@ -498,7 +501,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
         else if ((DEM_GetPumpDemand() != 0u) &&
-                 (Global_u16MinOffTicks >= 6000u))
+                 (Global_u16MinOffTicks >= 500u))
         {
             Global_eCurrentState = ST_FILLING;
         }
@@ -569,7 +572,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         break;
 
     case ST_TRIPPED:
-# 321 "Logic/tank_fsm/tank_fsm.c"
+# 324 "Logic/tank_fsm/tank_fsm.c"
         FSM_StopOutputs();
 
 
@@ -580,29 +583,35 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         break;
 
     case ST_MANUAL:
-
-
-
-
-
-
+# 342 "Logic/tank_fsm/tank_fsm.c"
         if (Local_eManualEvent == BTN_EVENT_SHORT_PRESS)
         {
-            if (Global_u16MinOffTicks >= 6000u)
+            if (Global_u8ManualPumpOn == 0u)
             {
-                PMP_Set(1u);
-                Valve_Set(1u);
+
+                if (Global_u16MinOffTicks >= 500u)
+                {
+                    Global_u8ManualPumpOn = 1u;
+                    FSM_StartFilling();
+                }
+            }
+            else
+            {
+
+                Global_u8ManualPumpOn = 0u;
+                FSM_StopOutputs();
             }
         }
 
 
-
-
-        if (Copy_pstData->pumpOn != 0u)
+        if (Global_u8ManualPumpOn != 0u)
         {
-            Valve_Set(1u);
+            FSM_StartFilling();
         }
-
+        else
+        {
+            FSM_StopOutputs();
+        }
         break;
 
     case ST_SERVICE:

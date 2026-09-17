@@ -37,6 +37,8 @@ TankData_t Global_stTankData;
 
 static FLG_Buffer_t Global_stFaultLog;
 static void APP_UpdateBuzzer(void);
+static TankState_t Global_eLastFSMState = ST_INIT;
+static uint8 Global_u8ModeDisplayTicks = 0u;
 /* =========================================================
  * INT0 Callback
  *
@@ -266,6 +268,25 @@ static void APP_Task10ms(void)
         (uint8)FSM_GetState();
 
     APP_UpdateBuzzer();
+
+    if (Global_stTankData.pumpOn == GPIO_HIGH)
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN6, GPIO_HIGH);
+    }
+    else
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN6, GPIO_LOW);
+    }
+
+    /* FAULT LED */
+    if (FSM_GetState() == ST_TRIPPED)
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN7, GPIO_HIGH);
+    }
+    else
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN7, GPIO_LOW);
+    }
 }
 
 /* =========================================================
@@ -278,6 +299,7 @@ static void APP_Task500ms(void)
 {
     uint16 Local_u16FlowInteger;
     uint8 Local_u8FlowDecimal;
+    TankState_t Local_eCurrentState;
 
     Local_u16FlowInteger =
         Global_stTankData.flowLpmX10 / 10u;
@@ -285,8 +307,61 @@ static void APP_Task500ms(void)
     Local_u8FlowDecimal =
         Global_stTankData.flowLpmX10 % 10u;
 
-    /* Clear LCD */
+    Local_eCurrentState =
+        FSM_GetState();
+
+    /* =====================================================
+     * Detect mode change
+     * ===================================================== */
+
+    if ((Local_eCurrentState == ST_MANUAL) &&
+        (Global_eLastFSMState != ST_MANUAL))
+    {
+        /* MANUAL mode selected */
+        Global_u8ModeDisplayTicks = 2u;
+    }
+    else if ((Local_eCurrentState != ST_MANUAL) &&
+             (Global_eLastFSMState == ST_MANUAL))
+    {
+        /* AUTO mode selected */
+        Global_u8ModeDisplayTicks = 2u;
+    }
+
+    Global_eLastFSMState = Local_eCurrentState;
+
+    /* =====================================================
+     * LCD
+     * ===================================================== */
+
     LCD_I2C_Clear();
+
+    /* -----------------------------------------------------
+     * Show mode for 1 second
+     * ----------------------------------------------------- */
+
+    if (Global_u8ModeDisplayTicks > 0u)
+    {
+        LCD_I2C_SetCursor(
+            LCD_ROW_1,
+            LCD_COL_1);
+
+        if (Local_eCurrentState == ST_MANUAL)
+        {
+            LCD_I2C_SendString("MODE: MANUAL");
+        }
+        else
+        {
+            LCD_I2C_SendString("MODE: AUTO");
+        }
+
+        Global_u8ModeDisplayTicks--;
+
+        return;
+    }
+
+    /* =====================================================
+     * Normal LCD data
+     * ===================================================== */
 
     /* -----------------------------------------------------
      * LCD Line 1
@@ -497,6 +572,12 @@ int main(void)
     Global_stTankData.pumpCycles = 0u;
 
     Global_stTankData.upTimeSec = 0UL;
+
+    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN6, GPIO_OUTPUT);
+    GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN6, GPIO_LOW);
+
+    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN7, GPIO_OUTPUT);
+    GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN7, GPIO_LOW);
     /* =====================================================
      * MCAL Initialization
      * ===================================================== */

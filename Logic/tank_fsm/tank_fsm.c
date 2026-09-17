@@ -13,14 +13,14 @@
 #include "tank_fsm.h"
 
 #define FSM_SETTLING_TICKS 500u
-#define FSM_MIN_OFF_TICKS 6000u
+#define FSM_MIN_OFF_TICKS 500u
 
 static TankState_t Global_eCurrentState = ST_INIT;
 
 static uint16 Global_u16SettlingTicks = 0u;
 static uint16 Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
 static uint8 Global_u8BuzzerSilenced = GPIO_LOW;
-
+static uint8 Global_u8ManualPumpOn = 0u;
 /* ---------------------------------------------------------- */
 /* Stop both pump and valve                                   */
 /* ---------------------------------------------------------- */
@@ -190,13 +190,16 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
     {
         if (Global_eCurrentState == ST_MANUAL)
         {
+            /* Exit MANUAL mode */
+            Global_u8ManualPumpOn = 0u;
             FSM_StopOutputs();
-
             Global_eCurrentState = ST_IDLE;
         }
         else if ((Global_eCurrentState == ST_IDLE) ||
                  (Global_eCurrentState == ST_FILLING))
         {
+            /* Enter MANUAL mode */
+            Global_u8ManualPumpOn = 0u;
             FSM_StopOutputs();
 
             Global_eCurrentState = ST_MANUAL;
@@ -334,23 +337,36 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
          *
          * Minimum OFF time must have expired.
          */
+
+        /* Manual START button */
         if (Local_eManualEvent == BTN_EVENT_SHORT_PRESS)
         {
-            if (Global_u16MinOffTicks >= FSM_MIN_OFF_TICKS)
+            if (Global_u8ManualPumpOn == 0u)
             {
-                PMP_Set(GPIO_HIGH);
-                Valve_Set(GPIO_HIGH);
+                /* Start pump if minimum OFF time has expired */
+                if (Global_u16MinOffTicks >= FSM_MIN_OFF_TICKS)
+                {
+                    Global_u8ManualPumpOn = 1u;
+                    FSM_StartFilling();
+                }
+            }
+            else
+            {
+                /* Pump is already ON -> turn it OFF */
+                Global_u8ManualPumpOn = 0u;
+                FSM_StopOutputs();
             }
         }
 
-        /*
-         * Keep valve open while pump is running.
-         */
-        if (Copy_pstData->pumpOn != GPIO_LOW)
+        /* Maintain current manual pump state */
+        if (Global_u8ManualPumpOn != 0u)
         {
-            Valve_Set(GPIO_HIGH);
+            FSM_StartFilling();
         }
-
+        else
+        {
+            FSM_StopOutputs();
+        }
         break;
 
     case ST_SERVICE:

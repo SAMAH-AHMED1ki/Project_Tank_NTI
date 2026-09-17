@@ -5,6 +5,18 @@ __SREG__ = 0x3f
 __tmp_reg__ = 0
 __zero_reg__ = 1
 	.text
+	.section	.text.FSM_StartFilling,"ax",@progbits
+	.type	FSM_StartFilling, @function
+FSM_StartFilling:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	ldi r24,lo8(1)
+	call PMP_Set
+	ldi r24,lo8(1)
+	jmp Valve_Set
+	.size	FSM_StartFilling, .-FSM_StartFilling
 	.section	.text.FSM_StopOutputs,"ax",@progbits
 	.type	FSM_StopOutputs, @function
 FSM_StopOutputs:
@@ -29,18 +41,18 @@ FSM_Init:
 	sts Global_eCurrentState+1,__zero_reg__
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
-	ldi r24,lo8(112)
-	ldi r25,lo8(23)
+	ldi r24,lo8(-12)
+	ldi r25,lo8(1)
 	sts Global_u16MinOffTicks,r24
 	sts Global_u16MinOffTicks+1,r25
 	sts Global_u8BuzzerSilenced,__zero_reg__
 	ldi r24,0
 	call PMP_Set
 	sbiw r24,0
-	brne .L2
+	brne .L3
 	ldi r24,0
 	jmp Valve_Set
-.L2:
+.L3:
 /* epilogue start */
 	ret
 	.size	FSM_Init, .-FSM_Init
@@ -69,11 +81,11 @@ FSM_Ack:
 	sts Global_u8BuzzerSilenced,r24
 	call ILK_Reset
 	sbiw r24,0
-	brne .L5
+	brne .L6
 	ldi r18,lo8(1)
 	sts Global_eCurrentState,r18
 	sts Global_eCurrentState+1,__zero_reg__
-.L5:
+.L6:
 /* epilogue start */
 	ret
 	.size	FSM_Ack, .-FSM_Ack
@@ -108,21 +120,21 @@ FSM_Run:
 	cp r16,__zero_reg__
 	cpc r17,__zero_reg__
 	brne .+2
-	rjmp .L7
+	rjmp .L8
 	movw r30,r16
 	ldd r24,Z+17
 	sbrc r24,0
-	rjmp .L9
+	rjmp .L10
 	lds r24,Global_u16MinOffTicks
 	lds r25,Global_u16MinOffTicks+1
-	cpi r24,112
-	ldi r31,23
+	cpi r24,-12
+	ldi r31,1
 	cpc r25,r31
-	brsh .L10
+	brsh .L11
 	adiw r24,1
 	sts Global_u16MinOffTicks,r24
 	sts Global_u16MinOffTicks+1,r25
-.L10:
+.L11:
 	movw r22,r28
 	subi r22,-5
 	sbci r23,-1
@@ -145,125 +157,133 @@ FSM_Run:
 	call ILK_Evaluate
 	movw r14,r24
 	or r24,r25
-	breq .L11
+	breq .L12
 	call FSM_StopOutputs
 	lds r24,Global_eCurrentState
 	lds r25,Global_eCurrentState+1
 	sbiw r24,5
-	breq .L12
+	breq .L13
 	sts Global_u8BuzzerSilenced,__zero_reg__
-.L12:
+.L13:
 	ldi r24,lo8(5)
 	sts Global_eCurrentState,r24
 	sts Global_eCurrentState+1,__zero_reg__
-.L11:
+.L12:
 	ldd r24,Y+1
 	ldd r25,Y+2
 	sbiw r24,3
 	sbiw r24,2
-	brsh .L13
+	brsh .L14
 	call FSM_Ack
-.L13:
+.L14:
 	or r14,r15
-	breq .L14
-.L21:
+	breq .L15
+.L22:
 	call FSM_StopOutputs
-	rjmp .L15
-.L9:
+	rjmp .L16
+.L10:
 	sts Global_u16MinOffTicks,__zero_reg__
 	sts Global_u16MinOffTicks+1,__zero_reg__
-	rjmp .L10
-.L14:
+	rjmp .L11
+.L15:
 	lds r30,Global_eCurrentState
 	lds r31,Global_eCurrentState+1
 	ldd r24,Y+5
 	ldd r25,Y+6
 	sbiw r24,3
-	brne .L16
+	breq .+2
+	rjmp .L17
 	cpi r30,6
 	cpc r31,__zero_reg__
-	brne .L17
+	brne .L18
+	sts Global_u8ManualPumpOn,__zero_reg__
 	call FSM_StopOutputs
 	ldi r24,lo8(1)
 	sts Global_eCurrentState,r24
 	sts Global_eCurrentState+1,__zero_reg__
-.L18:
+.L19:
 	call FSM_StopOutputs
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
 	movw r30,r16
 	ldd r24,Z+7
 	cpi r24,lo8(25)
-	brsh .L27
+	brsh .L28
 .L51:
 	ldi r24,lo8(4)
-	rjmp .L48
-.L17:
+	rjmp .L49
+.L18:
 	movw r24,r30
 	sbiw r24,1
 	sbiw r24,2
-	brsh .L16
+	brsh .L17
+	sts Global_u8ManualPumpOn,__zero_reg__
 	call FSM_StopOutputs
 	ldi r24,lo8(6)
 	sts Global_eCurrentState,r24
 	sts Global_eCurrentState+1,__zero_reg__
-.L19:
+.L20:
 	ldd r24,Y+3
 	ldd r25,Y+4
 	sbiw r24,3
-	brne .L34
+	brne .L35
+	lds r24,Global_u8ManualPumpOn
+	cpse r24,__zero_reg__
+	rjmp .L36
 	lds r24,Global_u16MinOffTicks
 	lds r25,Global_u16MinOffTicks+1
-	cpi r24,112
-	sbci r25,23
-	brlo .L34
+	cpi r24,-12
+	sbci r25,1
+	brsh .+2
+	rjmp .L22
 	ldi r24,lo8(1)
-	call PMP_Set
-	ldi r24,lo8(1)
-	call Valve_Set
-.L34:
-	movw r30,r16
-	ldd r24,Z+17
-	sbrs r24,0
-	rjmp .L15
-	rjmp .L49
-.L16:
+	sts Global_u8ManualPumpOn,r24
+	call FSM_StartFilling
+.L35:
+	lds r24,Global_u8ManualPumpOn
+	cp r24, __zero_reg__
+	brne .+2
+	rjmp .L22
+.L32:
+	call FSM_StartFilling
+	rjmp .L16
+.L17:
 	cpi r30,8
 	cpc r31,__zero_reg__
 	brlo .+2
-	rjmp .L20
-	subi r30,lo8(-(gs(.L22)))
-	sbci r31,hi8(-(gs(.L22)))
+	rjmp .L21
+	subi r30,lo8(-(gs(.L23)))
+	sbci r31,hi8(-(gs(.L23)))
 	jmp __tablejump2__
 	.section	.jumptables.gcc.FSM_Run,"a",@progbits
 	.p2align	1
-	.type	.L22, @object
-.L22:
+	.type	.L23, @object
+.L23:
+	.word gs(.L27)
+	.word gs(.L19)
 	.word gs(.L26)
-	.word gs(.L18)
 	.word gs(.L25)
 	.word gs(.L24)
-	.word gs(.L23)
-	.word gs(.L21)
-	.word gs(.L19)
-	.word gs(.L21)
+	.word gs(.L22)
+	.word gs(.L20)
+	.word gs(.L22)
 	.section	.text.FSM_Run
-.L26:
+.L27:
 	call FSM_StopOutputs
-.L33:
+.L34:
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
 .L50:
 	ldi r24,lo8(1)
-	rjmp .L48
-.L27:
+	rjmp .L49
+.L28:
 	call DEM_GetPumpDemand
 	cpse r24,__zero_reg__
-	rjmp .L28
-.L15:
+	rjmp .L29
+.L16:
 	ldi r24,0
 	ldi r25,0
-.L7:
+.L8:
 /* epilogue start */
 	pop __tmp_reg__
 	pop __tmp_reg__
@@ -278,41 +298,34 @@ FSM_Run:
 	pop r15
 	pop r14
 	ret
-.L28:
+.L29:
 	lds r24,Global_u16MinOffTicks
 	lds r25,Global_u16MinOffTicks+1
-	cpi r24,112
-	sbci r25,23
-	brlo .L15
+	cpi r24,-12
+	sbci r25,1
+	brlo .L16
 	ldi r24,lo8(2)
-.L48:
+.L49:
 	sts Global_eCurrentState,r24
 	sts Global_eCurrentState+1,__zero_reg__
-	rjmp .L15
-.L25:
+	rjmp .L16
+.L26:
 	movw r30,r16
 	ldd r24,Z+7
 	cpi r24,lo8(25)
-	brsh .L30
+	brsh .L31
 	call FSM_StopOutputs
 	rjmp .L51
-.L30:
+.L31:
 	call DEM_GetPumpDemand
 	cpse r24,__zero_reg__
-	rjmp .L31
+	rjmp .L32
 	call FSM_StopOutputs
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
 	ldi r24,lo8(3)
-	rjmp .L48
-.L31:
-	ldi r24,lo8(1)
-	call PMP_Set
-.L49:
-	ldi r24,lo8(1)
-	call Valve_Set
-	rjmp .L15
-.L24:
+	rjmp .L49
+.L25:
 	call FSM_StopOutputs
 	lds r24,Global_u16SettlingTicks
 	lds r25,Global_u16SettlingTicks+1
@@ -320,27 +333,31 @@ FSM_Run:
 	ldi r31,1
 	cpc r25,r31
 	brlo .+2
-	rjmp .L33
+	rjmp .L34
 	adiw r24,1
 	sts Global_u16SettlingTicks,r24
 	sts Global_u16SettlingTicks+1,r25
 	cpi r24,-12
 	sbci r25,1
 	breq .+2
-	rjmp .L15
-	rjmp .L33
-.L23:
+	rjmp .L16
+	rjmp .L34
+.L24:
 	call FSM_StopOutputs
 	movw r30,r16
 	ldd r24,Z+7
 	cpi r24,lo8(25)
 	brsh .+2
-	rjmp .L15
+	rjmp .L16
 	rjmp .L50
-.L20:
+.L36:
+	sts Global_u8ManualPumpOn,__zero_reg__
+	call FSM_StopOutputs
+	rjmp .L35
+.L21:
 	call FSM_StopOutputs
 	ldi r24,lo8(5)
-	rjmp .L48
+	rjmp .L49
 	.size	FSM_Run, .-FSM_Run
 	.section	.text.FSM_IsBuzzerEnabled,"ax",@progbits
 .global	FSM_IsBuzzerEnabled
@@ -363,6 +380,11 @@ FSM_IsBuzzerEnabled:
 /* epilogue start */
 	ret
 	.size	FSM_IsBuzzerEnabled, .-FSM_IsBuzzerEnabled
+	.section	.bss.Global_u8ManualPumpOn,"aw",@nobits
+	.type	Global_u8ManualPumpOn, @object
+	.size	Global_u8ManualPumpOn, 1
+Global_u8ManualPumpOn:
+	.zero	1
 	.section	.bss.Global_u8BuzzerSilenced,"aw",@nobits
 	.type	Global_u8BuzzerSilenced, @object
 	.size	Global_u8BuzzerSilenced, 1
@@ -372,7 +394,7 @@ Global_u8BuzzerSilenced:
 	.type	Global_u16MinOffTicks, @object
 	.size	Global_u16MinOffTicks, 2
 Global_u16MinOffTicks:
-	.word	6000
+	.word	500
 	.section	.bss.Global_u16SettlingTicks,"aw",@nobits
 	.type	Global_u16SettlingTicks, @object
 	.size	Global_u16SettlingTicks, 2

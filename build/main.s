@@ -7,20 +7,24 @@ __zero_reg__ = 1
 	.text
 	.section	.rodata.APP_Task500ms.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"L:"
+	.string	"MODE: MANUAL"
 .LC1:
-	.string	"% R:"
+	.string	"MODE: AUTO"
 .LC2:
-	.string	"%"
+	.string	"L:"
 .LC3:
-	.string	"F:"
+	.string	"% R:"
 .LC4:
-	.string	"."
+	.string	"%"
 .LC5:
-	.string	"L/m "
+	.string	"F:"
 .LC6:
-	.string	"RUN"
+	.string	"."
 .LC7:
+	.string	"L/m "
+.LC8:
+	.string	"RUN"
+.LC9:
 	.string	"OFF"
 	.section	.text.APP_Task500ms,"ax",@progbits
 	.type	APP_Task500ms, @function
@@ -35,8 +39,66 @@ APP_Task500ms:
 /* frame size = 4 */
 /* stack size = 6 */
 .L__stack_usage = 6
-	lds r24,Global_stTankData+10
-	lds r25,Global_stTankData+11
+	lds r18,Global_stTankData+10
+	lds r19,Global_stTankData+11
+	std Y+1,r18
+	std Y+2,r19
+	call FSM_GetState
+	std Y+3,r24
+	std Y+4,r25
+	lds r24,Global_eLastFSMState
+	lds r25,Global_eLastFSMState+1
+	ldd r18,Y+3
+	ldd r19,Y+4
+	cpi r18,6
+	cpc r19,__zero_reg__
+	brne .L2
+	sbiw r24,6
+	breq .L3
+.L4:
+	ldi r24,lo8(2)
+	sts Global_u8ModeDisplayTicks,r24
+.L3:
+	ldd r24,Y+3
+	ldd r25,Y+4
+	sts Global_eLastFSMState,r24
+	sts Global_eLastFSMState+1,r25
+	call LCD_I2C_Clear
+	lds r24,Global_u8ModeDisplayTicks
+	cp r24, __zero_reg__
+	breq .L5
+	ldi r22,0
+	ldi r24,0
+	call LCD_I2C_SetCursor
+	ldd r18,Y+3
+	ldd r19,Y+4
+	ldi r24,lo8(.LC0)
+	ldi r25,hi8(.LC0)
+	cpi r18,6
+	cpc r19,__zero_reg__
+	breq .L17
+	ldi r24,lo8(.LC1)
+	ldi r25,hi8(.LC1)
+.L17:
+	call LCD_I2C_SendString
+	lds r24,Global_u8ModeDisplayTicks
+	subi r24,lo8(-(-1))
+	sts Global_u8ModeDisplayTicks,r24
+/* epilogue start */
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop r29
+	pop r28
+	ret
+.L2:
+	sbiw r24,6
+	brne .L3
+	rjmp .L4
+.L5:
+	ldd r24,Y+1
+	ldd r25,Y+2
 	ldi r22,lo8(10)
 	ldi r23,0
 	call __udivmodhi4
@@ -44,49 +106,48 @@ APP_Task500ms:
 	std Y+2,r23
 	std Y+3,r24
 	std Y+4,r25
-	call LCD_I2C_Clear
 	ldi r22,0
 	ldi r24,0
 	call LCD_I2C_SetCursor
-	ldi r24,lo8(.LC0)
-	ldi r25,hi8(.LC0)
+	ldi r24,lo8(.LC2)
+	ldi r25,hi8(.LC2)
 	call LCD_I2C_SendString
 	lds r24,Global_stTankData+6
 	ldi r25,0
 	call LCD_I2C_SendNumber
-	ldi r24,lo8(.LC1)
-	ldi r25,hi8(.LC1)
+	ldi r24,lo8(.LC3)
+	ldi r25,hi8(.LC3)
 	call LCD_I2C_SendString
 	lds r24,Global_stTankData+7
 	ldi r25,0
 	call LCD_I2C_SendNumber
-	ldi r24,lo8(.LC2)
-	ldi r25,hi8(.LC2)
+	ldi r24,lo8(.LC4)
+	ldi r25,hi8(.LC4)
 	call LCD_I2C_SendString
 	ldi r22,0
 	ldi r24,lo8(1)
 	call LCD_I2C_SetCursor
-	ldi r24,lo8(.LC3)
-	ldi r25,hi8(.LC3)
+	ldi r24,lo8(.LC5)
+	ldi r25,hi8(.LC5)
 	call LCD_I2C_SendString
 	ldd r24,Y+1
 	ldd r25,Y+2
 	call LCD_I2C_SendNumber
-	ldi r24,lo8(.LC4)
-	ldi r25,hi8(.LC4)
+	ldi r24,lo8(.LC6)
+	ldi r25,hi8(.LC6)
 	call LCD_I2C_SendString
 	ldd r24,Y+3
 	ldd r25,Y+4
 	call LCD_I2C_SendNumber
-	ldi r24,lo8(.LC5)
-	ldi r25,hi8(.LC5)
+	ldi r24,lo8(.LC7)
+	ldi r25,hi8(.LC7)
 	call LCD_I2C_SendString
 	lds r24,Global_stTankData+17
 	sbrs r24,0
-	rjmp .L2
-	ldi r24,lo8(.LC6)
-	ldi r25,hi8(.LC6)
-.L3:
+	rjmp .L9
+	ldi r24,lo8(.LC8)
+	ldi r25,hi8(.LC8)
+.L18:
 /* epilogue start */
 	pop __tmp_reg__
 	pop __tmp_reg__
@@ -95,10 +156,10 @@ APP_Task500ms:
 	pop r29
 	pop r28
 	jmp LCD_I2C_SendString
-.L2:
-	ldi r24,lo8(.LC7)
-	ldi r25,hi8(.LC7)
-	rjmp .L3
+.L9:
+	ldi r24,lo8(.LC9)
+	ldi r25,hi8(.LC9)
+	rjmp .L18
 	.size	APP_Task500ms, .-APP_Task500ms
 	.section	.text.APP_HighFloatISR,"ax",@progbits
 	.type	APP_HighFloatISR, @function
@@ -139,21 +200,21 @@ APP_UpdateData:
 	call ADC_ReadChannel
 	movw r22,r16
 	or r24,r25
-	brne .L6
+	brne .L21
 	ldd r24,Y+5
 	ldd r25,Y+6
 	sts Global_stTankData,r24
 	sts Global_stTankData+1,r25
-.L6:
+.L21:
 	ldi r24,lo8(1)
 	call ADC_ReadChannel
 	or r24,r25
-	brne .L7
+	brne .L22
 	ldd r24,Y+5
 	ldd r25,Y+6
 	sts Global_stTankData+2,r24
 	sts Global_stTankData+3,r25
-.L7:
+.L22:
 	movw r16,r28
 	subi r16,-9
 	sbci r17,-1
@@ -162,25 +223,25 @@ APP_UpdateData:
 	call LEVEL_ReadPercentage
 	movw r22,r16
 	or r24,r25
-	brne .L8
+	brne .L23
 	ldd r24,Y+9
 	sts Global_stTankData+6,r24
-.L8:
+.L23:
 	ldi r24,lo8(1)
 	call LEVEL_ReadPercentage
 	or r24,r25
-	brne .L9
+	brne .L24
 	ldd r24,Y+9
 	sts Global_stTankData+7,r24
-.L9:
+.L24:
 	ldi r24,lo8(Global_stTankData+8)
 	ldi r25,hi8(Global_stTankData+8)
 	call CUR_GetmA
 	or r24,r25
-	breq .L10
+	breq .L25
 	sts Global_stTankData+8,__zero_reg__
 	sts Global_stTankData+9,__zero_reg__
-.L10:
+.L25:
 	call FLOWMETER_GetFlowLpmX10
 	sts Global_stTankData+10,r24
 	sts Global_stTankData+11,r25
@@ -209,10 +270,10 @@ APP_UpdateData:
 	call PMP_GetState
 	or r24,r25
 	breq .+2
-	rjmp .L16
+	rjmp .L31
 	ldd r24,Y+8
 	andi r24,lo8(1)
-.L11:
+.L26:
 	lds r25,Global_stTankData+17
 	bst r24,0
 	bld r25,0
@@ -222,10 +283,10 @@ APP_UpdateData:
 	call Valve_GetState
 	or r24,r25
 	breq .+2
-	rjmp .L17
+	rjmp .L32
 	ldd r24,Y+7
 	andi r24,lo8(1)
-.L12:
+.L27:
 	lds r25,Global_stTankData+17
 	bst r24,0
 	bld r25,1
@@ -236,29 +297,29 @@ APP_UpdateData:
 	movw r24,r16
 	call PMP_RunSeconds
 	or r24,r25
-	brne .L18
+	brne .L33
 	ldd r24,Y+1
 	ldd r25,Y+2
-.L13:
+.L28:
 	sts Global_stTankData+20,r24
 	sts Global_stTankData+21,r25
 	ldi r24,lo8(Global_stTankData+22)
 	ldi r25,hi8(Global_stTankData+22)
 	call PMP_TotalSeconds
 	or r24,r25
-	breq .L14
+	breq .L29
 	sts Global_stTankData+22,__zero_reg__
 	sts Global_stTankData+23,__zero_reg__
 	sts Global_stTankData+24,__zero_reg__
 	sts Global_stTankData+25,__zero_reg__
-.L14:
+.L29:
 	movw r24,r16
 	call PMP_Cycles
 	or r24,r25
-	brne .L19
+	brne .L34
 	ldd r24,Y+1
 	ldd r25,Y+2
-.L15:
+.L30:
 	sts Global_stTankData+26,r24
 	sts Global_stTankData+27,r25
 	call FSM_GetState
@@ -275,20 +336,20 @@ APP_UpdateData:
 	pop r17
 	pop r16
 	ret
-.L16:
+.L31:
 	ldi r24,0
-	rjmp .L11
-.L17:
+	rjmp .L26
+.L32:
 	ldi r24,0
-	rjmp .L12
-.L18:
-	ldi r24,0
-	ldi r25,0
-	rjmp .L13
-.L19:
+	rjmp .L27
+.L33:
 	ldi r24,0
 	ldi r25,0
-	rjmp .L15
+	rjmp .L28
+.L34:
+	ldi r24,0
+	ldi r25,0
+	rjmp .L30
 	.size	APP_UpdateData, .-APP_UpdateData
 	.section	.text.APP_Task1s,"ax",@progbits
 	.type	APP_Task1s, @function
@@ -334,7 +395,7 @@ APP_Task10ms:
 	sts Global_stTankData+18,r24
 	call FSM_IsBuzzerEnabled
 	cp r24, __zero_reg__
-	breq .L28
+	breq .L43
 	lds r24,Local_u16BuzzerTicks.0
 	lds r25,Local_u16BuzzerTicks.0+1
 	adiw r24,1
@@ -343,25 +404,42 @@ APP_Task10ms:
 	ldi r20,lo8(1)
 	cpi r24,20
 	cpc r25,__zero_reg__
-	brlo .L33
+	brlo .L50
 	cpi r24,100
 	cpc r25,__zero_reg__
-	brsh .L30
-.L34:
+	brsh .L46
+.L51:
 	ldi r20,0
-.L33:
+.L50:
 	ldi r22,lo8(3)
 	ldi r24,lo8(1)
+	call GPIO_SetPinValue
+	rjmp .L45
+.L46:
+	sts Local_u16BuzzerTicks.0,__zero_reg__
+	sts Local_u16BuzzerTicks.0+1,__zero_reg__
+.L45:
+	lds r24,Global_stTankData+17
+	ldi r20,lo8(1)
+	sbrs r24,0
+	ldi r20,0
+.L52:
+	ldi r22,lo8(6)
+	ldi r24,lo8(2)
+	call GPIO_SetPinValue
+	call FSM_GetState
+	ldi r20,lo8(1)
+	sbiw r24,5
+	breq .L53
+	ldi r20,0
+.L53:
+	ldi r22,lo8(7)
+	ldi r24,lo8(2)
 	jmp GPIO_SetPinValue
-.L30:
+.L43:
 	sts Local_u16BuzzerTicks.0,__zero_reg__
 	sts Local_u16BuzzerTicks.0+1,__zero_reg__
-/* epilogue start */
-	ret
-.L28:
-	sts Local_u16BuzzerTicks.0,__zero_reg__
-	sts Local_u16BuzzerTicks.0+1,__zero_reg__
-	rjmp .L34
+	rjmp .L51
 	.size	APP_Task10ms, .-APP_Task10ms
 	.section	.text.startup.main,"ax",@progbits
 .global	main
@@ -405,6 +483,22 @@ main:
 	sts Global_stTankData+29,__zero_reg__
 	sts Global_stTankData+30,__zero_reg__
 	sts Global_stTankData+31,__zero_reg__
+	ldi r20,lo8(1)
+	ldi r22,lo8(6)
+	ldi r24,lo8(2)
+	call GPIO_SetPinDirection
+	ldi r20,0
+	ldi r22,lo8(6)
+	ldi r24,lo8(2)
+	call GPIO_SetPinValue
+	ldi r20,lo8(1)
+	ldi r22,lo8(7)
+	ldi r24,lo8(2)
+	call GPIO_SetPinDirection
+	ldi r20,0
+	ldi r22,lo8(7)
+	ldi r24,lo8(2)
+	call GPIO_SetPinValue
 	call TIMER0_Init
 	ldi r24,0
 	call LEVEL_Init
@@ -478,7 +572,7 @@ main:
 	call APP_UpdateData
 	call FSM_GetState
 	sts Global_stTankData+18,r24
-.L42:
+.L61:
 	ldi r24,lo8(10)
 	ldi r25,0
 	call TIMER0_DelayMS
@@ -492,40 +586,50 @@ main:
 	andi r24,1<<0
 	sbrc r25,1
 	ori r24,lo8(2)
-.L36:
+.L55:
 	sbrc r25,2
 	ori r24,lo8(4)
-.L37:
+.L56:
 	sbrc r25,3
 	ori r24,lo8(8)
-.L38:
+.L57:
 	cpi r18,5
 	cpc r19,__zero_reg__
-	brne .L39
+	brne .L58
 	ori r24,lo8(16)
-.L40:
+.L59:
 	call SHIFTREG_SendByte
 	lds r22,Global_stTankData+6
 	ldi r24,lo8(2)
 	call BARGRAPH_SetLevel
-	rjmp .L42
-.L39:
+	rjmp .L61
+.L58:
 	cpi r18,6
 	cpc r19,__zero_reg__
-	brne .L41
+	brne .L60
 	ori r24,lo8(32)
-	rjmp .L40
-.L41:
+	rjmp .L59
+.L60:
 	cpi r18,7
 	cpc r19,__zero_reg__
-	brne .L40
+	brne .L59
 	ori r24,lo8(64)
-	rjmp .L40
+	rjmp .L59
 	.size	main, .-main
 	.section	.bss.Local_u16BuzzerTicks.0,"aw",@nobits
 	.type	Local_u16BuzzerTicks.0, @object
 	.size	Local_u16BuzzerTicks.0, 2
 Local_u16BuzzerTicks.0:
+	.zero	2
+	.section	.bss.Global_u8ModeDisplayTicks,"aw",@nobits
+	.type	Global_u8ModeDisplayTicks, @object
+	.size	Global_u8ModeDisplayTicks, 1
+Global_u8ModeDisplayTicks:
+	.zero	1
+	.section	.bss.Global_eLastFSMState,"aw",@nobits
+	.type	Global_eLastFSMState, @object
+	.size	Global_eLastFSMState, 2
+Global_eLastFSMState:
 	.zero	2
 	.section	.bss.Global_stFaultLog,"aw",@nobits
 	.type	Global_stFaultLog, @object
