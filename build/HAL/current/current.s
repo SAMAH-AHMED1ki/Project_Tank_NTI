@@ -156,8 +156,8 @@ CUR_GetmA:
 .L__stack_usage = 0
 	sbiw r24,0
 	breq .L8
-	ldi r18,lo8(-60)
-	ldi r19,lo8(9)
+	lds r18,Global_u16CurrentmA
+	lds r19,Global_u16CurrentmA+1
 	movw r30,r24
 	st Z,r18
 	std Z+1,r19

@@ -9,7 +9,6 @@
 #include "tank_types.h"
 #include "tank_fsm.h"
 extern TankData_t Global_stTankData;
-
 #define CON_RX_BUFFER_SIZE 64U
 #define CON_OK_TEXT "OK\r\n"
 #define CON_ERR_CMD_TEXT "ERR CMD\r\n"

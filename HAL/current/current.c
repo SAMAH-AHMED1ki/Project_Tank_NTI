@@ -38,39 +38,21 @@ STD_ReturnType CUR_Update(void)
     uint32 Local_u32CalculatedmA = 0;
     STD_ReturnType Local_Status;
 
-    Local_Status =
-        ADC_ReadChannel(CURRENT_ADC_CHANNEL, &Local_u16AdcReading);
+    Local_Status = ADC_ReadChannel(CURRENT_ADC_CHANNEL, &Local_u16AdcReading);
 
     if (Local_Status == E_OK)
     {
-        /*
-         * Convert ADC reading (0..1023)
-         * to current in mA (0..10000)
-         */
         Local_u32CalculatedmA =
             ((uint32)Local_u16AdcReading * CURRENT_MAX_MA) / CURRENT_ADC_MAX_VAL;
 
-        /*
-         * Remove the oldest sample from the sum
-         */
-        Global_u32SampleSum -=
-            Global_u16Samples[Global_u8SampleIndex];
+        Global_u32SampleSum -= Global_u16Samples[Global_u8SampleIndex];
 
-        /*
-         * Store the new sample
-         */
         Global_u16Samples[Global_u8SampleIndex] =
             (uint16)Local_u32CalculatedmA;
 
-        /*
-         * Add the new sample to the sum
-         */
         Global_u32SampleSum +=
             Global_u16Samples[Global_u8SampleIndex];
 
-        /*
-         * Move to the next position
-         */
         Global_u8SampleIndex++;
 
         if (Global_u8SampleIndex >= CURRENT_FILTER_SIZE)
@@ -78,9 +60,6 @@ STD_ReturnType CUR_Update(void)
             Global_u8SampleIndex = 0;
         }
 
-        /*
-         * 4-sample moving average
-         */
         Global_u16CurrentmA =
             (uint16)(Global_u32SampleSum / CURRENT_FILTER_SIZE);
     }
@@ -95,7 +74,7 @@ STD_ReturnType CUR_GetmA(uint16 *Copy_pu16CurrentmA)
         return E_NOK;
     }
 
-    *Copy_pu16CurrentmA = 2500u; // قيمة تجريبية مؤقتة للتأكد
+    *Copy_pu16CurrentmA = Global_u16CurrentmA;
 
     return E_OK;
 }

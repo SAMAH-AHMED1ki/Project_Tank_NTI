@@ -576,7 +576,6 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
 
-        Global_eCurrentState = ST_IDLE;
 
         break;
 
@@ -649,6 +648,12 @@ STD_ReturnType FSM_Ack(void)
     Global_u8BuzzerSilenced = 1u;
 
     Local_Status = ILK_Reset();
+
+
+    if (Local_Status == E_OK)
+    {
+        Global_eCurrentState = ST_IDLE;
+    }
 
     return Local_Status;
 }

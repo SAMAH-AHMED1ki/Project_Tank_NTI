@@ -92,38 +92,20 @@ STD_ReturnType CUR_Update(void)
     uint32 Local_u32CalculatedmA = 0;
     STD_ReturnType Local_Status;
 
-    Local_Status =
-        ADC_ReadChannel(2u, &Local_u16AdcReading);
+    Local_Status = ADC_ReadChannel(2u, &Local_u16AdcReading);
 
     if (Local_Status == E_OK)
     {
-
-
-
-
         Local_u32CalculatedmA =
             ((uint32)Local_u16AdcReading * 10000u) / 1023u;
 
-
-
-
-        Global_u32SampleSum -=
-            Global_u16Samples[Global_u8SampleIndex];
-
-
-
+        Global_u32SampleSum -= Global_u16Samples[Global_u8SampleIndex];
 
         Global_u16Samples[Global_u8SampleIndex] =
             (uint16)Local_u32CalculatedmA;
 
-
-
-
         Global_u32SampleSum +=
             Global_u16Samples[Global_u8SampleIndex];
-
-
-
 
         Global_u8SampleIndex++;
 
@@ -131,9 +113,6 @@ STD_ReturnType CUR_Update(void)
         {
             Global_u8SampleIndex = 0;
         }
-
-
-
 
         Global_u16CurrentmA =
             (uint16)(Global_u32SampleSum / 4u);
@@ -149,7 +128,7 @@ STD_ReturnType CUR_GetmA(uint16 *Copy_pu16CurrentmA)
         return E_NOK;
     }
 
-    *Copy_pu16CurrentmA = 2500u;
+    *Copy_pu16CurrentmA = Global_u16CurrentmA;
 
     return E_OK;
 }
