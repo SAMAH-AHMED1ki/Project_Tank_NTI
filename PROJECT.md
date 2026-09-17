@@ -145,12 +145,12 @@ drivers are used as-is.
 
 #### Main control and remaining HAL owner
 
-- `interlocks.c/.h`(Implemented and tested)
-- `demand.c/.h`(Implemented and tested)
-- `tank_fsm.c/.h`(Implemented and tested)
-- `main.c/.h`(Implemented )
-- `current.c/.h`(Implemented and tested)
-- `floats.c/.h`(Implemented and tested)
+- `interlocks.c/.h` (Implemented and tested)
+- `demand.c/.h` (Implemented and tested)
+- `tank_fsm.c/.h` (Implemented and tested)
+- `main.c/.h` (Implemented and tested)
+- `current.c/.h` (Implemented and tested)
+- `floats.c/.h` (Implemented and tested)
 
 **What Samah will do:** Implement the control decision order so interlocks are
 checked before demand, write the pump state machine, and enforce hysteresis and

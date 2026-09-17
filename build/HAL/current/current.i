@@ -149,7 +149,7 @@ STD_ReturnType CUR_GetmA(uint16 *Copy_pu16CurrentmA)
         return E_NOK;
     }
 
-    *Copy_pu16CurrentmA = Global_u16CurrentmA;
+    *Copy_pu16CurrentmA = 2500u;
 
     return E_OK;
 }

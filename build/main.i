@@ -953,6 +953,7 @@ void CON_SendHelp(void);
 
 
 STD_ReturnType CON_SendFaults(void);
+extern FLG_Buffer_t g_conFaultLog;
 # 32 "main.c" 2
 
 

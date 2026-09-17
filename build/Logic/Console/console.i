@@ -628,6 +628,7 @@ void CON_SendHelp(void);
 
 
 STD_ReturnType CON_SendFaults(void);
+extern FLG_Buffer_t g_conFaultLog;
 # 7 "Logic/Console/console.c" 2
 # 1 "MCAL/UART/UART_interface.h" 1
 # 15 "MCAL/UART/UART_interface.h"
