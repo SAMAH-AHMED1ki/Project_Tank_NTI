@@ -122,7 +122,7 @@ remaining modules listed below.
 
 - `spi.c/.h` (Implemented and tested)
 - `shiftreg.c/.h` (Implemented and tested)
-- `counter.c/.h` (Implemented and tested)
+- `Timer.c/.h` (Implemented and tested)
 - `flowmeter.c/.h` (Implemented and tested)
 - `scheduler.c/.h` (Implemented and tested)
 
@@ -166,12 +166,12 @@ float debounce, and final application startup.
 
 #### UART and UART services owner
 
-- `usart.c/.h`
-- `ring_buffer.c/.h`
-- `console.c/.h`
-- `faultlog.c/.h`
-- `pump.c/.h`
-- `valve.c/.h`
+- `usart.c/.h` (Implemented and tested)
+- `ring_buffer.c/.h` (Implemented and tested)
+- `console.c/.h` (Implemented and tested)
+- `faultlog.c/.h` (Implemented and tested)
+- `pump.c/.h` (Implemented and tested)
+- `valve.c/.h` (Implemented and tested)
 - Verify UART RX/TX, ring-buffer safety, console commands, fault-history dump,
   and actuator runtime accounting
 
