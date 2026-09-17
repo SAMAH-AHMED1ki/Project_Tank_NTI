@@ -266,6 +266,9 @@ TankState_t FSM_GetState(void);
 
 
 STD_ReturnType FSM_Ack(void);
+
+
+uint8 FSM_IsBuzzerEnabled(void);
 # 14 "Logic/tank_fsm/tank_fsm.c" 2
 
 
@@ -275,6 +278,7 @@ static TankState_t Global_eCurrentState = ST_INIT;
 
 static uint16 Global_u16SettlingTicks = 0u;
 static uint16 Global_u16MinOffTicks = 6000u;
+static uint8 Global_u8BuzzerSilenced = 0u;
 
 
 
@@ -331,6 +335,7 @@ STD_ReturnType FSM_Init(void)
 
     Global_u16SettlingTicks = 0u;
     Global_u16MinOffTicks = 6000u;
+    Global_u8BuzzerSilenced = 0u;
 
     Local_Status = PMP_Set(0u);
 
@@ -392,6 +397,11 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 
 
         FSM_StopOutputs();
+
+        if (Global_eCurrentState != ST_TRIPPED)
+        {
+            Global_u8BuzzerSilenced = 0u;
+        }
 
         Global_eCurrentState = ST_TRIPPED;
 
@@ -559,7 +569,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         break;
 
     case ST_TRIPPED:
-# 314 "Logic/tank_fsm/tank_fsm.c"
+# 321 "Logic/tank_fsm/tank_fsm.c"
         FSM_StopOutputs();
 
 
@@ -634,5 +644,26 @@ TankState_t FSM_GetState(void)
 
 STD_ReturnType FSM_Ack(void)
 {
-    return ILK_Reset();
+    STD_ReturnType Local_Status;
+
+    Global_u8BuzzerSilenced = 1u;
+
+    Local_Status = ILK_Reset();
+
+    return Local_Status;
+}
+
+
+
+
+
+uint8 FSM_IsBuzzerEnabled(void)
+{
+    if ((Global_eCurrentState == ST_TRIPPED) &&
+        (Global_u8BuzzerSilenced == 0u))
+    {
+        return 1u;
+    }
+
+    return 0u;
 }

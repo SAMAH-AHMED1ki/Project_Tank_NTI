@@ -31,7 +31,7 @@ STD_ReturnType BARGRAPH_SetLevel(uint8 port, uint8 levelPercent)
     uint8 led0State = (levelPercent >= 25u) ? GPIO_HIGH : GPIO_LOW;
     uint8 led1State = (levelPercent >= 50u) ? GPIO_HIGH : GPIO_LOW;
     uint8 led2State = (levelPercent >= 75u) ? GPIO_HIGH : GPIO_LOW;
-    uint8 led3State = (levelPercent == 100u) ? GPIO_HIGH : GPIO_LOW;
+    uint8 led3State = (levelPercent >= 95u) ? GPIO_HIGH : GPIO_LOW;
 
     status |= GPIO_SetPinValue(port, BARGRAPH_LED0_PIN, led0State);
     status |= GPIO_SetPinValue(port, BARGRAPH_LED1_PIN, led1State);

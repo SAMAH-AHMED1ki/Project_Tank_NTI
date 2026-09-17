@@ -21,4 +21,6 @@ TankState_t FSM_GetState(void);
 /* Request acknowledgement of a latched trip */
 STD_ReturnType FSM_Ack(void);
 
+/* Check whether the trip buzzer should be active */
+uint8 FSM_IsBuzzerEnabled(void);
 #endif /* TANK_FSM_H_ */

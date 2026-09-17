@@ -332,8 +332,36 @@ APP_Task10ms:
 	call FSM_Run
 	call FSM_GetState
 	sts Global_stTankData+18,r24
+	call FSM_IsBuzzerEnabled
+	cp r24, __zero_reg__
+	breq .L28
+	lds r24,Local_u16BuzzerTicks.0
+	lds r25,Local_u16BuzzerTicks.0+1
+	adiw r24,1
+	sts Local_u16BuzzerTicks.0,r24
+	sts Local_u16BuzzerTicks.0+1,r25
+	ldi r20,lo8(1)
+	cpi r24,20
+	cpc r25,__zero_reg__
+	brlo .L33
+	cpi r24,100
+	cpc r25,__zero_reg__
+	brsh .L30
+.L34:
+	ldi r20,0
+.L33:
+	ldi r22,lo8(3)
+	ldi r24,lo8(1)
+	jmp GPIO_SetPinValue
+.L30:
+	sts Local_u16BuzzerTicks.0,__zero_reg__
+	sts Local_u16BuzzerTicks.0+1,__zero_reg__
 /* epilogue start */
 	ret
+.L28:
+	sts Local_u16BuzzerTicks.0,__zero_reg__
+	sts Local_u16BuzzerTicks.0+1,__zero_reg__
+	rjmp .L34
 	.size	APP_Task10ms, .-APP_Task10ms
 	.section	.text.startup.main,"ax",@progbits
 .global	main
@@ -385,10 +413,20 @@ main:
 	call SHIFTREG_Init
 	call PMP_Init
 	call Valve_Init
+	ldi r20,lo8(1)
+	ldi r22,lo8(3)
+	ldi r24,lo8(1)
+	call GPIO_SetPinDirection
+	ldi r20,0
+	ldi r22,lo8(3)
+	ldi r24,lo8(1)
+	call GPIO_SetPinValue
 	call FLT_Init
 	call CUR_Init
 	ldi r24,lo8(3)
 	call BTN_Init
+	ldi r24,lo8(2)
+	call BARGRAPH_Init
 	call FLOWMETER_Init
 	ldi r22,lo8(-96)
 	ldi r23,lo8(-122)
@@ -440,7 +478,7 @@ main:
 	call APP_UpdateData
 	call FSM_GetState
 	sts Global_stTankData+18,r24
-.L35:
+.L42:
 	ldi r24,lo8(10)
 	ldi r25,0
 	call TIMER0_DelayMS
@@ -454,38 +492,47 @@ main:
 	andi r24,1<<0
 	sbrc r25,1
 	ori r24,lo8(2)
-.L29:
+.L36:
 	sbrc r25,2
 	ori r24,lo8(4)
-.L30:
+.L37:
 	sbrc r25,3
 	ori r24,lo8(8)
-.L31:
+.L38:
 	cpi r18,5
 	cpc r19,__zero_reg__
-	brne .L32
+	brne .L39
 	ori r24,lo8(16)
-.L33:
+.L40:
 	call SHIFTREG_SendByte
-	rjmp .L35
-.L32:
+	lds r22,Global_stTankData+6
+	ldi r24,lo8(2)
+	call BARGRAPH_SetLevel
+	rjmp .L42
+.L39:
 	cpi r18,6
 	cpc r19,__zero_reg__
-	brne .L34
+	brne .L41
 	ori r24,lo8(32)
-	rjmp .L33
-.L34:
+	rjmp .L40
+.L41:
 	cpi r18,7
 	cpc r19,__zero_reg__
-	brne .L33
+	brne .L40
 	ori r24,lo8(64)
-	rjmp .L33
+	rjmp .L40
 	.size	main, .-main
+	.section	.bss.Local_u16BuzzerTicks.0,"aw",@nobits
+	.type	Local_u16BuzzerTicks.0, @object
+	.size	Local_u16BuzzerTicks.0, 2
+Local_u16BuzzerTicks.0:
+	.zero	2
 	.section	.bss.Global_stFaultLog,"aw",@nobits
 	.type	Global_stFaultLog, @object
 	.size	Global_stFaultLog, 147
 Global_stFaultLog:
 	.zero	147
+.global	Global_stTankData
 	.section	.bss.Global_stTankData,"aw",@nobits
 	.type	Global_stTankData, @object
 	.size	Global_stTankData, 32

@@ -19,6 +19,7 @@ static TankState_t Global_eCurrentState = ST_INIT;
 
 static uint16 Global_u16SettlingTicks = 0u;
 static uint16 Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
+static uint8 Global_u8BuzzerSilenced = GPIO_LOW;
 
 /* ---------------------------------------------------------- */
 /* Stop both pump and valve                                   */
@@ -75,6 +76,7 @@ STD_ReturnType FSM_Init(void)
 
     Global_u16SettlingTicks = 0u;
     Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
+    Global_u8BuzzerSilenced = GPIO_LOW;
 
     Local_Status = PMP_Set(GPIO_LOW);
 
@@ -136,6 +138,11 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
          * Any active trip has absolute priority.
          */
         FSM_StopOutputs();
+
+        if (Global_eCurrentState != ST_TRIPPED)
+        {
+            Global_u8BuzzerSilenced = GPIO_LOW;
+        }
 
         Global_eCurrentState = ST_TRIPPED;
 
@@ -385,5 +392,26 @@ TankState_t FSM_GetState(void)
 
 STD_ReturnType FSM_Ack(void)
 {
-    return ILK_Reset();
+    STD_ReturnType Local_Status;
+
+    Global_u8BuzzerSilenced = GPIO_HIGH;
+
+    Local_Status = ILK_Reset();
+
+    return Local_Status;
+}
+
+/* ---------------------------------------------------------- */
+/* Check buzzer status                                        */
+/* ---------------------------------------------------------- */
+
+uint8 FSM_IsBuzzerEnabled(void)
+{
+    if ((Global_eCurrentState == ST_TRIPPED) &&
+        (Global_u8BuzzerSilenced == GPIO_LOW))
+    {
+        return GPIO_HIGH;
+    }
+
+    return GPIO_LOW;
 }

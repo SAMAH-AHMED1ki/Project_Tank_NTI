@@ -3,7 +3,6 @@
 # 0 "<command-line>"
 # 1 "main.c"
 
-
 # 1 "C:/avr-gcc/avr/include/avr/io.h" 1 3
 # 99 "C:/avr-gcc/avr/include/avr/io.h" 3
 # 1 "C:/avr-gcc/avr/include/avr/sfr_defs.h" 1 3
@@ -193,7 +192,7 @@ typedef struct
 
 # 1 "C:/avr-gcc/avr/include/avr/lock.h" 1 3
 # 800 "C:/avr-gcc/avr/include/avr/io.h" 2 3
-# 4 "main.c" 2
+# 3 "main.c" 2
 # 1 "LIB/STD_TYPES.h" 1
 # 12 "LIB/STD_TYPES.h"
 
@@ -214,7 +213,7 @@ typedef enum
     E_PORT_NOT_VALID = 2,
     E_PIN_NOT_VALID = 3,
 } STD_ReturnType;
-# 5 "main.c" 2
+# 4 "main.c" 2
 
 
 # 1 "MCAL/GPIO/GPIO_interface.h" 1
@@ -250,7 +249,7 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 
 
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 8 "main.c" 2
+# 7 "main.c" 2
 # 1 "MCAL/ADC/ADC_interface.h" 1
 # 46 "MCAL/ADC/ADC_interface.h"
 STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler);
@@ -277,7 +276,7 @@ STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
 
 
 STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
-# 9 "main.c" 2
+# 8 "main.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -341,7 +340,7 @@ uint16 TIMER1_GetCounter(void);
 
 
 STD_ReturnType TIMER1_ResetCounter(void);
-# 10 "main.c" 2
+# 9 "main.c" 2
 # 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
 # 30 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType INTERRUPT_EnableGlobal(void);
@@ -376,7 +375,7 @@ STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
 typedef void (*EXTI_CallbackType)(void);
 
 STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
-# 11 "main.c" 2
+# 10 "main.c" 2
 # 1 "MCAL/SPI/SPI_interface.h" 1
 # 30 "MCAL/SPI/SPI_interface.h"
 STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
@@ -398,7 +397,7 @@ STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received);
 
 STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
 STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
-# 12 "main.c" 2
+# 11 "main.c" 2
 # 1 "MCAL/I2C/I2C_interface.h" 1
 # 32 "MCAL/I2C/I2C_interface.h"
 STD_ReturnType I2C_InitMaster(uint32 Copy_u32SclHz);
@@ -435,7 +434,7 @@ STD_ReturnType I2C_SendByte(uint8 Copy_u8Data);
 
 
 STD_ReturnType I2C_ReceiveByte(uint8 *Copy_pu8Data, uint8 Copy_u8SendAck);
-# 13 "main.c" 2
+# 12 "main.c" 2
 # 1 "Logic/Scheduler/Scheduler_interface.h" 1
 # 12 "Logic/Scheduler/Scheduler_interface.h"
 typedef void (*SchedulerTaskFunction_t)(void);
@@ -478,7 +477,7 @@ void SCHEDULER_Tick(void);
 
 
 void SCHEDULER_Run(void);
-# 14 "main.c" 2
+# 13 "main.c" 2
 # 1 "MCAL/UART/UART_interface.h" 1
 # 15 "MCAL/UART/UART_interface.h"
 # 1 "LIB/Ringbuffer/Ringbuffer.h" 1
@@ -547,7 +546,7 @@ STD_ReturnType UART_IsDataReady(void);
 
 STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State);
 STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State);
-# 15 "main.c" 2
+# 14 "main.c" 2
 
 # 1 "HAL/lcd_i2c/LCD_I2C_interface.h" 1
 # 30 "HAL/lcd_i2c/LCD_I2C_interface.h"
@@ -566,7 +565,7 @@ STD_ReturnType LCD_I2C_SetCursor(uint8 Copy_u8Row, uint8 Copy_u8Column);
 STD_ReturnType LCD_I2C_Clear(void);
 
 STD_ReturnType LCD_I2C_SendNumber(uint16 Copy_u16Number);
-# 17 "main.c" 2
+# 16 "main.c" 2
 # 1 "Logic/Flowmeter/Flowmeter_interface.h" 1
 # 11 "Logic/Flowmeter/Flowmeter_interface.h"
 STD_ReturnType FLOWMETER_Init(void);
@@ -595,7 +594,7 @@ uint32 FLOWMETER_GetTotalMilliliters(void);
 
 
 STD_ReturnType FLOWMETER_ResetTotaliser(void);
-# 18 "main.c" 2
+# 17 "main.c" 2
 # 1 "HAL/Shiftreg/Shiftreg_interface.h" 1
 
 
@@ -607,7 +606,48 @@ STD_ReturnType SHIFTREG_Init(void);
 
 
 STD_ReturnType SHIFTREG_SendByte(uint8 Copy_u8Data);
+# 18 "main.c" 2
+# 1 "HAL/Bargraph/bargraph_interface.h" 1
+# 13 "HAL/Bargraph/bargraph_interface.h"
+STD_ReturnType BARGRAPH_Init(uint8 port);
+
+STD_ReturnType BARGRAPH_SetLevel(uint8 port, uint8 levelPercent);
+
+STD_ReturnType BARGRAPH_Off(uint8 port);
 # 19 "main.c" 2
+# 1 "HAL/Buttons/buttons_interface.h" 1
+# 12 "HAL/Buttons/buttons_interface.h"
+typedef enum
+{
+    BTN_MODE = 0,
+    BTN_MANUAL_START,
+    BTN_ACK,
+    BTN_COUNT
+} ButtonID_t;
+
+typedef enum
+{
+    BTN_EVENT_NONE = 0,
+    BTN_EVENT_PRESSED,
+    BTN_EVENT_RELEASED,
+    BTN_EVENT_SHORT_PRESS,
+    BTN_EVENT_LONG_HOLD_1S
+} ButtonEvent_t;
+
+
+STD_ReturnType BTN_Init(uint8 port);
+
+
+void BTN_Update10ms(uint8 port);
+
+
+STD_ReturnType BTN_GetEvent(ButtonID_t btn, ButtonEvent_t *pEvent);
+
+
+STD_ReturnType BTN_IsPressed(uint8 port,
+                             ButtonID_t btn,
+                             uint8 *pIsPressed);
+# 20 "main.c" 2
 
 # 1 "Logic/interlocks/tank_types.h" 1
 
@@ -715,7 +755,7 @@ typedef struct
     uint8 checksum;
 
 } TankCfg_t;
-# 21 "main.c" 2
+# 22 "main.c" 2
 # 1 "HAL/Level/level_interface.h" 1
 
 
@@ -737,14 +777,14 @@ STD_ReturnType LEVEL_Init(uint8 adcChannel);
 STD_ReturnType LEVEL_ReadPercentage(uint8 adcChannel, uint8 *pPercentage);
 
 STD_ReturnType LEVEL_GetBand(uint8 levelPercent, LevelBand_t *pBand);
-# 22 "main.c" 2
+# 23 "main.c" 2
 # 1 "HAL/current/current.h" 1
 # 12 "HAL/current/current.h"
 STD_ReturnType CUR_Init(void);
 STD_ReturnType CUR_Update(void);
 STD_ReturnType CUR_GetmA(uint16 *Copy_pu16CurrentmA);
 uint8 CUR_IsOverLimit(uint16 Copy_u16LimitmA);
-# 23 "main.c" 2
+# 24 "main.c" 2
 # 1 "HAL/floats/floats.h" 1
 # 11 "HAL/floats/floats.h"
 STD_ReturnType FLT_Init(void);
@@ -752,39 +792,6 @@ STD_ReturnType FLT_Update(void);
 
 uint8 FLT_IsHighActive(void);
 uint8 FLT_IsLowActive(void);
-# 24 "main.c" 2
-# 1 "HAL/Buttons/buttons_interface.h" 1
-# 12 "HAL/Buttons/buttons_interface.h"
-typedef enum
-{
-    BTN_MODE = 0,
-    BTN_MANUAL_START,
-    BTN_ACK,
-    BTN_COUNT
-} ButtonID_t;
-
-typedef enum
-{
-    BTN_EVENT_NONE = 0,
-    BTN_EVENT_PRESSED,
-    BTN_EVENT_RELEASED,
-    BTN_EVENT_SHORT_PRESS,
-    BTN_EVENT_LONG_HOLD_1S
-} ButtonEvent_t;
-
-
-STD_ReturnType BTN_Init(uint8 port);
-
-
-void BTN_Update10ms(uint8 port);
-
-
-STD_ReturnType BTN_GetEvent(ButtonID_t btn, ButtonEvent_t *pEvent);
-
-
-STD_ReturnType BTN_IsPressed(uint8 port,
-                             ButtonID_t btn,
-                             uint8 *pIsPressed);
 # 25 "main.c" 2
 # 1 "HAL/Pump/Pump_interface.h" 1
 
@@ -853,6 +860,9 @@ TankState_t FSM_GetState(void);
 
 
 STD_ReturnType FSM_Ack(void);
+
+
+uint8 FSM_IsBuzzerEnabled(void);
 # 30 "main.c" 2
 # 1 "Logic/FaultLog/faultlog.h" 1
 # 10 "Logic/FaultLog/faultlog.h"
@@ -948,10 +958,11 @@ STD_ReturnType CON_SendFaults(void);
 
 
 
-static TankData_t Global_stTankData;
+TankData_t Global_stTankData;
 
 static FLG_Buffer_t Global_stFaultLog;
-# 48 "main.c"
+static void APP_UpdateBuzzer(void);
+# 49 "main.c"
 static void APP_HighFloatISR(void)
 {
     PMP_Set(0u);
@@ -1123,7 +1134,7 @@ static void APP_UpdateData(void)
     Global_stTankData.state =
         (uint8)FSM_GetState();
 }
-# 235 "main.c"
+# 236 "main.c"
 static void APP_Task10ms(void)
 {
 
@@ -1140,12 +1151,14 @@ static void APP_Task10ms(void)
 
 
     DEM_Update(&Global_stTankData);
-# 261 "main.c"
+# 262 "main.c"
     FSM_Run(&Global_stTankData);
 
 
     Global_stTankData.state =
         (uint8)FSM_GetState();
+
+    APP_UpdateBuzzer();
 }
 
 
@@ -1238,7 +1251,7 @@ static void APP_Task1s(void)
 
     APP_UpdateData();
 }
-# 374 "main.c"
+# 377 "main.c"
 static void APP_UpdateShiftRegister(void)
 {
     uint8 Local_u8Status = 0u;
@@ -1292,6 +1305,34 @@ static void APP_UpdateShiftRegister(void)
 
 
     SHIFTREG_SendByte(Local_u8Status);
+}
+
+static void APP_UpdateBuzzer(void)
+{
+    static uint16 Local_u16BuzzerTicks = 0u;
+
+    if (FSM_IsBuzzerEnabled() != 0u)
+    {
+        Local_u16BuzzerTicks++;
+
+        if (Local_u16BuzzerTicks < 20u)
+        {
+            GPIO_SetPinValue(1u, 3u, 1u);
+        }
+        else if (Local_u16BuzzerTicks < 100u)
+        {
+            GPIO_SetPinValue(1u, 3u, 0u);
+        }
+        else
+        {
+            Local_u16BuzzerTicks = 0u;
+        }
+    }
+    else
+    {
+        Local_u16BuzzerTicks = 0u;
+        GPIO_SetPinValue(1u, 3u, 0u);
+    }
 }
 
 
@@ -1361,9 +1402,14 @@ int main(void)
 
     PMP_Init();
     Valve_Init();
+
+    GPIO_SetPinDirection(1u, 3u, 1u);
+    GPIO_SetPinValue(1u, 3u, 0u);
+
     FLT_Init();
     CUR_Init();
     BTN_Init(3u);
+    BARGRAPH_Init(2u);
 
 
 
@@ -1470,6 +1516,7 @@ int main(void)
 
 
         APP_UpdateShiftRegister();
+        BARGRAPH_SetLevel(2u, Global_stTankData.levelPct);
     }
     return 0;
 }

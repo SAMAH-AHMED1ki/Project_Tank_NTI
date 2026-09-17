@@ -34,8 +34,8 @@ BARGRAPH_SetLevel:
 	cpi r22,lo8(75)
 	brlo .L8
 	ldi r17,lo8(1)
-	cpi r22,lo8(100)
-	breq .L4
+	cpi r22,lo8(95)
+	brsh .L4
 	ldi r17,0
 .L4:
 	ldi r16,lo8(1)
@@ -90,20 +90,20 @@ BARGRAPH_SetLevel:
 	ldi r16,0
 	mov r15,__zero_reg__
 	ldi r20,0
-.L12:
+.L9:
 	ldi r17,0
 	rjmp .L3
 .L7:
 	ldi r16,0
 	mov r15,__zero_reg__
-.L13:
+.L10:
 	ldi r20,lo8(1)
-	rjmp .L12
+	rjmp .L9
 .L8:
 	ldi r16,0
 	clr r15
 	inc r15
-	rjmp .L13
+	rjmp .L10
 	.size	BARGRAPH_SetLevel, .-BARGRAPH_SetLevel
 	.section	.text.BARGRAPH_Off,"ax",@progbits
 .global	BARGRAPH_Off

@@ -1,4 +1,3 @@
-
 #define F_CPU 8000000UL
 #include <avr/io.h>
 #include "STD_TYPES.h"
@@ -16,12 +15,13 @@
 #include "LCD_I2C_interface.h"
 #include "Flowmeter_interface.h"
 #include "Shiftreg_interface.h"
+#include "bargraph_interface.h"
+#include "buttons_interface.h"
 /* ========================== APP ========================== */
 #include "tank_types.h"
 #include "level_interface.h"
 #include "current.h"
 #include "floats.h"
-#include "buttons_interface.h"
 #include "Pump_interface.h"
 #include "Valve_interface.h"
 #include "demand.h"
@@ -33,9 +33,10 @@
  * Global application data
  * ========================================================= */
 
-static TankData_t Global_stTankData;
+TankData_t Global_stTankData;
 
 static FLG_Buffer_t Global_stFaultLog;
+static void APP_UpdateBuzzer(void);
 /* =========================================================
  * INT0 Callback
  *
@@ -263,6 +264,8 @@ static void APP_Task10ms(void)
     /* Refresh state after FSM */
     Global_stTankData.state =
         (uint8)FSM_GetState();
+
+    APP_UpdateBuzzer();
 }
 
 /* =========================================================
@@ -426,6 +429,34 @@ static void APP_UpdateShiftRegister(void)
     SHIFTREG_SendByte(Local_u8Status);
 }
 
+static void APP_UpdateBuzzer(void)
+{
+    static uint16 Local_u16BuzzerTicks = 0u;
+
+    if (FSM_IsBuzzerEnabled() != GPIO_LOW)
+    {
+        Local_u16BuzzerTicks++;
+
+        if (Local_u16BuzzerTicks < 20u)
+        {
+            GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_HIGH);
+        }
+        else if (Local_u16BuzzerTicks < 100u)
+        {
+            GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_LOW);
+        }
+        else
+        {
+            Local_u16BuzzerTicks = 0u;
+        }
+    }
+    else
+    {
+        Local_u16BuzzerTicks = 0u;
+        GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_LOW);
+    }
+}
+
 /* =========================================================
  * MAIN
  * ========================================================= */
@@ -493,9 +524,14 @@ int main(void)
 
     PMP_Init();
     Valve_Init();
+
+    GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN3, GPIO_OUTPUT);
+    GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_LOW);
+
     FLT_Init();
     CUR_Init();
     BTN_Init(GPIO_PORTD);
+    BARGRAPH_Init(GPIO_PORTC);
 
     /*
      * Flowmeter initialization.
@@ -602,6 +638,7 @@ int main(void)
 
         /* Update 74HC595 status */
         APP_UpdateShiftRegister();
+        BARGRAPH_SetLevel(GPIO_PORTC, Global_stTankData.levelPct);
     }
     return 0;
 }

@@ -25,7 +25,6 @@ ISR(USART_RXC_vect)
         RB_Put(g_uartRxBuffer, Local_u8Data);
     }
 }
-
 /*
  * UART_Init
  * 1. Reject baud == 0.
