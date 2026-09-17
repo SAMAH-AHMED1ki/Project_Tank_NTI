@@ -6,6 +6,7 @@
 
 
 
+
 # 1 "C:/avr-gcc/avr/include/stdio.h" 1 3
 # 44 "C:/avr-gcc/avr/include/stdio.h" 3
 # 1 "C:/avr-gcc/avr/include/inttypes.h" 1 3
@@ -410,7 +411,8 @@ extern void setbuf(FILE *stream, char *buf);
 extern int setvbuf(FILE *stream, char *buf, int mode, size_t size);
 extern FILE *tmpfile(void);
 extern char *tmpnam (char *s);
-# 6 "Logic/Console/console.c" 2
+# 7 "Logic/Console/console.c" 2
+
 # 1 "Logic/Console/console.h" 1
 # 9 "Logic/Console/console.h"
 # 1 "LIB/STD_TYPES.h" 1
@@ -629,7 +631,7 @@ void CON_SendHelp(void);
 
 STD_ReturnType CON_SendFaults(void);
 extern FLG_Buffer_t g_conFaultLog;
-# 7 "Logic/Console/console.c" 2
+# 9 "Logic/Console/console.c" 2
 # 1 "MCAL/UART/UART_interface.h" 1
 # 15 "MCAL/UART/UART_interface.h"
 # 1 "LIB/Ringbuffer/Ringbuffer.h" 1
@@ -698,7 +700,7 @@ STD_ReturnType UART_IsDataReady(void);
 
 STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State);
 STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State);
-# 8 "Logic/Console/console.c" 2
+# 10 "Logic/Console/console.c" 2
 
 
 # 1 "Logic/tank_fsm/tank_fsm.h" 1
@@ -716,13 +718,20 @@ STD_ReturnType FSM_Ack(void);
 
 
 uint8 FSM_IsBuzzerEnabled(void);
-# 11 "Logic/Console/console.c" 2
+# 13 "Logic/Console/console.c" 2
+
 extern TankData_t Global_stTankData;
-# 21 "Logic/Console/console.c"
+# 25 "Logic/Console/console.c"
 static RingBuffer_t g_conRxBuffer;
+
 FLG_Buffer_t g_conFaultLog;
+
 static uint8 g_conLine[40U + 1U];
 static uint8 g_conLineLen = 0U;
+
+
+
+
 
 static void CON_WriteByte(char ch)
 {
@@ -737,16 +746,23 @@ static void CON_WriteString(const char *pText)
     }
 }
 
+
+
+
+
 static uint8 CON_ToUpper(uint8 ch)
 {
     if ((ch >= 'a') && (ch <= 'z'))
     {
         return (uint8)(ch - ('a' - 'A'));
     }
+
     return ch;
 }
 
-static uint8 CON_CompareNoCase(const uint8 *pLine, const char *pExpected)
+static uint8 CON_CompareNoCase(
+    const uint8 *pLine,
+    const char *pExpected)
 {
     uint8 index = 0U;
 
@@ -757,65 +773,58 @@ static uint8 CON_CompareNoCase(const uint8 *pLine, const char *pExpected)
 
     while (pExpected[index] != '\0')
     {
-        if (CON_ToUpper(pLine[index]) != (uint8)pExpected[index])
+        if (CON_ToUpper(pLine[index]) !=
+            (uint8)pExpected[index])
         {
             return 0U;
         }
+
         index++;
     }
 
-    return (pLine[index] == '\0' || pLine[index] == ' ' || pLine[index] == '\r' || pLine[index] == '\n' || pLine[index] == '\t') ? 1U : 0U;
+
+
+
+    if ((pLine[index] == '\0') ||
+        (pLine[index] == ' ') ||
+        (pLine[index] == '\t') ||
+        (pLine[index] == '\r') ||
+        (pLine[index] == '\n'))
+    {
+        return 1U;
+    }
+
+    return 0U;
 }
 
-static void CON_SkipSpaces(const uint8 **ppText)
+static void CON_SkipSpaces(
+    const uint8 **ppText)
 {
-    while ((*ppText != ((void *)0)) && (((**ppText) == ' ') || ((**ppText) == '\t') || ((**ppText) == '\r') || ((**ppText) == '\n')))
+    if (ppText == ((void *)0))
+    {
+        return;
+    }
+
+    while ((*ppText != ((void *)0)) &&
+           (((**ppText) == ' ') ||
+            ((**ppText) == '\t') ||
+            ((**ppText) == '\r') ||
+            ((**ppText) == '\n')))
     {
         (*ppText)++;
     }
 }
 
-static uint8 CON_ParseUint16(const uint8 *pText, uint16 *pValue)
-{
-    uint32 value = 0U;
-
-    if ((pText == ((void *)0)) || (pValue == ((void *)0)))
-    {
-        return 0U;
-    }
-
-    CON_SkipSpaces(&pText);
-
-    if ((*pText < '0') || (*pText > '9'))
-    {
-        return 0U;
-    }
-
-    while ((*pText >= '0') && (*pText <= '9'))
-    {
-        value = (value * 10UL) + (uint32)(*pText - '0');
-        pText++;
-    }
-
-    *pValue = (uint16)value;
-    return 1U;
-}
-
-static void CON_SendTelemetryFrame(void)
-{
 
 
 
-
-
-
-    CON_WriteString("$WT,L=0,R=0,I=0,Q=0,V=0,P=0,V2=0,ST=INIT,TR=0,RUN=0,UP=0*3A\r\n");
-}
 
 STD_ReturnType CON_Init(void)
 {
     RB_Init(&g_conRxBuffer);
+
     FLG_Init(&g_conFaultLog);
+
     g_conLineLen = 0U;
 
     if (UART_Init(9600UL) != E_OK)
@@ -824,9 +833,15 @@ STD_ReturnType CON_Init(void)
     }
 
     UART_SetRxBuffer(&g_conRxBuffer);
+
     UART_SetRxInterrupt(1U);
+
     return E_OK;
 }
+
+
+
+
 
 void CON_Run(void)
 {
@@ -839,45 +854,63 @@ void CON_Run(void)
             break;
         }
 
+
+
+
         if ((byte == '\r') || (byte == '\n'))
         {
             if (g_conLineLen > 0U)
             {
                 g_conLine[g_conLineLen] = '\0';
+
                 CON_ProcessCommand(g_conLine);
+
                 g_conLineLen = 0U;
             }
         }
+
+
+
+
         else if (g_conLineLen < 40U)
         {
             g_conLine[g_conLineLen] = byte;
             g_conLineLen++;
         }
+
+
+
+
         else
         {
             CON_WriteString("ERR LONG\r\n");
+
             while (RB_IsEmpty(&g_conRxBuffer) == 0U)
             {
                 if (RB_Get(&g_conRxBuffer, &byte) != E_OK)
                 {
                     break;
                 }
+
                 if ((byte == '\r') || (byte == '\n'))
                 {
                     break;
                 }
             }
+
             g_conLineLen = 0U;
         }
     }
 }
 
-STD_ReturnType CON_ProcessCommand(const uint8 *pCommandLine)
+
+
+
+
+STD_ReturnType CON_ProcessCommand(
+    const uint8 *pCommandLine)
 {
-    uint8 i = 0U;
-    uint16 value = 0U;
-    const uint8 *pCursor;
-    uint8 hasMatch;
+    uint8 hasMatch = 0U;
 
     if (pCommandLine == ((void *)0))
     {
@@ -885,124 +918,264 @@ STD_ReturnType CON_ProcessCommand(const uint8 *pCommandLine)
         return E_NOK;
     }
 
-    pCursor = pCommandLine;
-    CON_SkipSpaces(&pCursor);
+    CON_SkipSpaces(&pCommandLine);
 
-    while ((pCursor[i] != '\0') && (pCursor[i] != ' ') && (pCursor[i] != '\t') && (pCursor[i] != '\r') && (pCursor[i] != '\n'))
-    {
-        if (i >= 32U)
-        {
-            CON_WriteString("ERR LONG\r\n");
-            return E_NOK;
-        }
-        i++;
-    }
 
-    hasMatch = 0U;
 
-    if (CON_CompareNoCase(pCursor, "STATUS") || CON_CompareNoCase(pCursor, "STATUS?"))
-    {
-        CON_SendStatus();
-        hasMatch = 1U;
-    }
-    else if (CON_CompareNoCase(pCursor, "HELP"))
+
+    if (CON_CompareNoCase(pCommandLine, "HELP"))
     {
         CON_SendHelp();
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "ACK"))
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "STATUS") ||
+             CON_CompareNoCase(pCommandLine, "STATUS?"))
     {
-        FSM_Ack();
-        CON_WriteString("OK\r\n");
+        CON_SendStatus();
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "FAULTS?"))
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "LEVEL?"))
+    {
+        char buffer[32];
+
+        sprintf(
+            buffer,
+            "LEVEL=%u%%\r\n",
+            (unsigned int)Global_stTankData.levelPct);
+
+        CON_WriteString(buffer);
+
+        hasMatch = 1U;
+    }
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "FLOW?"))
+    {
+        char buffer[32];
+
+        sprintf(
+            buffer,
+            "FLOW=%u.%u L/min\r\n",
+            (unsigned int)(Global_stTankData.flowLpmX10 / 10U),
+
+            (unsigned int)(Global_stTankData.flowLpmX10 % 10U));
+
+        CON_WriteString(buffer);
+
+        hasMatch = 1U;
+    }
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "VOLUME?"))
+    {
+        char buffer[32];
+
+        sprintf(
+            buffer,
+            "VOLUME=%lu L\r\n",
+            (unsigned long)
+                Global_stTankData.totalLitres);
+
+        CON_WriteString(buffer);
+
+        hasMatch = 1U;
+    }
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "CURRENT?"))
+    {
+        char buffer[32];
+
+        sprintf(
+            buffer,
+            "CURRENT=%u mA\r\n",
+            (unsigned int)
+                Global_stTankData.currentmA);
+
+        CON_WriteString(buffer);
+
+        hasMatch = 1U;
+    }
+
+
+
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "CFG?"))
+    {
+        CON_WriteString(
+            "CFG=30,90,60,8,0.5,1,10,15,120\r\n");
+
+        hasMatch = 1U;
+    }
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "ACK"))
+    {
+        if (FSM_Ack() == E_OK)
+        {
+            CON_WriteString("OK\r\n");
+        }
+        else
+        {
+            CON_WriteString("ERR ACTIVE\r\n");
+        }
+
+        hasMatch = 1U;
+    }
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "FAULTS?"))
     {
         CON_SendFaults();
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "CLRFAULTS"))
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "CLRFAULTS"))
     {
         FLG_Clear(&g_conFaultLog);
+
         CON_WriteString("OK\r\n");
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "LEVEL?"))
+
+
+
+
+    else if (CON_CompareNoCase(pCommandLine, "TRIP?"))
     {
         char buffer[32];
-        sprintf(buffer, "LEVEL=%u\r\n", (unsigned int)Global_stTankData.levelPct);
+
+        sprintf(
+            buffer,
+            "TRIP=%u\r\n",
+            (unsigned int)
+                Global_stTankData.activeTrip);
+
         CON_WriteString(buffer);
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "FLOW?"))
+
+
+
+
+
+
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "MODE AUTO"))
     {
-        char buffer[32];
-        sprintf(buffer, "FLOW=%.1f\r\n", (double)(Global_stTankData.flowLpmX10 / 10.0));
-        CON_WriteString(buffer);
+        CON_WriteString(
+            "ERR MODE - USE MODE BUTTON\r\n");
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "VOLUME?"))
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "MODE MANUAL"))
     {
-        char buffer[32];
-        sprintf(buffer, "VOLUME=%lu\r\n", (unsigned long)Global_stTankData.totalLitres);
-        CON_WriteString(buffer);
+        CON_WriteString(
+            "ERR MODE - USE MODE BUTTON\r\n");
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "CURRENT?"))
+
+
+
+
+
+
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "PUMP ON"))
     {
-        char buffer[32];
-        sprintf(buffer, "CURRENT=%u\r\n", (unsigned int)Global_stTankData.currentmA);
-        CON_WriteString(buffer);
+        CON_WriteString(
+            "ERR MODE - USE FSM CONTROL\r\n");
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "CFG?"))
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "PUMP OFF"))
     {
-        CON_WriteString("CFG=0,0,0,0,0,0,0,0,0,0\r\n");
+        CON_WriteString(
+            "ERR MODE - USE FSM CONTROL\r\n");
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "MODE AUTO") || CON_CompareNoCase(pCursor, "MODE MANUAL"))
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "VALVE ON"))
     {
-        CON_WriteString("OK\r\n");
+        CON_WriteString(
+            "ERR MODE - USE FSM CONTROL\r\n");
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "PUMP ON") || CON_CompareNoCase(pCursor, "PUMP OFF") ||
-             CON_CompareNoCase(pCursor, "VALVE ON") || CON_CompareNoCase(pCursor, "VALVE OFF") ||
-             CON_CompareNoCase(pCursor, "SERVICE ON") || CON_CompareNoCase(pCursor, "SERVICE OFF"))
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "VALVE OFF"))
     {
-        CON_WriteString("OK\r\n");
+        CON_WriteString(
+            "ERR MODE - USE FSM CONTROL\r\n");
+
         hasMatch = 1U;
     }
-    else if (CON_CompareNoCase(pCursor, "TRIP?"))
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "SERVICE ON"))
     {
-        CON_WriteString("TRIP=0,NONE\r\n");
+        CON_WriteString(
+            "ERR MODE - USE SERVICE CONTROL\r\n");
+
         hasMatch = 1U;
     }
-    else if ((pCursor[0] == 'S') || (pCursor[0] == 's'))
+
+    else if (CON_CompareNoCase(
+                 pCommandLine,
+                 "SERVICE OFF"))
     {
-        if ((pCursor[1] == 'E') || (pCursor[1] == 'e'))
-        {
-            if ((pCursor[2] == 'T') || (pCursor[2] == 't'))
-            {
-                if ((pCursor[3] == ' ') || (pCursor[3] == '\t'))
-                {
-                    const uint8 *pArg = pCursor + 4U;
-                    if ((pArg[0] == 'S') || (pArg[0] == 's'))
-                    {
-                        if ((pArg[1] == 'T') || (pArg[1] == 't'))
-                        {
-                            pArg += 3U;
-                            CON_SkipSpaces(&pArg);
-                            if (CON_ParseUint16(pArg, &value) == 1U)
-                            {
-                                CON_WriteString("OK\r\n");
-                                hasMatch = 1U;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        CON_WriteString(
+            "ERR MODE - USE SERVICE CONTROL\r\n");
+
+        hasMatch = 1U;
     }
+
+
+
 
     if (hasMatch == 0U)
     {
@@ -1013,39 +1186,182 @@ STD_ReturnType CON_ProcessCommand(const uint8 *pCommandLine)
     return E_OK;
 }
 
+
+
+
+
 void CON_SendStatus(void)
 {
-    CON_SendTelemetryFrame();
-}
-
-void CON_SendHelp(void)
-{
-    CON_WriteString("HELP\r\n");
-    CON_WriteString("STATUS\r\n");
-    CON_WriteString("LEVEL?\r\n");
-    CON_WriteString("FLOW?\r\n");
-    CON_WriteString("VOLUME?\r\n");
-    CON_WriteString("CURRENT?\r\n");
-    CON_WriteString("CFG?\r\n");
-    CON_WriteString("ACK\r\n");
-    CON_WriteString("FAULTS?\r\n");
-    CON_WriteString("CLRFAULTS\r\n");
-}
-
-STD_ReturnType CON_SendFaults(void)
-{
+    char buffer[96];
 
 
 
 
+    const char *stateText;
 
-    if (FLG_GetCount(&g_conFaultLog) == 0U)
+    switch (FSM_GetState())
     {
-        CON_WriteString("NO FAULTS\r\n");
-        return E_OK;
+    case ST_INIT:
+        stateText = "INIT";
+        break;
+
+    case ST_IDLE:
+        stateText = "IDLE";
+        break;
+
+    case ST_FILLING:
+        stateText = "FILLING";
+        break;
+
+    case ST_SETTLING:
+        stateText = "SETTLING";
+        break;
+
+    case ST_RESERVOIR_WAIT:
+        stateText = "RES_WAIT";
+        break;
+
+    case ST_TRIPPED:
+        stateText = "TRIPPED";
+        break;
+
+    case ST_MANUAL:
+        stateText = "MANUAL";
+        break;
+
+    case ST_SERVICE:
+        stateText = "SERVICE";
+        break;
+
+    default:
+        stateText = "UNKNOWN";
+        break;
     }
 
 
-    FLG_Dump(&g_conFaultLog, CON_WriteByte);
+
+
+    sprintf(
+        buffer,
+        "LEVEL=%u%% R=%u%% I=%umA\r\n",
+        (unsigned int)
+            Global_stTankData.levelPct,
+
+        (unsigned int)
+            Global_stTankData.reservoirPct,
+
+        (unsigned int)
+            Global_stTankData.currentmA);
+
+    CON_WriteString(buffer);
+
+    sprintf(
+        buffer,
+        "FLOW=%u.%uL/min VOL=%luL\r\n",
+        (unsigned int)(Global_stTankData.flowLpmX10 / 10U),
+
+        (unsigned int)(Global_stTankData.flowLpmX10 % 10U),
+
+        (unsigned long)
+            Global_stTankData.totalLitres);
+
+    CON_WriteString(buffer);
+
+    sprintf(
+        buffer,
+        "PUMP=%u VALVE=%u HIGH=%u LOW=%u\r\n",
+        (unsigned int)
+            Global_stTankData.pumpOn,
+
+        (unsigned int)
+            Global_stTankData.valveOn,
+
+        (unsigned int)
+            Global_stTankData.highFloat,
+
+        (unsigned int)
+            Global_stTankData.lowFloat);
+
+    CON_WriteString(buffer);
+
+    sprintf(
+        buffer,
+        "STATE=%s TRIP=%u RUN=%u UP=%lu\r\n",
+        stateText,
+
+        (unsigned int)
+            Global_stTankData.activeTrip,
+
+        (unsigned int)
+            Global_stTankData.pumpRunSec,
+
+        (unsigned long)
+            Global_stTankData.upTimeSec);
+
+    CON_WriteString(buffer);
+}
+
+
+
+
+
+void CON_SendHelp(void)
+{
+    CON_WriteString("=== WATER TANK CONSOLE ===\r\n");
+
+    CON_WriteString(
+        "STATUS      - System status\r\n");
+
+    CON_WriteString(
+        "LEVEL?      - Roof tank level\r\n");
+
+    CON_WriteString(
+        "FLOW?       - Current flow\r\n");
+
+    CON_WriteString(
+        "VOLUME?     - Total volume\r\n");
+
+    CON_WriteString(
+        "CURRENT?    - Pump current\r\n");
+
+    CON_WriteString(
+        "CFG?        - Configuration\r\n");
+
+    CON_WriteString(
+        "TRIP?       - Active trip\r\n");
+
+    CON_WriteString(
+        "FAULTS?     - Fault history\r\n");
+
+    CON_WriteString(
+        "CLRFAULTS   - Clear fault history\r\n");
+
+    CON_WriteString(
+        "ACK         - Acknowledge trip\r\n");
+
+    CON_WriteString(
+        "MODE AUTO/MANUAL - Mode command\r\n");
+
+    CON_WriteString(
+        "===========================\r\n");
+}
+
+
+
+
+
+STD_ReturnType CON_SendFaults(void)
+{
+    if (FLG_GetCount(&g_conFaultLog) == 0U)
+    {
+        CON_WriteString("NO FAULTS\r\n");
+
+        return E_OK;
+    }
+
+    FLG_Dump(
+        &g_conFaultLog,
+        CON_WriteByte);
+
     return E_OK;
 }

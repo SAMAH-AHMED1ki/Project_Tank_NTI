@@ -16,26 +16,6 @@ C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
                               build/main.o (__do_clear_bss)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                               build/Logic/Flowmeter/Flowmeter.o (__muluhisi3)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3.o)
-                              build/Logic/Console/console.o (__divsf3)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3.o) (__divsf3x)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(floatsisf.o)
-                              build/Logic/Console/console.o (__floatunsisf)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_inf.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o) (__fp_inf)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_nan.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o) (__fp_nan)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscA.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o) (__fp_pscA)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscB.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o) (__fp_pscB)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_round.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3.o) (__fp_round)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_split3.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o) (__fp_split3)
-C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_zero.o)
-                              C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o) (__fp_szero)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
                               build/Logic/Console/console.o (sprintf)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
@@ -121,8 +101,6 @@ Discarded input sections
  .text          0x00000000        0x0 build/Logic/Console/console.o
  .data          0x00000000        0x0 build/Logic/Console/console.o
  .bss           0x00000000        0x0 build/Logic/Console/console.o
- .text.CON_SendStatus
-                0x00000000        0x8 build/Logic/Console/console.o
  .text          0x00000000        0x0 build/Logic/demand/demand.o
  .data          0x00000000        0x0 build/Logic/demand/demand.o
  .bss           0x00000000        0x0 build/Logic/demand/demand.o
@@ -341,36 +319,6 @@ Discarded input sections
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
  .text.libgcc.fixed
                 0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(floatsisf.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(floatsisf.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(floatsisf.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_inf.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_inf.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_inf.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_nan.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_nan.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_nan.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscA.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscA.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscA.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscB.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscB.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscB.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_round.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_round.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_round.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_split3.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_split3.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_split3.o)
- .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_zero.o)
- .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_zero.o)
- .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_zero.o)
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
  .bss           0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
@@ -580,7 +528,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x2f58
+.text           0x00000000     0x2e32
  *(.vectors)
  .vectors       0x00000000       0x54 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
                 0x00000000                __vector_default
@@ -786,268 +734,235 @@ END GROUP
                 0x00001028       0x20 build/LIB/Ringbuffer/Ringbuffer.o
                 0x00001028                RB_IsEmpty
  .text.CON_CompareNoCase
-                0x00001048       0x50 build/Logic/Console/console.o
- .text.CON_SkipSpaces
-                0x00001098       0x2a build/Logic/Console/console.o
+                0x00001048       0x4a build/Logic/Console/console.o
  .text.CON_WriteByte
-                0x000010c2        0x4 build/Logic/Console/console.o
+                0x00001092        0x4 build/Logic/Console/console.o
  .text.CON_Init
-                0x000010c6       0x46 build/Logic/Console/console.o
-                0x000010c6                CON_Init
+                0x00001096       0x46 build/Logic/Console/console.o
+                0x00001096                CON_Init
+ .text.CON_SendStatus
+                0x000010dc      0x17e build/Logic/Console/console.o
+                0x000010dc                CON_SendStatus
  .text.CON_SendHelp
-                0x0000110c       0x50 build/Logic/Console/console.o
-                0x0000110c                CON_SendHelp
+                0x0000125a       0x68 build/Logic/Console/console.o
+                0x0000125a                CON_SendHelp
  .text.CON_SendFaults
-                0x0000115c       0x28 build/Logic/Console/console.o
-                0x0000115c                CON_SendFaults
+                0x000012c2       0x28 build/Logic/Console/console.o
+                0x000012c2                CON_SendFaults
  .text.CON_ProcessCommand
-                0x00001184      0x30c build/Logic/Console/console.o
-                0x00001184                CON_ProcessCommand
- .text.CON_Run  0x00001490       0xb2 build/Logic/Console/console.o
-                0x00001490                CON_Run
+                0x000012ea      0x280 build/Logic/Console/console.o
+                0x000012ea                CON_ProcessCommand
+ .text.CON_Run  0x0000156a       0xb2 build/Logic/Console/console.o
+                0x0000156a                CON_Run
  .text.DEM_Init
-                0x00001542        0xa build/Logic/demand/demand.o
-                0x00001542                DEM_Init
+                0x0000161c        0xa build/Logic/demand/demand.o
+                0x0000161c                DEM_Init
  .text.DEM_Update
-                0x0000154c       0x28 build/Logic/demand/demand.o
-                0x0000154c                DEM_Update
+                0x00001626       0x28 build/Logic/demand/demand.o
+                0x00001626                DEM_Update
  .text.DEM_GetPumpDemand
-                0x00001574        0x6 build/Logic/demand/demand.o
-                0x00001574                DEM_GetPumpDemand
+                0x0000164e        0x6 build/Logic/demand/demand.o
+                0x0000164e                DEM_GetPumpDemand
  .text.FLG_WriteUint32
-                0x0000157a       0xd6 build/Logic/FaultLog/faultlog.o
+                0x00001654       0xd6 build/Logic/FaultLog/faultlog.o
  .text.FLG_Init
-                0x00001650       0x34 build/Logic/FaultLog/faultlog.o
-                0x00001650                FLG_Init
+                0x0000172a       0x34 build/Logic/FaultLog/faultlog.o
+                0x0000172a                FLG_Init
  .text.FLG_GetCount
-                0x00001684       0x12 build/Logic/FaultLog/faultlog.o
-                0x00001684                FLG_GetCount
+                0x0000175e       0x12 build/Logic/FaultLog/faultlog.o
+                0x0000175e                FLG_GetCount
  .text.FLG_Clear
-                0x00001696        0xa build/Logic/FaultLog/faultlog.o
-                0x00001696                FLG_Clear
+                0x00001770        0xa build/Logic/FaultLog/faultlog.o
+                0x00001770                FLG_Clear
  .text.FLG_Dump
-                0x000016a0      0x172 build/Logic/FaultLog/faultlog.o
-                0x000016a0                FLG_Dump
+                0x0000177a      0x172 build/Logic/FaultLog/faultlog.o
+                0x0000177a                FLG_Dump
  .text.FLOWMETER_Init
-                0x00001812       0x34 build/Logic/Flowmeter/Flowmeter.o
-                0x00001812                FLOWMETER_Init
+                0x000018ec       0x34 build/Logic/Flowmeter/Flowmeter.o
+                0x000018ec                FLOWMETER_Init
  .text.FLOWMETER_Update1Hz
-                0x00001846       0x52 build/Logic/Flowmeter/Flowmeter.o
-                0x00001846                FLOWMETER_Update1Hz
+                0x00001920       0x52 build/Logic/Flowmeter/Flowmeter.o
+                0x00001920                FLOWMETER_Update1Hz
  .text.FLOWMETER_GetFlowLpmX10
-                0x00001898       0x2a build/Logic/Flowmeter/Flowmeter.o
-                0x00001898                FLOWMETER_GetFlowLpmX10
+                0x00001972       0x2a build/Logic/Flowmeter/Flowmeter.o
+                0x00001972                FLOWMETER_GetFlowLpmX10
  .text.FLOWMETER_GetTotalMilliliters
-                0x000018c2       0x2a build/Logic/Flowmeter/Flowmeter.o
-                0x000018c2                FLOWMETER_GetTotalMilliliters
+                0x0000199c       0x2a build/Logic/Flowmeter/Flowmeter.o
+                0x0000199c                FLOWMETER_GetTotalMilliliters
  .text.ResetTimers
-                0x000018ec       0x42 build/Logic/interlocks/interlocks.o
+                0x000019c6       0x42 build/Logic/interlocks/interlocks.o
  .text.INT_Init
-                0x0000192e       0x16 build/Logic/interlocks/interlocks.o
-                0x0000192e                INT_Init
+                0x00001a08       0x16 build/Logic/interlocks/interlocks.o
+                0x00001a08                INT_Init
  .text.ILK_Reset
-                0x00001944       0x18 build/Logic/interlocks/interlocks.o
-                0x00001944                ILK_Reset
+                0x00001a1e       0x18 build/Logic/interlocks/interlocks.o
+                0x00001a1e                ILK_Reset
  .text.ILK_Evaluate
-                0x0000195c      0x302 build/Logic/interlocks/interlocks.o
-                0x0000195c                ILK_Evaluate
+                0x00001a36      0x302 build/Logic/interlocks/interlocks.o
+                0x00001a36                ILK_Evaluate
  .text.SCHEDULER_Init
-                0x00001c5e       0x30 build/Logic/Scheduler/Scheduler.o
-                0x00001c5e                SCHEDULER_Init
+                0x00001d38       0x30 build/Logic/Scheduler/Scheduler.o
+                0x00001d38                SCHEDULER_Init
  .text.SCHEDULER_AddTask
-                0x00001c8e       0x9c build/Logic/Scheduler/Scheduler.o
-                0x00001c8e                SCHEDULER_AddTask
+                0x00001d68       0x9c build/Logic/Scheduler/Scheduler.o
+                0x00001d68                SCHEDULER_AddTask
  .text.SCHEDULER_Tick
-                0x00001d2a       0x5a build/Logic/Scheduler/Scheduler.o
-                0x00001d2a                SCHEDULER_Tick
+                0x00001e04       0x5a build/Logic/Scheduler/Scheduler.o
+                0x00001e04                SCHEDULER_Tick
  .text.SCHEDULER_Run
-                0x00001d84       0x34 build/Logic/Scheduler/Scheduler.o
-                0x00001d84                SCHEDULER_Run
+                0x00001e5e       0x34 build/Logic/Scheduler/Scheduler.o
+                0x00001e5e                SCHEDULER_Run
  .text.FSM_StopOutputs
-                0x00001db8        0xc build/Logic/tank_fsm/tank_fsm.o
+                0x00001e92        0xc build/Logic/tank_fsm/tank_fsm.o
  .text.FSM_Init
-                0x00001dc4       0x32 build/Logic/tank_fsm/tank_fsm.o
-                0x00001dc4                FSM_Init
+                0x00001e9e       0x32 build/Logic/tank_fsm/tank_fsm.o
+                0x00001e9e                FSM_Init
  .text.FSM_GetState
-                0x00001df6        0xa build/Logic/tank_fsm/tank_fsm.o
-                0x00001df6                FSM_GetState
- .text.FSM_Ack  0x00001e00       0x1a build/Logic/tank_fsm/tank_fsm.o
-                0x00001e00                FSM_Ack
- .text.FSM_Run  0x00001e1a      0x21c build/Logic/tank_fsm/tank_fsm.o
-                0x00001e1a                FSM_Run
+                0x00001ed0        0xa build/Logic/tank_fsm/tank_fsm.o
+                0x00001ed0                FSM_GetState
+ .text.FSM_Ack  0x00001eda       0x1a build/Logic/tank_fsm/tank_fsm.o
+                0x00001eda                FSM_Ack
+ .text.FSM_Run  0x00001ef4      0x21c build/Logic/tank_fsm/tank_fsm.o
+                0x00001ef4                FSM_Run
  .text.FSM_IsBuzzerEnabled
-                0x00002036       0x18 build/Logic/tank_fsm/tank_fsm.o
-                0x00002036                FSM_IsBuzzerEnabled
+                0x00002110       0x18 build/Logic/tank_fsm/tank_fsm.o
+                0x00002110                FSM_IsBuzzerEnabled
  .text.ADC_Init
-                0x0000204e       0x2a build/MCAL/ADC/ADC.o
-                0x0000204e                ADC_Init
+                0x00002128       0x2a build/MCAL/ADC/ADC.o
+                0x00002128                ADC_Init
  .text.ADC_ReadChannel
-                0x00002078       0x30 build/MCAL/ADC/ADC.o
-                0x00002078                ADC_ReadChannel
+                0x00002152       0x30 build/MCAL/ADC/ADC.o
+                0x00002152                ADC_ReadChannel
  .text.GPIO_SetPinDirection
-                0x000020a8       0xe4 build/MCAL/GPIO/GPIO.o
-                0x000020a8                GPIO_SetPinDirection
+                0x00002182       0xe4 build/MCAL/GPIO/GPIO.o
+                0x00002182                GPIO_SetPinDirection
  .text.GPIO_SetPinValue
-                0x0000218c       0x7c build/MCAL/GPIO/GPIO.o
-                0x0000218c                GPIO_SetPinValue
+                0x00002266       0x7c build/MCAL/GPIO/GPIO.o
+                0x00002266                GPIO_SetPinValue
  .text.GPIO_GetPinValue
-                0x00002208       0x44 build/MCAL/GPIO/GPIO.o
-                0x00002208                GPIO_GetPinValue
+                0x000022e2       0x44 build/MCAL/GPIO/GPIO.o
+                0x000022e2                GPIO_GetPinValue
  .text.I2C_InitMaster
-                0x0000224c       0x42 build/MCAL/I2C/I2C.o
-                0x0000224c                I2C_InitMaster
+                0x00002326       0x42 build/MCAL/I2C/I2C.o
+                0x00002326                I2C_InitMaster
  .text.I2C_SendStart
-                0x0000228e       0x1c build/MCAL/I2C/I2C.o
-                0x0000228e                I2C_SendStart
+                0x00002368       0x1c build/MCAL/I2C/I2C.o
+                0x00002368                I2C_SendStart
  .text.I2C_SendStop
-                0x000022aa        0x6 build/MCAL/I2C/I2C.o
-                0x000022aa                I2C_SendStop
+                0x00002384        0x6 build/MCAL/I2C/I2C.o
+                0x00002384                I2C_SendStop
  .text.I2C_SendSlaveAddressWithWrite
-                0x000022b0       0x20 build/MCAL/I2C/I2C.o
-                0x000022b0                I2C_SendSlaveAddressWithWrite
+                0x0000238a       0x20 build/MCAL/I2C/I2C.o
+                0x0000238a                I2C_SendSlaveAddressWithWrite
  .text.I2C_SendByte
-                0x000022d0       0x1e build/MCAL/I2C/I2C.o
-                0x000022d0                I2C_SendByte
+                0x000023aa       0x1e build/MCAL/I2C/I2C.o
+                0x000023aa                I2C_SendByte
  .text.INTERRUPT_EnableGlobal
-                0x000022ee        0xc build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000022ee                INTERRUPT_EnableGlobal
+                0x000023c8        0xc build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000023c8                INTERRUPT_EnableGlobal
  .text.EXTI_SetSense
-                0x000022fa       0x54 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000022fa                EXTI_SetSense
+                0x000023d4       0x54 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000023d4                EXTI_SetSense
  .text.EXTI_ClearFlag
-                0x0000234e       0x2a build/MCAL/INTERRUPT/INTERRUPT.o
-                0x0000234e                EXTI_ClearFlag
+                0x00002428       0x2a build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00002428                EXTI_ClearFlag
  .text.EXTI_Enable
-                0x00002378       0x3c build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00002378                EXTI_Enable
+                0x00002452       0x3c build/MCAL/INTERRUPT/INTERRUPT.o
+                0x00002452                EXTI_Enable
  .text.EXTI_SetCallback
-                0x000023b4       0x3a build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000023b4                EXTI_SetCallback
+                0x0000248e       0x3a build/MCAL/INTERRUPT/INTERRUPT.o
+                0x0000248e                EXTI_SetCallback
  .text.__vector_1
-                0x000023ee       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x000023ee                __vector_1
+                0x000024c8       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x000024c8                __vector_1
  .text.__vector_2
-                0x00002440       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00002440                __vector_2
+                0x0000251a       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x0000251a                __vector_2
  .text.__vector_3
-                0x00002492       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
-                0x00002492                __vector_3
+                0x0000256c       0x52 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x0000256c                __vector_3
  .text.SPI_InitMaster
-                0x000024e4       0x20 build/MCAL/SPI/SPI.o
-                0x000024e4                SPI_InitMaster
+                0x000025be       0x20 build/MCAL/SPI/SPI.o
+                0x000025be                SPI_InitMaster
  .text.SPI_Transceive
-                0x00002504       0x1e build/MCAL/SPI/SPI.o
-                0x00002504                SPI_Transceive
+                0x000025de       0x1e build/MCAL/SPI/SPI.o
+                0x000025de                SPI_Transceive
  .text.TIMER0_Init
-                0x00002522       0x16 build/MCAL/TIMER/TIMER.o
-                0x00002522                TIMER0_Init
+                0x000025fc       0x16 build/MCAL/TIMER/TIMER.o
+                0x000025fc                TIMER0_Init
  .text.TIMER0_DelayMS
-                0x00002538       0x30 build/MCAL/TIMER/TIMER.o
-                0x00002538                TIMER0_DelayMS
+                0x00002612       0x30 build/MCAL/TIMER/TIMER.o
+                0x00002612                TIMER0_DelayMS
  .text.TIMER1_ExternalCounterInit
-                0x00002568       0x22 build/MCAL/TIMER/TIMER.o
-                0x00002568                TIMER1_ExternalCounterInit
+                0x00002642       0x22 build/MCAL/TIMER/TIMER.o
+                0x00002642                TIMER1_ExternalCounterInit
  .text.TIMER1_GetCounter
-                0x0000258a        0x6 build/MCAL/TIMER/TIMER.o
-                0x0000258a                TIMER1_GetCounter
+                0x00002664        0x6 build/MCAL/TIMER/TIMER.o
+                0x00002664                TIMER1_GetCounter
  .text.__vector_13
-                0x00002590       0x56 build/MCAL/UART/UART.o
-                0x00002590                __vector_13
+                0x0000266a       0x56 build/MCAL/UART/UART.o
+                0x0000266a                __vector_13
  .text.UART_Init
-                0x000025e6       0x42 build/MCAL/UART/UART.o
-                0x000025e6                UART_Init
+                0x000026c0       0x42 build/MCAL/UART/UART.o
+                0x000026c0                UART_Init
  .text.UART_SendByte
-                0x00002628        0xc build/MCAL/UART/UART.o
-                0x00002628                UART_SendByte
+                0x00002702        0xc build/MCAL/UART/UART.o
+                0x00002702                UART_SendByte
  .text.UART_SendString
-                0x00002634       0x32 build/MCAL/UART/UART.o
-                0x00002634                UART_SendString
+                0x0000270e       0x32 build/MCAL/UART/UART.o
+                0x0000270e                UART_SendString
  .text.UART_SetRxInterrupt
-                0x00002666       0x18 build/MCAL/UART/UART.o
-                0x00002666                UART_SetRxInterrupt
+                0x00002740       0x18 build/MCAL/UART/UART.o
+                0x00002740                UART_SetRxInterrupt
  .text.UART_SetRxBuffer
-                0x0000267e        0xe build/MCAL/UART/UART.o
-                0x0000267e                UART_SetRxBuffer
+                0x00002758        0xe build/MCAL/UART/UART.o
+                0x00002758                UART_SetRxBuffer
  .text.libgcc.mul
-                0x0000268c       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
-                0x0000268c                __umulhisi3
+                0x00002766       0x1e C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
+                0x00002766                __umulhisi3
  .text.libgcc.div
-                0x000026aa       0x28 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
-                0x000026aa                __udivmodhi4
+                0x00002784       0x28 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodhi4.o)
+                0x00002784                __udivmodhi4
  .text.libgcc.div
-                0x000026d2       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                0x000026d2                __udivmodsi4
- .text.libgcc   0x00002716        0xc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
-                0x00002716                __tablejump2__
+                0x000027ac       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
+                0x000027ac                __udivmodsi4
+ .text.libgcc   0x000027f0        0xc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_tablejump2.o)
+                0x000027f0                __tablejump2__
  .text.libgcc.mul
-                0x00002722       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
-                0x00002722                __muluhisi3
- .text.avr-libc.fplib
-                0x00002738        0x8 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3.o)
-                0x00002738                __divsf3
- .text.avr-libc.fplib
-                0x00002740       0xdc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(divsf3x.o)
-                0x00002760                __divsf3x
-                0x00002766                __divsf3_pse
- .text.avr-libc.fplib
-                0x0000281c       0x7a C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(floatsisf.o)
-                0x0000281c                __floatunsisf
-                0x00002820                __floatsisf
- .text.avr-libc.fplib
-                0x00002896        0xc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_inf.o)
-                0x00002896                __fp_inf
- .text.avr-libc.fplib
-                0x000028a2        0x6 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_nan.o)
-                0x000028a2                __fp_nan
- .text.avr-libc.fplib
-                0x000028a8        0xe C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscA.o)
-                0x000028a8                __fp_pscA
- .text.avr-libc.fplib
-                0x000028b6        0xe C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_pscB.o)
-                0x000028b6                __fp_pscB
- .text.avr-libc.fplib
-                0x000028c4       0x22 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_round.o)
-                0x000028c4                __fp_round
- .text.avr-libc.fplib
-                0x000028e6       0x44 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_split3.o)
-                0x000028e6                __fp_split3
-                0x000028f6                __fp_splitA
- .text.avr-libc.fplib
-                0x0000292a        0xe C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libm.a(fp_zero.o)
-                0x0000292a                __fp_zero
-                0x0000292c                __fp_szero
+                0x000027fc       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
+                0x000027fc                __muluhisi3
  .text.avr-libc
-                0x00002938       0x48 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
-                0x00002938                sprintf
+                0x00002812       0x48 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(sprintf.o)
+                0x00002812                sprintf
  .text.avr-libc
-                0x00002980      0x3ca C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
-                0x00002980                vfprintf
+                0x0000285a      0x3ca C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
+                0x0000285a                vfprintf
  .text.avr-libc
-                0x00002d4a       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
-                0x00002d4a                strnlen_P
+                0x00002c24       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
+                0x00002c24                strnlen_P
  .text.avr-libc
-                0x00002d60       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
-                0x00002d60                strnlen
+                0x00002c3a       0x16 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
+                0x00002c3a                strnlen
  .text.avr-libc
-                0x00002d76       0x82 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(fputc.o)
-                0x00002d76                fputc
+                0x00002c50       0x82 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(fputc.o)
+                0x00002c50                fputc
  .text.avr-libc
-                0x00002df8       0xbc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
-                0x00002df8                __ultoa_invert
+                0x00002cd2       0xbc C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
+                0x00002cd2                __ultoa_invert
  .text.libgcc.div
-                0x00002eb4       0x10 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_negsi2.o)
-                0x00002eb4                __negsi2
+                0x00002d8e       0x10 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_negsi2.o)
+                0x00002d8e                __negsi2
  .text.libgcc.prologue
-                0x00002ec4       0x38 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_prologue.o)
-                0x00002ec4                __prologue_saves__
+                0x00002d9e       0x38 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_prologue.o)
+                0x00002d9e                __prologue_saves__
  .text.libgcc.prologue
-                0x00002efc       0x36 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_epilogue.o)
-                0x00002efc                __epilogue_restores__
-                0x00002f32                        . = ALIGN (0x2)
+                0x00002dd6       0x36 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_epilogue.o)
+                0x00002dd6                __epilogue_restores__
+                0x00002e0c                        . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00002f32        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
-                0x00002f32                _exit
-                0x00002f32                exit
+ .fini9         0x00002e0c        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+                0x00002e0c                _exit
+                0x00002e0c                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -1066,22 +981,22 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00002f32        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00002e0c        0x4 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
  *(.hightext)
  *(.hightext*)
  *(.progmemx)
  *(.progmemx.*)
-                0x00002f36                        . = ALIGN (0x2)
+                0x00002e10                        . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
  .jumptables.gcc.ILK_Evaluate
-                0x00002f36       0x12 build/Logic/interlocks/interlocks.o
+                0x00002e10       0x12 build/Logic/interlocks/interlocks.o
  .jumptables.gcc.FSM_Run
-                0x00002f48       0x10 build/Logic/tank_fsm/tank_fsm.o
-                0x00002f58                        _etext = .
+                0x00002e22       0x10 build/Logic/tank_fsm/tank_fsm.o
+                0x00002e32                        _etext = .
 
-.data           0x00800060      0x1f8 load address 0x00002f58
+.data           0x00800060      0x42e load address 0x00002e32
                 0x00800060                        PROVIDE (__data_start = .)
  *(.data)
  *(.data*)
@@ -1093,129 +1008,137 @@ END GROUP
  *(.rodata)
  *(.rodata*)
  .rodata.APP_Task500ms.str1.1
-                0x00800080      0x1d7 build/main.o
+                0x00800080      0x3fd build/main.o
                                  0x1c (size before relaxing)
  .rodata.CON_SendStatus.str1.1
-                0x00800257        0x0 build/Logic/Console/console.o
-                                 0x3e (size before relaxing)
+                0x0080047d        0x0 build/Logic/Console/console.o
+                                 0x81 (size before relaxing)
  .rodata.CON_SendHelp.str1.1
-                0x00800257        0x0 build/Logic/Console/console.o
-                                 0x59 (size before relaxing)
+                0x0080047d        0x0 build/Logic/Console/console.o
+                                0x18f (size before relaxing)
  .rodata.CON_SendFaults.str1.1
-                0x00800257        0x0 build/Logic/Console/console.o
+                0x0080047d        0x0 build/Logic/Console/console.o
                                   0xc (size before relaxing)
  .rodata.CON_ProcessCommand.str1.1
-                0x00800257        0x0 build/Logic/Console/console.o
-                                0x117 (size before relaxing)
+                0x0080047d        0x0 build/Logic/Console/console.o
+                                0x185 (size before relaxing)
+ .rodata.CON_Run.str1.1
+                0x0080047d        0x0 build/Logic/Console/console.o
+                                  0xb (size before relaxing)
+ .rodata.str1.1
+                0x0080047d        0x0 build/Logic/Console/console.o
+                                 0x3b (size before relaxing)
+ .rodata.CSWTCH.41
+                0x0080047d       0x10 build/Logic/Console/console.o
  .rodata.FLG_Dump.str1.1
-                0x00800257        0x0 build/Logic/FaultLog/faultlog.o
+                0x0080048d        0x0 build/Logic/FaultLog/faultlog.o
                                   0x5 (size before relaxing)
  *(.gnu.linkonce.r*)
-                0x00800258                        . = ALIGN (0x2)
- *fill*         0x00800257        0x1 
-                0x00800258                        _edata = .
-                0x00800258                        PROVIDE (__data_end = .)
+                0x0080048e                        . = ALIGN (0x2)
+ *fill*         0x0080048d        0x1 
+                0x0080048e                        _edata = .
+                0x0080048e                        PROVIDE (__data_end = .)
 
-.bss            0x00800258      0x25e
-                0x00800258                        PROVIDE (__bss_start = .)
+.bss            0x0080048e      0x25e
+                0x0080048e                        PROVIDE (__bss_start = .)
  *(.bss)
  *(.bss*)
  .bss.Local_u16BuzzerTicks.0
-                0x00800258        0x2 build/main.o
+                0x0080048e        0x2 build/main.o
  .bss.Global_stFaultLog
-                0x0080025a       0x93 build/main.o
+                0x00800490       0x93 build/main.o
  .bss.Global_stTankData
-                0x008002ed       0x20 build/main.o
-                0x008002ed                Global_stTankData
+                0x00800523       0x20 build/main.o
+                0x00800523                Global_stTankData
  .bss.Global_u32SampleSum
-                0x0080030d        0x4 build/HAL/current/current.o
+                0x00800543        0x4 build/HAL/current/current.o
  .bss.Global_u8SampleIndex
-                0x00800311        0x1 build/HAL/current/current.o
+                0x00800547        0x1 build/HAL/current/current.o
  .bss.Global_u16Samples
-                0x00800312        0x8 build/HAL/current/current.o
+                0x00800548        0x8 build/HAL/current/current.o
  .bss.Global_u16CurrentmA
-                0x0080031a        0x2 build/HAL/current/current.o
+                0x00800550        0x2 build/HAL/current/current.o
  .bss.Global_u8LowState
-                0x0080031c        0x1 build/HAL/floats/floats.o
+                0x00800552        0x1 build/HAL/floats/floats.o
  .bss.Global_u8HighState
-                0x0080031d        0x1 build/HAL/floats/floats.o
+                0x00800553        0x1 build/HAL/floats/floats.o
  .bss.Pump_u32Cycles
-                0x0080031e        0x4 build/HAL/Pump/Pump.o
+                0x00800554        0x4 build/HAL/Pump/Pump.o
  .bss.Pump_u32TotalSeconds
-                0x00800322        0x4 build/HAL/Pump/Pump.o
+                0x00800558        0x4 build/HAL/Pump/Pump.o
  .bss.Pump_u32RunSeconds
-                0x00800326        0x4 build/HAL/Pump/Pump.o
+                0x0080055c        0x4 build/HAL/Pump/Pump.o
  .bss.Pump_u8State
-                0x0080032a        0x1 build/HAL/Pump/Pump.o
+                0x00800560        0x1 build/HAL/Pump/Pump.o
  .bss.Valve_u8State
-                0x0080032b        0x1 build/HAL/Valve/Valve.o
+                0x00800561        0x1 build/HAL/Valve/Valve.o
  .bss.g_conLineLen
-                0x0080032c        0x1 build/Logic/Console/console.o
+                0x00800562        0x1 build/Logic/Console/console.o
  .bss.g_conLine
-                0x0080032d       0x29 build/Logic/Console/console.o
+                0x00800563       0x29 build/Logic/Console/console.o
  .bss.g_conFaultLog
-                0x00800356       0x93 build/Logic/Console/console.o
-                0x00800356                g_conFaultLog
+                0x0080058c       0x93 build/Logic/Console/console.o
+                0x0080058c                g_conFaultLog
  .bss.g_conRxBuffer
-                0x008003e9       0x43 build/Logic/Console/console.o
+                0x0080061f       0x43 build/Logic/Console/console.o
  .bss.Global_u8PumpDemand
-                0x0080042c        0x1 build/Logic/demand/demand.o
+                0x00800662        0x1 build/Logic/demand/demand.o
  .bss.g_totalPulses
-                0x0080042d        0x4 build/Logic/Flowmeter/Flowmeter.o
+                0x00800663        0x4 build/Logic/Flowmeter/Flowmeter.o
  .bss.g_pulsesLastSecond
-                0x00800431        0x2 build/Logic/Flowmeter/Flowmeter.o
+                0x00800667        0x2 build/Logic/Flowmeter/Flowmeter.o
  .bss.g_lastCount
-                0x00800433        0x2 build/Logic/Flowmeter/Flowmeter.o
+                0x00800669        0x2 build/Logic/Flowmeter/Flowmeter.o
  .bss.Global_u8Ack
-                0x00800435        0x1 build/Logic/interlocks/interlocks.o
+                0x0080066b        0x1 build/Logic/interlocks/interlocks.o
  .bss.Global_u8NoRiseStartLevel
-                0x00800436        0x1 build/Logic/interlocks/interlocks.o
+                0x0080066c        0x1 build/Logic/interlocks/interlocks.o
  .bss.Global_u8LeakStartLevel
-                0x00800437        0x1 build/Logic/interlocks/interlocks.o
+                0x0080066d        0x1 build/Logic/interlocks/interlocks.o
  .bss.Global_u16NoRiseTicks
-                0x00800438        0x2 build/Logic/interlocks/interlocks.o
+                0x0080066e        0x2 build/Logic/interlocks/interlocks.o
  .bss.Global_u16LeakTicks
-                0x0080043a        0x2 build/Logic/interlocks/interlocks.o
+                0x00800670        0x2 build/Logic/interlocks/interlocks.o
  .bss.Global_u16LevelSensorTicks
-                0x0080043c        0x2 build/Logic/interlocks/interlocks.o
+                0x00800672        0x2 build/Logic/interlocks/interlocks.o
  .bss.Global_u16DryRunTicks
-                0x0080043e        0x2 build/Logic/interlocks/interlocks.o
+                0x00800674        0x2 build/Logic/interlocks/interlocks.o
  .bss.Global_u16NoCurrentTicks
-                0x00800440        0x2 build/Logic/interlocks/interlocks.o
+                0x00800676        0x2 build/Logic/interlocks/interlocks.o
  .bss.Global_u16OverCurrentTicks
-                0x00800442        0x2 build/Logic/interlocks/interlocks.o
+                0x00800678        0x2 build/Logic/interlocks/interlocks.o
  .bss.Global_u16OverflowTicks
-                0x00800444        0x2 build/Logic/interlocks/interlocks.o
+                0x0080067a        0x2 build/Logic/interlocks/interlocks.o
  .bss.Global_eTrip
-                0x00800446        0x2 build/Logic/interlocks/interlocks.o
+                0x0080067c        0x2 build/Logic/interlocks/interlocks.o
  .bss.Scheduler_Initialized
-                0x00800448        0x1 build/Logic/Scheduler/Scheduler.o
+                0x0080067e        0x1 build/Logic/Scheduler/Scheduler.o
  .bss.Scheduler_Tasks
-                0x00800449       0x60 build/Logic/Scheduler/Scheduler.o
+                0x0080067f       0x60 build/Logic/Scheduler/Scheduler.o
  .bss.Global_u8BuzzerSilenced
-                0x008004a9        0x1 build/Logic/tank_fsm/tank_fsm.o
+                0x008006df        0x1 build/Logic/tank_fsm/tank_fsm.o
  .bss.Global_u16SettlingTicks
-                0x008004aa        0x2 build/Logic/tank_fsm/tank_fsm.o
+                0x008006e0        0x2 build/Logic/tank_fsm/tank_fsm.o
  .bss.Global_eCurrentState
-                0x008004ac        0x2 build/Logic/tank_fsm/tank_fsm.o
+                0x008006e2        0x2 build/Logic/tank_fsm/tank_fsm.o
  .bss.EXTI_INT2_Callback
-                0x008004ae        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x008006e4        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
  .bss.EXTI_INT1_Callback
-                0x008004b0        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x008006e6        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
  .bss.EXTI_INT0_Callback
-                0x008004b2        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
+                0x008006e8        0x2 build/MCAL/INTERRUPT/INTERRUPT.o
  .bss.g_uartRxBuffer
-                0x008004b4        0x2 build/MCAL/UART/UART.o
+                0x008006ea        0x2 build/MCAL/UART/UART.o
  *(COMMON)
-                0x008004b6                        PROVIDE (__bss_end = .)
-                0x00002f58                        __data_load_start = LOADADDR (.data)
-                0x00003150                        __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x008006ec                        PROVIDE (__bss_end = .)
+                0x00002e32                        __data_load_start = LOADADDR (.data)
+                0x00003260                        __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x008004b6        0x0
+.noinit         0x008006ec        0x0
                 [!provide]                        PROVIDE (__noinit_start = .)
  *(.noinit .noinit.* .gnu.linkonce.n.*)
                 [!provide]                        PROVIDE (__noinit_end = .)
-                0x008004b6                        _end = .
+                0x008006ec                        _end = .
                 [!provide]                        PROVIDE (__heap_start = .)
                 0x00000000                        __flmap_init_label = DEFINED (__flmap_noinit_start)?__flmap_noinit_start:0x0
                 0x00000000                        __flmap = DEFINED (__flmap)?__flmap:0x0
