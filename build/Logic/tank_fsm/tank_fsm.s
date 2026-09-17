@@ -39,6 +39,8 @@ FSM_Init:
 .L__stack_usage = 0
 	sts Global_eCurrentState,__zero_reg__
 	sts Global_eCurrentState+1,__zero_reg__
+	sts Global_eActiveTrip,__zero_reg__
+	sts Global_eActiveTrip+1,__zero_reg__
 	sts Global_u16SettlingTicks,__zero_reg__
 	sts Global_u16SettlingTicks+1,__zero_reg__
 	ldi r24,lo8(-12)
@@ -82,6 +84,8 @@ FSM_Ack:
 	call ILK_Reset
 	sbiw r24,0
 	brne .L6
+	sts Global_eActiveTrip,__zero_reg__
+	sts Global_eActiveTrip+1,__zero_reg__
 	ldi r18,lo8(1)
 	sts Global_eCurrentState,r18
 	sts Global_eCurrentState+1,__zero_reg__
@@ -164,6 +168,8 @@ FSM_Run:
 	sbiw r24,5
 	breq .L13
 	sts Global_u8BuzzerSilenced,__zero_reg__
+	sts Global_eActiveTrip,r14
+	sts Global_eActiveTrip+1,r15
 .L13:
 	ldi r24,lo8(5)
 	sts Global_eCurrentState,r24
@@ -380,6 +386,19 @@ FSM_IsBuzzerEnabled:
 /* epilogue start */
 	ret
 	.size	FSM_IsBuzzerEnabled, .-FSM_IsBuzzerEnabled
+	.section	.text.FSM_GetActiveTrip,"ax",@progbits
+.global	FSM_GetActiveTrip
+	.type	FSM_GetActiveTrip, @function
+FSM_GetActiveTrip:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	lds r24,Global_eActiveTrip
+	lds r25,Global_eActiveTrip+1
+/* epilogue start */
+	ret
+	.size	FSM_GetActiveTrip, .-FSM_GetActiveTrip
 	.section	.bss.Global_u8ManualPumpOn,"aw",@nobits
 	.type	Global_u8ManualPumpOn, @object
 	.size	Global_u8ManualPumpOn, 1
@@ -399,6 +418,11 @@ Global_u16MinOffTicks:
 	.type	Global_u16SettlingTicks, @object
 	.size	Global_u16SettlingTicks, 2
 Global_u16SettlingTicks:
+	.zero	2
+	.section	.bss.Global_eActiveTrip,"aw",@nobits
+	.type	Global_eActiveTrip, @object
+	.size	Global_eActiveTrip, 2
+Global_eActiveTrip:
 	.zero	2
 	.section	.bss.Global_eCurrentState,"aw",@nobits
 	.type	Global_eCurrentState, @object

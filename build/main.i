@@ -863,6 +863,9 @@ STD_ReturnType FSM_Ack(void);
 
 
 uint8 FSM_IsBuzzerEnabled(void);
+
+
+Trip_t FSM_GetActiveTrip(void);
 # 30 "main.c" 2
 # 1 "Logic/FaultLog/faultlog.h" 1
 # 10 "Logic/FaultLog/faultlog.h"
@@ -965,7 +968,9 @@ static FLG_Buffer_t Global_stFaultLog;
 static void APP_UpdateBuzzer(void);
 static TankState_t Global_eLastFSMState = ST_INIT;
 static uint8 Global_u8ModeDisplayTicks = 0u;
-# 51 "main.c"
+static uint8 Global_u8TripDisplayToggle = 0u;
+static uint8 Global_u8TripDisplayTicks = 0u;
+# 53 "main.c"
 static void APP_HighFloatISR(void)
 {
     PMP_Set(0u);
@@ -1137,7 +1142,7 @@ static void APP_UpdateData(void)
     Global_stTankData.state =
         (uint8)FSM_GetState();
 }
-# 238 "main.c"
+# 240 "main.c"
 static void APP_Task10ms(void)
 {
 
@@ -1154,12 +1159,13 @@ static void APP_Task10ms(void)
 
 
     DEM_Update(&Global_stTankData);
-# 264 "main.c"
+# 266 "main.c"
     FSM_Run(&Global_stTankData);
 
 
     Global_stTankData.state =
         (uint8)FSM_GetState();
+    Global_stTankData.activeTrip = (uint8)FSM_GetActiveTrip();
 
     APP_UpdateBuzzer();
 
@@ -1186,6 +1192,50 @@ static void APP_Task10ms(void)
 
 
 
+static void APP_DisplayTrip(uint8 Copy_u8Trip)
+{
+    switch (Copy_u8Trip)
+    {
+    case TRIP_OVERFLOW:
+        LCD_I2C_SendString("!TRIP: OVERFLOW");
+        break;
+
+    case TRIP_OVERCURRENT:
+        LCD_I2C_SendString("!TRIP: OVERCURRENT");
+        break;
+
+    case TRIP_DRY_RESERVOIR:
+        LCD_I2C_SendString("!TRIP: DRY RESERVOIR");
+        break;
+
+    case TRIP_DRY_RUN:
+        LCD_I2C_SendString("!TRIP: DRY RUN");
+        break;
+
+    case TRIP_NO_CURRENT:
+        LCD_I2C_SendString("!TRIP: NO CURRENT");
+        break;
+
+    case TRIP_MAX_RUNTIME:
+        LCD_I2C_SendString("!TRIP: MAX RUNTIME");
+        break;
+
+    case TRIP_LEVEL_SENSOR:
+        LCD_I2C_SendString("!TRIP: LEVEL SENSOR");
+        break;
+
+    case TRIP_LEAK:
+        LCD_I2C_SendString("!TRIP: LEAK");
+        break;
+
+    case TRIP_NO_RISE:
+        LCD_I2C_SendString("!TRIP: NO RISE");
+        break;
+    }
+}
+
+
+
 
 
 
@@ -1193,6 +1243,10 @@ static void APP_Task500ms(void)
 {
     uint16 Local_u16FlowInteger;
     uint8 Local_u8FlowDecimal;
+
+    uint16 Local_u16CurrentInteger;
+    uint8 Local_u8CurrentDecimal;
+
     TankState_t Local_eCurrentState;
 
     Local_u16FlowInteger =
@@ -1203,6 +1257,13 @@ static void APP_Task500ms(void)
 
     Local_eCurrentState =
         FSM_GetState();
+
+
+    Local_u16CurrentInteger =
+        Global_stTankData.currentmA / 1000u;
+
+    Local_u8CurrentDecimal =
+        (Global_stTankData.currentmA % 1000u) / 100u;
 
 
 
@@ -1252,7 +1313,7 @@ static void APP_Task500ms(void)
 
         return;
     }
-# 370 "main.c"
+# 428 "main.c"
     LCD_I2C_SetCursor(
         0u,
         0u);
@@ -1267,7 +1328,12 @@ static void APP_Task500ms(void)
     LCD_I2C_SendNumber(
         Global_stTankData.reservoirPct);
 
-    LCD_I2C_SendString("%");
+    LCD_I2C_SendString("% ");
+
+    LCD_I2C_SendNumber(Local_u16CurrentInteger);
+    LCD_I2C_SendString(".");
+    LCD_I2C_SendNumber(Local_u8CurrentDecimal);
+    LCD_I2C_SendString("A");
 
 
 
@@ -1277,30 +1343,83 @@ static void APP_Task500ms(void)
         1u,
         0u);
 
-    LCD_I2C_SendString("F:");
-
-    LCD_I2C_SendNumber(
-        Local_u16FlowInteger);
-
-    LCD_I2C_SendString(".");
-
-    LCD_I2C_SendNumber(
-        Local_u8FlowDecimal);
-
-    LCD_I2C_SendString("L/m ");
 
 
 
-    if (Global_stTankData.pumpOn)
+    if (FSM_GetState() == ST_TRIPPED)
     {
-        LCD_I2C_SendString("RUN");
+
+
+
+        if (Global_u8TripDisplayTicks < 3u)
+        {
+            Global_u8TripDisplayTicks++;
+        }
+        else
+        {
+            Global_u8TripDisplayTicks = 0u;
+            Global_u8TripDisplayToggle ^= 1u;
+        }
+
+        if (Global_u8TripDisplayToggle == 0u)
+        {
+            APP_DisplayTrip(Global_stTankData.activeTrip);
+        }
+        else
+        {
+
+
+
+            if (Global_stTankData.pumpOn == 1u)
+                LCD_I2C_SendString("FILL ");
+            else
+                LCD_I2C_SendString("IDLE ");
+
+            LCD_I2C_SendString("Q:");
+
+            LCD_I2C_SendNumber(Local_u16FlowInteger);
+
+            LCD_I2C_SendString(".");
+
+            LCD_I2C_SendNumber(Local_u8FlowDecimal);
+
+            LCD_I2C_SendString(" ");
+
+            LCD_I2C_SendNumber(Global_stTankData.totalLitres);
+
+            LCD_I2C_SendString("L");
+        }
     }
+
+
+
+
     else
     {
-        LCD_I2C_SendString("OFF");
+
+        Global_u8TripDisplayTicks = 0u;
+        Global_u8TripDisplayToggle = 0u;
+
+        if (Global_stTankData.pumpOn == 1u)
+            LCD_I2C_SendString("FILL ");
+        else
+            LCD_I2C_SendString("IDLE ");
+
+        LCD_I2C_SendString("Q:");
+
+        LCD_I2C_SendNumber(Local_u16FlowInteger);
+
+        LCD_I2C_SendString(".");
+
+        LCD_I2C_SendNumber(Local_u8FlowDecimal);
+
+        LCD_I2C_SendString(" ");
+
+        LCD_I2C_SendNumber(Global_stTankData.totalLitres);
+
+        LCD_I2C_SendString("L");
     }
 }
-
 
 
 
@@ -1319,7 +1438,7 @@ static void APP_Task1s(void)
 
     APP_UpdateData();
 }
-# 452 "main.c"
+# 568 "main.c"
 static void APP_UpdateShiftRegister(void)
 {
     uint8 Local_u8Status = 0u;

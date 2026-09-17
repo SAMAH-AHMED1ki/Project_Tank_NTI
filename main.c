@@ -39,6 +39,8 @@ static FLG_Buffer_t Global_stFaultLog;
 static void APP_UpdateBuzzer(void);
 static TankState_t Global_eLastFSMState = ST_INIT;
 static uint8 Global_u8ModeDisplayTicks = 0u;
+static uint8 Global_u8TripDisplayToggle = 0u;
+static uint8 Global_u8TripDisplayTicks = 0u;
 /* =========================================================
  * INT0 Callback
  *
@@ -266,6 +268,7 @@ static void APP_Task10ms(void)
     /* Refresh state after FSM */
     Global_stTankData.state =
         (uint8)FSM_GetState();
+    Global_stTankData.activeTrip = (uint8)FSM_GetActiveTrip();
 
     APP_UpdateBuzzer();
 
@@ -288,7 +291,51 @@ static void APP_Task10ms(void)
         GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN7, GPIO_LOW);
     }
 }
+/* =========================================================
+ * Display current trip on LCD
+ * ========================================================= */
 
+static void APP_DisplayTrip(uint8 Copy_u8Trip)
+{
+    switch (Copy_u8Trip)
+    {
+    case TRIP_OVERFLOW:
+        LCD_I2C_SendString("!TRIP: OVERFLOW");
+        break;
+
+    case TRIP_OVERCURRENT:
+        LCD_I2C_SendString("!TRIP: OVERCURRENT");
+        break;
+
+    case TRIP_DRY_RESERVOIR:
+        LCD_I2C_SendString("!TRIP: DRY RESERVOIR");
+        break;
+
+    case TRIP_DRY_RUN:
+        LCD_I2C_SendString("!TRIP: DRY RUN");
+        break;
+
+    case TRIP_NO_CURRENT:
+        LCD_I2C_SendString("!TRIP: NO CURRENT");
+        break;
+
+    case TRIP_MAX_RUNTIME:
+        LCD_I2C_SendString("!TRIP: MAX RUNTIME");
+        break;
+
+    case TRIP_LEVEL_SENSOR:
+        LCD_I2C_SendString("!TRIP: LEVEL SENSOR");
+        break;
+
+    case TRIP_LEAK:
+        LCD_I2C_SendString("!TRIP: LEAK");
+        break;
+
+    case TRIP_NO_RISE:
+        LCD_I2C_SendString("!TRIP: NO RISE");
+        break;
+    }
+}
 /* =========================================================
  * 500 ms Application Task
  *
@@ -299,6 +346,10 @@ static void APP_Task500ms(void)
 {
     uint16 Local_u16FlowInteger;
     uint8 Local_u8FlowDecimal;
+
+    uint16 Local_u16CurrentInteger;
+    uint8 Local_u8CurrentDecimal;
+
     TankState_t Local_eCurrentState;
 
     Local_u16FlowInteger =
@@ -309,6 +360,13 @@ static void APP_Task500ms(void)
 
     Local_eCurrentState =
         FSM_GetState();
+
+    /* Current is stored in mA */
+    Local_u16CurrentInteger =
+        Global_stTankData.currentmA / 1000u;
+
+    Local_u8CurrentDecimal =
+        (Global_stTankData.currentmA % 1000u) / 100u;
 
     /* =====================================================
      * Detect mode change
@@ -381,7 +439,12 @@ static void APP_Task500ms(void)
     LCD_I2C_SendNumber(
         Global_stTankData.reservoirPct);
 
-    LCD_I2C_SendString("%");
+    LCD_I2C_SendString("% ");
+
+    LCD_I2C_SendNumber(Local_u16CurrentInteger);
+    LCD_I2C_SendString(".");
+    LCD_I2C_SendNumber(Local_u8CurrentDecimal);
+    LCD_I2C_SendString("A");
 
     /* -----------------------------------------------------
      * LCD Line 2
@@ -391,30 +454,83 @@ static void APP_Task500ms(void)
         LCD_ROW_2,
         LCD_COL_1);
 
-    LCD_I2C_SendString("F:");
-
-    LCD_I2C_SendNumber(
-        Local_u16FlowInteger);
-
-    LCD_I2C_SendString(".");
-
-    LCD_I2C_SendNumber(
-        Local_u8FlowDecimal);
-
-    LCD_I2C_SendString("L/m ");
-
-    /* Pump status */
-
-    if (Global_stTankData.pumpOn)
+    /*
+     * TRIPPED STATE
+     */
+    if (FSM_GetState() == ST_TRIPPED)
     {
-        LCD_I2C_SendString("RUN");
+        /*
+         * Toggle every 1.5 seconds
+         */
+        if (Global_u8TripDisplayTicks < 3u)
+        {
+            Global_u8TripDisplayTicks++;
+        }
+        else
+        {
+            Global_u8TripDisplayTicks = 0u;
+            Global_u8TripDisplayToggle ^= 1u;
+        }
+
+        if (Global_u8TripDisplayToggle == 0u)
+        {
+            APP_DisplayTrip(Global_stTankData.activeTrip);
+        }
+        else
+        {
+            /*
+             * Normal data
+             */
+            if (Global_stTankData.pumpOn == GPIO_HIGH)
+                LCD_I2C_SendString("FILL ");
+            else
+                LCD_I2C_SendString("IDLE ");
+
+            LCD_I2C_SendString("Q:");
+
+            LCD_I2C_SendNumber(Local_u16FlowInteger);
+
+            LCD_I2C_SendString(".");
+
+            LCD_I2C_SendNumber(Local_u8FlowDecimal);
+
+            LCD_I2C_SendString(" ");
+
+            LCD_I2C_SendNumber(Global_stTankData.totalLitres);
+
+            LCD_I2C_SendString("L");
+        }
     }
+
+    /*
+     * NORMAL STATE
+     */
     else
     {
-        LCD_I2C_SendString("OFF");
+        /* Reset trip display timer */
+        Global_u8TripDisplayTicks = 0u;
+        Global_u8TripDisplayToggle = 0u;
+
+        if (Global_stTankData.pumpOn == GPIO_HIGH)
+            LCD_I2C_SendString("FILL ");
+        else
+            LCD_I2C_SendString("IDLE ");
+
+        LCD_I2C_SendString("Q:");
+
+        LCD_I2C_SendNumber(Local_u16FlowInteger);
+
+        LCD_I2C_SendString(".");
+
+        LCD_I2C_SendNumber(Local_u8FlowDecimal);
+
+        LCD_I2C_SendString(" ");
+
+        LCD_I2C_SendNumber(Global_stTankData.totalLitres);
+
+        LCD_I2C_SendString("L");
     }
 }
-
 /* =========================================================
  * 1 Second Application Task
  * ========================================================= */

@@ -16,6 +16,7 @@
 #define FSM_MIN_OFF_TICKS 500u
 
 static TankState_t Global_eCurrentState = ST_INIT;
+static Trip_t Global_eActiveTrip = TRIP_NONE;
 
 static uint16 Global_u16SettlingTicks = 0u;
 static uint16 Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
@@ -73,6 +74,7 @@ STD_ReturnType FSM_Init(void)
     STD_ReturnType Local_Status;
 
     Global_eCurrentState = ST_INIT;
+    Global_eActiveTrip = TRIP_NONE;
 
     Global_u16SettlingTicks = 0u;
     Global_u16MinOffTicks = FSM_MIN_OFF_TICKS;
@@ -142,6 +144,7 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
         if (Global_eCurrentState != ST_TRIPPED)
         {
             Global_u8BuzzerSilenced = GPIO_LOW;
+            Global_eActiveTrip = Local_eTrip;
         }
 
         Global_eCurrentState = ST_TRIPPED;
@@ -416,6 +419,7 @@ STD_ReturnType FSM_Ack(void)
     /* لو الإنفجار/الخطأ اتصفى، نرجع الستيت لـ ST_IDLE بأمان */
     if (Local_Status == E_OK)
     {
+        Global_eActiveTrip = TRIP_NONE;
         Global_eCurrentState = ST_IDLE;
     }
 
@@ -435,4 +439,9 @@ uint8 FSM_IsBuzzerEnabled(void)
     }
 
     return GPIO_LOW;
+}
+
+Trip_t FSM_GetActiveTrip(void)
+{
+    return Global_eActiveTrip;
 }
