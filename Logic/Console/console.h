@@ -42,5 +42,5 @@ void CON_SendHelp(void);
 
 /* Sends the fault history newest-first in FLT,n,trip,timeSec,L,R,I format. */
 STD_ReturnType CON_SendFaults(void);
-
+extern FLG_Buffer_t g_conFaultLog;
 #endif /* CONSOLE_H_ */

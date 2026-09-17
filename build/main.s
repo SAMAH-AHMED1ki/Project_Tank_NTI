@@ -486,6 +486,7 @@ main:
 	.size	Global_stFaultLog, 147
 Global_stFaultLog:
 	.zero	147
+.global	Global_stTankData
 	.section	.bss.Global_stTankData,"aw",@nobits
 	.type	Global_stTankData, @object
 	.size	Global_stTankData, 32

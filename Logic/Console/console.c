@@ -2,10 +2,13 @@
  * Author: Doaa Shaker Mohamed Aziz Awad
  * Module: Console command parser and UART telemetry
  */
-
+#include <stdio.h>
 #include "console.h"
 #include "UART_interface.h"
 #include "Ringbuffer.h"
+#include "tank_types.h"
+#include "tank_fsm.h"
+extern TankData_t Global_stTankData;
 
 #define CON_RX_BUFFER_SIZE 64U
 #define CON_OK_TEXT "OK\r\n"
@@ -17,7 +20,7 @@
 #define CON_ERR_LONG_TEXT "ERR LONG\r\n"
 
 static RingBuffer_t g_conRxBuffer;
-static FLG_Buffer_t g_conFaultLog;
+FLG_Buffer_t g_conFaultLog;
 static uint8 g_conLine[CON_MAX_LINE_LEN + 1U];
 static uint8 g_conLineLen = 0U;
 
@@ -209,6 +212,7 @@ STD_ReturnType CON_ProcessCommand(const uint8 *pCommandLine)
     }
     else if (CON_CompareNoCase(pCursor, "ACK"))
     {
+        FSM_Ack();
         CON_WriteString(CON_OK_TEXT);
         hasMatch = 1U;
     }
@@ -225,22 +229,30 @@ STD_ReturnType CON_ProcessCommand(const uint8 *pCommandLine)
     }
     else if (CON_CompareNoCase(pCursor, "LEVEL?"))
     {
-        CON_WriteString("LEVEL=0\r\n");
+        char buffer[32];
+        sprintf(buffer, "LEVEL=%u\r\n", (unsigned int)Global_stTankData.levelPct);
+        CON_WriteString(buffer);
         hasMatch = 1U;
     }
     else if (CON_CompareNoCase(pCursor, "FLOW?"))
     {
-        CON_WriteString("FLOW=0.0\r\n");
+        char buffer[32];
+        sprintf(buffer, "FLOW=%.1f\r\n", (double)(Global_stTankData.flowLpmX10 / 10.0));
+        CON_WriteString(buffer);
         hasMatch = 1U;
     }
     else if (CON_CompareNoCase(pCursor, "VOLUME?"))
     {
-        CON_WriteString("VOLUME=0\r\n");
+        char buffer[32];
+        sprintf(buffer, "VOLUME=%lu\r\n", (unsigned long)Global_stTankData.totalLitres);
+        CON_WriteString(buffer);
         hasMatch = 1U;
     }
     else if (CON_CompareNoCase(pCursor, "CURRENT?"))
     {
-        CON_WriteString("CURRENT=0\r\n");
+        char buffer[32];
+        sprintf(buffer, "CURRENT=%u\r\n", (unsigned int)Global_stTankData.currentmA);
+        CON_WriteString(buffer);
         hasMatch = 1U;
     }
     else if (CON_CompareNoCase(pCursor, "CFG?"))
@@ -322,12 +334,18 @@ void CON_SendHelp(void)
 
 STD_ReturnType CON_SendFaults(void)
 {
+    /*
+     * مش محتاجين نعمل فحص وهمي هنا، لأن ملف interlocks.h / interlocks.c
+     * هو اللي بيعمل Evaluate للأعطال ويسجلها لوحدها في السيستم.
+     */
+
     if (FLG_GetCount(&g_conFaultLog) == 0U)
     {
         CON_WriteString("NO FAULTS\r\n");
         return E_OK;
     }
 
+    // طباعة السجل بالصيغة القياسية المظبوطة للـ Parsing
     FLG_Dump(&g_conFaultLog, CON_WriteByte);
     return E_OK;
 }

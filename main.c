@@ -33,7 +33,7 @@
  * Global application data
  * ========================================================= */
 
-static TankData_t Global_stTankData;
+TankData_t Global_stTankData;
 
 static FLG_Buffer_t Global_stFaultLog;
 /* =========================================================
