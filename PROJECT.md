@@ -202,7 +202,7 @@ functions for the application layer.
 
 **What Aya will do:** Implement the TWI master at 100 kHz and handle start,
 write, read, acknowledge, stop, and bus-error conditions. She will build the
-PCF8574 LCD layer on top of I2C, initialize the 16x2 display, position the
+Aip31068_i2c-118 LCD layer on top of I2C, initialize the 16x2 display, position the
 cursor, print numbers and status text, and refresh the screen without
 flicker. The display must show level, flow, pump state, wait time, and active
 fault information supplied by the application layer. She will also debounce
@@ -211,7 +211,7 @@ bargraph. Tests must cover LCD startup, both display lines, numeric formatting,
 button bounce, bargraph thresholds, roof/reservoir level scaling, and an I2C
 failure.
 
-**Integration deliverable:** complete I2C-to-PCF8574-to-LCD display path using
+**Integration deliverable:** complete Aip31068_i2c-118 LCD display path using
 the application data supplied by the control modules.
 
 ## 4. Shared Integration and Test Ownership
