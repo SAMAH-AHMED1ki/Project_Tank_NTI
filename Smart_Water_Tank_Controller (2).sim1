@@ -8,19 +8,19 @@
 
 <item itemtype="Tunnel" CircId="Tunnel-4" mainComp="false" Show_id="false" Show_Val="false" Pos="-180,-192" rotation="-180" hflip="1" vflip="1" label="Tunnel-4" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="1" IsBus="false" />
 
-<item itemtype="Potentiometer" CircId="Potentiometer-5" mainComp="false" ShowProp="Value_Ohm" Show_id="true" Show_Val="true" Pos="44,-72" rotation="0" hflip="1" vflip="1" label="Reservoir level" idLabPos="-28.7082,-43.0258" labelrot="0" valLabPos="15,-20" valLabRot="0" Resistance="10 kΩ" Value_Ohm="5.27 kΩ" Slider="false" Scale="1" />
+<item itemtype="Potentiometer" CircId="Potentiometer-5" mainComp="false" ShowProp="Value_Ohm" Show_id="true" Show_Val="true" Pos="44,-72" rotation="0" hflip="1" vflip="1" label="Reservoir level" idLabPos="-28.7082,-43.0258" labelrot="0" valLabPos="15,-20" valLabRot="0" Resistance="10 kΩ" Value_Ohm="5.89 kΩ" Slider="false" Scale="1" />
 
-<item itemtype="Potentiometer" CircId="Potentiometer-6" mainComp="false" ShowProp="Value_Ohm" Show_id="true" Show_Val="true" Pos="80,-180" rotation="0" hflip="1" vflip="1" label="Pump current" idLabPos="-29.9185,-46.0515" labelrot="0" valLabPos="15,-20" valLabRot="0" Resistance="10 kΩ" Value_Ohm="3.88 kΩ" Slider="false" Scale="1" />
+<item itemtype="Potentiometer" CircId="Potentiometer-6" mainComp="false" ShowProp="Value_Ohm" Show_id="true" Show_Val="true" Pos="80,-180" rotation="0" hflip="1" vflip="1" label="Pump current" idLabPos="-29.9185,-46.0515" labelrot="0" valLabPos="15,-20" valLabRot="0" Resistance="10 kΩ" Value_Ohm="5 kΩ" Slider="false" Scale="1" />
 
-<item itemtype="Potentiometer" CircId="Potentiometer-7" mainComp="false" ShowProp="Value_Ohm" Show_id="true" Show_Val="true" Pos="-40,-116" rotation="0" hflip="1" vflip="1" label="Roof tank level" idLabPos="-28.103,-43.6309" labelrot="0" valLabPos="15,-20" valLabRot="0" Resistance="10 kΩ" Value_Ohm="2.28 kΩ" Slider="false" Scale="1" />
+<item itemtype="Potentiometer" CircId="Potentiometer-7" mainComp="false" ShowProp="Value_Ohm" Show_id="true" Show_Val="true" Pos="-40,-116" rotation="0" hflip="1" vflip="1" label="Roof tank level" idLabPos="-28.103,-43.6309" labelrot="0" valLabPos="15,-20" valLabRot="0" Resistance="10 kΩ" Value_Ohm="6.77 kΩ" Slider="false" Scale="1" />
 
 <item itemtype="Switch" CircId="Switch-8" mainComp="false" Show_id="true" Show_Val="false" Pos="-420,-104" rotation="0" hflip="1" vflip="1" label="High float switch" idLabPos="-35.3649,-25.8155" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" DT="false" Poles="1" />
 
-<item itemtype="Switch" CircId="Switch-9" mainComp="false" Show_id="true" Show_Val="false" Pos="-420,-64" rotation="0" hflip="1" vflip="1" label="Low float switch" idLabPos="-34.1546,-25.1765" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" DT="false" Poles="1" />
+<item itemtype="Switch" CircId="Switch-9" mainComp="false" Show_id="true" Show_Val="false" Pos="-420,-64" rotation="0" hflip="1" vflip="1" label="Low float switch" idLabPos="-36.8044,-25.1765" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" DT="false" Poles="1" />
 
 <item itemtype="Push" CircId="Push-10" mainComp="false" Show_id="true" Show_Val="false" Pos="-532,-68" rotation="0" hflip="1" vflip="1" label="Acknowledge" idLabPos="-28.9752,-25.7771" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
 
-<item itemtype="Push" CircId="Push-11" mainComp="false" Show_id="true" Show_Val="false" Pos="-532,-24" rotation="0" hflip="1" vflip="1" label="Mode" idLabPos="-14.3318,-23.9267" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
+<item itemtype="Push" CircId="Push-11" mainComp="false" Show_id="true" Show_Val="false" Pos="-532,-24" rotation="0" hflip="1" vflip="1" label="Mode" idLabPos="-13.5929,-25.6411" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
 
 <item itemtype="Push" CircId="Push-12" mainComp="false" Show_id="true" Show_Val="false" Pos="-532,-116" rotation="0" hflip="1" vflip="1" label="Manual Start" idLabPos="-27.4878,-26.3982" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
 
@@ -38,7 +38,7 @@
 
 <item itemtype="Tunnel" CircId="Tunnel-25" mainComp="false" Show_id="false" Show_Val="false" Pos="80,-156" rotation="-90" hflip="1" vflip="1" label="Tunnel-25" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="2" IsBus="false" />
 
-<item itemtype="Clock" CircId="Clock-26" mainComp="false" Show_id="true" Show_Val="false" Pos="-76,-192" rotation="-540" hflip="1" vflip="1" label="Flow-meter pulses" idLabPos="40.6913,23.807" labelrot="180" valLabPos="-16,8" valLabRot="0" Out="true" Running="true" Voltage="5 V" Freq="800 Hz" Always_On="false" />
+<item itemtype="Clock" CircId="Clock-26" mainComp="false" Show_id="true" Show_Val="false" Pos="-76,-192" rotation="-540" hflip="1" vflip="1" label="Flow-meter pulses" idLabPos="40.6913,23.807" labelrot="180" valLabPos="-16,8" valLabRot="0" Out="true" Running="true" Voltage="5 V" Freq="1000 Hz" Always_On="false" />
 
 <item itemtype="Tunnel" CircId="Tunnel-28" mainComp="false" Show_id="false" Show_Val="false" Pos="-184,-80" rotation="-360" hflip="1" vflip="1" label="Tunnel-28" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="3" IsBus="false" />
 
@@ -310,8 +310,6 @@
 
 <item itemtype="Connector" uid="Connector-159" startpinid="Tunnel-116-pin" endpinid="SerialTerm-113-pin0" pointList="-28,144,-12,144" />
 
-<item itemtype="Connector" uid="Connector-163" startpinid="Tunnel-126-pin" endpinid="Led-138-rPin" pointList="-304,128,-400,128" />
-
 <item itemtype="Connector" uid="Connector-165" startpinid="Tunnel-142-pin" endpinid="Led-137-rPin" pointList="-304,68,-400,68" />
 
 <item itemtype="Connector" uid="Connector-169" startpinid="Tunnel-140-pin" endpinid="Led-139-rPin" pointList="-304,92,-400,92" />
@@ -422,8 +420,6 @@
 
 <item itemtype="Connector" uid="Connector-410" startpinid="Node-203-2" endpinid="Node-201-1" pointList="124,48,124,36" />
 
-<item itemtype="Connector" uid="Connector-411" startpinid="Tunnel-3-pin" endpinid="mega32-1-RST" pointList="-208,-24,-176,-24" />
-
 <item itemtype="Connector" uid="Connector-6" startpinid="Potentiometer-7-PinM" endpinid="mega32-1-PORTA0" pointList="-40,-100,-112,-100,-112,-88" />
 
 <item itemtype="Connector" uid="Connector-181" startpinid="Tunnel-143-pin" endpinid="Led-131-rPin" pointList="-304,80,-400,80" />
@@ -437,5 +433,9 @@
 <item itemtype="Connector" uid="Connector-430" startpinid="Resistor-37-lPin" endpinid="AudioOut-209-lPin" pointList="-280,-40,-284,-40,-284,-16,-308,-16" />
 
 <item itemtype="Connector" uid="Connector-268" startpinid="mega32-1-PORTB3" endpinid="Resistor-37-rPin" pointList="-176,-64,-220,-64,-220,-40,-248,-40" />
+
+<item itemtype="Connector" uid="Connector-163" startpinid="Tunnel-126-pin" endpinid="Led-138-rPin" pointList="-304,128,-400,128" />
+
+<item itemtype="Connector" uid="Connector-441" startpinid="Tunnel-3-pin" endpinid="mega32-1-RST" pointList="-208,-24,-176,-24" />
 
 </circuit>

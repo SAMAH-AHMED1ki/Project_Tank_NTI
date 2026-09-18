@@ -404,6 +404,22 @@ TankState_t FSM_GetState(void)
     return Global_eCurrentState;
 }
 
+STD_ReturnType FSM_SetServiceMode(uint8 enable)
+{
+    if (enable != 0u)
+    {
+        FSM_StopOutputs();
+        Global_eCurrentState = ST_SERVICE;
+    }
+    else
+    {
+        FSM_StopOutputs();
+        Global_eCurrentState = ST_IDLE;
+    }
+
+    return E_OK;
+}
+
 /* ---------------------------------------------------------- */
 /* Acknowledge current trip                                   */
 /* ---------------------------------------------------------- */

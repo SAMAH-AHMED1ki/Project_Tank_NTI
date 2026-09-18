@@ -866,6 +866,8 @@ uint8 FSM_IsBuzzerEnabled(void);
 
 
 Trip_t FSM_GetActiveTrip(void);
+
+STD_ReturnType FSM_SetServiceMode(uint8 Copy_u8Enable);
 # 30 "main.c" 2
 # 1 "Logic/FaultLog/faultlog.h" 1
 # 10 "Logic/FaultLog/faultlog.h"

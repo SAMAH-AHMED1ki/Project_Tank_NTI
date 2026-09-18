@@ -109,213 +109,292 @@ CON_Init:
 	.size	CON_Init, .-CON_Init
 	.section	.rodata.CON_SendStatus.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"UNKNOWN"
+	.string	"\r\nLEVEL="
 .LC1:
-	.string	"LEVEL=%u%% R=%u%% I=%umA\r\n"
+	.string	"%"
 .LC2:
-	.string	"FLOW=%u.%uL/min VOL=%luL\r\n"
+	.string	" R="
 .LC3:
-	.string	"PUMP=%u VALVE=%u HIGH=%u LOW=%u\r\n"
+	.string	" I="
 .LC4:
-	.string	"STATE=%s TRIP=%u RUN=%u UP=%lu\r\n"
+	.string	"mA\r\n"
+.LC5:
+	.string	"PUMP="
+.LC6:
+	.string	" VALVE="
+.LC7:
+	.string	" HIGH="
+.LC8:
+	.string	" LOW="
+.LC9:
+	.string	"\r\n"
+.LC10:
+	.string	"TRIP="
+.LC11:
+	.string	" STATE="
+.LC12:
+	.string	"INIT"
+.LC13:
+	.string	"IDLE"
+.LC14:
+	.string	"FILLING"
+.LC15:
+	.string	"TRIPPED"
+.LC16:
+	.string	"MANUAL"
+.LC17:
+	.string	"SERVICE"
+.LC18:
+	.string	"UNKNOWN"
 	.section	.text.CON_SendStatus,"ax",@progbits
 .global	CON_SendStatus
 	.type	CON_SendStatus, @function
 CON_SendStatus:
-	push r14
-	push r15
 	push r16
 	push r17
 	push r28
 	push r29
+	push __tmp_reg__
 	in r28,__SP_L__
 	in r29,__SP_H__
-	subi r28,96
-	sbc r29,__zero_reg__
-	in __tmp_reg__,__SREG__
-	cli
-	out __SP_H__,r29
-	out __SREG__,__tmp_reg__
-	out __SP_L__,r28
 /* prologue: function */
-/* frame size = 96 */
-/* stack size = 102 */
-.L__stack_usage = 102
+/* frame size = 1 */
+/* stack size = 5 */
+.L__stack_usage = 5
+	call FSM_GetActiveTrip
+	std Y+1,r24
 	call FSM_GetState
-	cpi r24,8
-	cpc r25,__zero_reg__
-	brlo .+2
-	rjmp .L20
-	lsl r24
-	rol r25
-	movw r30,r24
-	subi r30,lo8(-(CSWTCH.41))
-	sbci r31,hi8(-(CSWTCH.41))
-	ld r14,Z
-	ldd r15,Z+1
-.L19:
-	lds r24,Global_stTankData+9
-	push r24
-	lds r24,Global_stTankData+8
-	push r24
-	lds r24,Global_stTankData+7
-	push __zero_reg__
-	push r24
+	mov r16,r24
+	ldi r24,lo8(.LC0)
+	ldi r25,hi8(.LC0)
+	call UART_SendString
 	lds r24,Global_stTankData+6
-	push __zero_reg__
-	push r24
+	ldi r22,lo8(10)
+	call __udivmodqi4
+	call __udivmodqi4
+	ldi r24,lo8(48)
+	add r24,r25
+	call UART_SendByte
+	lds r24,Global_stTankData+6
+	ldi r22,lo8(10)
+	call __udivmodqi4
+	ldi r24,lo8(48)
+	add r24,r25
+	call UART_SendByte
 	ldi r24,lo8(.LC1)
 	ldi r25,hi8(.LC1)
-	push r25
-	push r24
-	movw r16,r28
-	subi r16,-1
-	sbci r17,-1
-	push r17
-	push r16
-	call sprintf
-	movw r24,r16
 	call UART_SendString
-	lds r18,Global_stTankData+12
-	lds r19,Global_stTankData+13
-	lds r20,Global_stTankData+14
-	lds r30,Global_stTankData+15
-	lds r24,Global_stTankData+10
-	lds r25,Global_stTankData+11
+	ldi r24,lo8(.LC2)
+	ldi r25,hi8(.LC2)
+	call UART_SendString
+	lds r24,Global_stTankData+7
+	ldi r22,lo8(10)
+	call __udivmodqi4
+	call __udivmodqi4
+	ldi r24,lo8(48)
+	add r24,r25
+	call UART_SendByte
+	lds r24,Global_stTankData+7
+	ldi r22,lo8(10)
+	call __udivmodqi4
+	ldi r24,lo8(48)
+	add r24,r25
+	call UART_SendByte
+	ldi r24,lo8(.LC1)
+	ldi r25,hi8(.LC1)
+	call UART_SendString
+	ldi r24,lo8(.LC3)
+	ldi r25,hi8(.LC3)
+	call UART_SendString
+	lds r24,Global_stTankData+8
+	lds r25,Global_stTankData+9
+	ldi r22,lo8(-24)
+	ldi r23,lo8(3)
+	call __udivmodhi4
+	movw r24,r22
 	ldi r22,lo8(10)
 	ldi r23,0
 	call __udivmodhi4
-	push r30
-	push r20
-	push r19
-	push r18
-	push r25
-	push r24
-	push r23
-	push r22
-	ldi r24,lo8(.LC2)
-	ldi r25,hi8(.LC2)
-	push r25
-	push r24
-	push r17
-	push r16
-	call sprintf
-	movw r24,r16
-	call UART_SendString
-	lds r24,Global_stTankData+17
-	bst r24,3
-	clr r24
-	bld r24,0
-	push __zero_reg__
-	push r24
-	lds r24,Global_stTankData+17
-	bst r24,2
-	clr r24
-	bld r24,0
-	push __zero_reg__
-	push r24
-	lds r24,Global_stTankData+17
-	lsr r24
-	andi r24,1
-	push __zero_reg__
-	push r24
-	lds r24,Global_stTankData+17
-	andi r24,1
-	push __zero_reg__
-	push r24
-	ldi r24,lo8(.LC3)
-	ldi r25,hi8(.LC3)
-	push r25
-	push r24
-	push r17
-	push r16
-	call sprintf
-	in __tmp_reg__,__SREG__
-	cli
-	out __SP_H__,r29
-	out __SREG__,__tmp_reg__
-	out __SP_L__,r28
-	movw r24,r16
-	call UART_SendString
-	lds r24,Global_stTankData+31
-	push r24
-	lds r24,Global_stTankData+30
-	push r24
-	lds r24,Global_stTankData+29
-	push r24
-	lds r24,Global_stTankData+28
-	push r24
-	lds r24,Global_stTankData+21
-	push r24
-	lds r24,Global_stTankData+20
-	push r24
-	lds r24,Global_stTankData+19
-	push __zero_reg__
-	push r24
-	push r15
-	push r14
+	subi r24,lo8(-(48))
+	call UART_SendByte
+	lds r24,Global_stTankData+8
+	lds r25,Global_stTankData+9
+	ldi r22,lo8(100)
+	ldi r23,0
+	call __udivmodhi4
+	movw r24,r22
+	ldi r22,lo8(10)
+	ldi r23,0
+	call __udivmodhi4
+	subi r24,lo8(-(48))
+	call UART_SendByte
+	lds r24,Global_stTankData+8
+	lds r25,Global_stTankData+9
+	ldi r22,lo8(10)
+	ldi r23,0
+	call __udivmodhi4
+	movw r24,r22
+	ldi r22,lo8(10)
+	ldi r23,0
+	call __udivmodhi4
+	subi r24,lo8(-(48))
+	call UART_SendByte
+	lds r24,Global_stTankData+8
+	lds r25,Global_stTankData+9
+	ldi r22,lo8(10)
+	ldi r23,0
+	call __udivmodhi4
+	subi r24,lo8(-(48))
+	call UART_SendByte
 	ldi r24,lo8(.LC4)
 	ldi r25,hi8(.LC4)
-	push r25
-	push r24
-	push r17
-	push r16
-	call sprintf
-	movw r24,r16
 	call UART_SendString
-	in __tmp_reg__,__SREG__
-	cli
-	out __SP_H__,r29
-	out __SREG__,__tmp_reg__
-	out __SP_L__,r28
+	ldi r24,lo8(.LC5)
+	ldi r25,hi8(.LC5)
+	call UART_SendString
+	lds r24,Global_stTankData+17
+	andi r24,lo8(1)
+	subi r24,lo8(-(48))
+	call UART_SendByte
+	ldi r24,lo8(.LC6)
+	ldi r25,hi8(.LC6)
+	call UART_SendString
+	lds r24,Global_stTankData+17
+	sbrs r24,1
+	rjmp .L31
+	ldi r24,lo8(49)
+.L19:
+	call UART_SendByte
+	ldi r24,lo8(.LC7)
+	ldi r25,hi8(.LC7)
+	call UART_SendString
+	lds r24,Global_stTankData+17
+	sbrs r24,2
+	rjmp .L32
+	ldi r24,lo8(49)
+.L20:
+	call UART_SendByte
+	ldi r24,lo8(.LC8)
+	ldi r25,hi8(.LC8)
+	call UART_SendString
+	lds r24,Global_stTankData+17
+	sbrs r24,3
+	rjmp .L33
+	ldi r24,lo8(49)
+.L21:
+	call UART_SendByte
+	ldi r24,lo8(.LC9)
+	ldi r25,hi8(.LC9)
+	call UART_SendString
+	ldi r24,lo8(.LC10)
+	ldi r25,hi8(.LC10)
+	call UART_SendString
+	ldd r24,Y+1
+	ldi r22,lo8(10)
+	call __udivmodqi4
+	std Y+1,r25
+	call __udivmodqi4
+	ldi r24,lo8(48)
+	add r24,r25
+	call UART_SendByte
+	ldd r24,Y+1
+	subi r24,lo8(-(48))
+	call UART_SendByte
+	ldi r24,lo8(.LC11)
+	ldi r25,hi8(.LC11)
+	call UART_SendString
+	mov r24,r16
+	ldi r25,0
+	cpi r16,lo8(5)
+	breq .L22
+	cpi r24,6
+	cpc r25,__zero_reg__
+	brsh .L23
+	cpi r24,1
+	cpc r25,__zero_reg__
+	breq .L24
+	cpi r24,2
+	cpc r25,__zero_reg__
+	breq .L25
+	or r24,r25
+	breq .L26
+.L27:
+	ldi r24,lo8(.LC18)
+	ldi r25,hi8(.LC18)
+	rjmp .L34
+.L31:
+	ldi r24,lo8(48)
+	rjmp .L19
+.L32:
+	ldi r24,lo8(48)
+	rjmp .L20
+.L33:
+	ldi r24,lo8(48)
+	rjmp .L21
+.L23:
+	breq .L28
+	sbiw r24,7
+	brne .L27
+	ldi r24,lo8(.LC17)
+	ldi r25,hi8(.LC17)
+	rjmp .L34
+.L26:
+	ldi r24,lo8(.LC12)
+	ldi r25,hi8(.LC12)
+.L34:
+	call UART_SendString
+	ldi r24,lo8(.LC9)
+	ldi r25,hi8(.LC9)
 /* epilogue start */
-	subi r28,-96
-	sbci r29,-1
-	in __tmp_reg__,__SREG__
-	cli
-	out __SP_H__,r29
-	out __SREG__,__tmp_reg__
-	out __SP_L__,r28
+	pop __tmp_reg__
 	pop r29
 	pop r28
 	pop r17
 	pop r16
-	pop r15
-	pop r14
-	ret
-.L20:
-	ldi r24,lo8(.LC0)
-	mov r14,r24
-	ldi r24,hi8(.LC0)
-	mov r15,r24
-	rjmp .L19
+	jmp UART_SendString
+.L24:
+	ldi r24,lo8(.LC13)
+	ldi r25,hi8(.LC13)
+	rjmp .L34
+.L25:
+	ldi r24,lo8(.LC14)
+	ldi r25,hi8(.LC14)
+	rjmp .L34
+.L22:
+	ldi r24,lo8(.LC15)
+	ldi r25,hi8(.LC15)
+	rjmp .L34
+.L28:
+	ldi r24,lo8(.LC16)
+	ldi r25,hi8(.LC16)
+	rjmp .L34
 	.size	CON_SendStatus, .-CON_SendStatus
 	.section	.rodata.CON_SendHelp.str1.1,"aMS",@progbits,1
-.LC5:
+.LC19:
 	.string	"=== WATER TANK CONSOLE ===\r\n"
-.LC6:
+.LC20:
 	.string	"STATUS      - System status\r\n"
-.LC7:
+.LC21:
 	.string	"LEVEL?      - Roof tank level\r\n"
-.LC8:
+.LC22:
 	.string	"FLOW?       - Current flow\r\n"
-.LC9:
+.LC23:
 	.string	"VOLUME?     - Total volume\r\n"
-.LC10:
+.LC24:
 	.string	"CURRENT?    - Pump current\r\n"
-.LC11:
+.LC25:
 	.string	"CFG?        - Configuration\r\n"
-.LC12:
+.LC26:
 	.string	"TRIP?       - Active trip\r\n"
-.LC13:
+.LC27:
 	.string	"FAULTS?     - Fault history\r\n"
-.LC14:
+.LC28:
 	.string	"CLRFAULTS   - Clear fault history\r\n"
-.LC15:
+.LC29:
 	.string	"ACK         - Acknowledge trip\r\n"
-.LC16:
+.LC30:
 	.string	"MODE AUTO/MANUAL - Mode command\r\n"
-.LC17:
+.LC31:
 	.string	"===========================\r\n"
 	.section	.text.CON_SendHelp,"ax",@progbits
 .global	CON_SendHelp
@@ -325,48 +404,48 @@ CON_SendHelp:
 /* frame size = 0 */
 /* stack size = 0 */
 .L__stack_usage = 0
-	ldi r24,lo8(.LC5)
-	ldi r25,hi8(.LC5)
+	ldi r24,lo8(.LC19)
+	ldi r25,hi8(.LC19)
 	call UART_SendString
-	ldi r24,lo8(.LC6)
-	ldi r25,hi8(.LC6)
+	ldi r24,lo8(.LC20)
+	ldi r25,hi8(.LC20)
 	call UART_SendString
-	ldi r24,lo8(.LC7)
-	ldi r25,hi8(.LC7)
+	ldi r24,lo8(.LC21)
+	ldi r25,hi8(.LC21)
 	call UART_SendString
-	ldi r24,lo8(.LC8)
-	ldi r25,hi8(.LC8)
+	ldi r24,lo8(.LC22)
+	ldi r25,hi8(.LC22)
 	call UART_SendString
-	ldi r24,lo8(.LC9)
-	ldi r25,hi8(.LC9)
+	ldi r24,lo8(.LC23)
+	ldi r25,hi8(.LC23)
 	call UART_SendString
-	ldi r24,lo8(.LC10)
-	ldi r25,hi8(.LC10)
+	ldi r24,lo8(.LC24)
+	ldi r25,hi8(.LC24)
 	call UART_SendString
-	ldi r24,lo8(.LC11)
-	ldi r25,hi8(.LC11)
+	ldi r24,lo8(.LC25)
+	ldi r25,hi8(.LC25)
 	call UART_SendString
-	ldi r24,lo8(.LC12)
-	ldi r25,hi8(.LC12)
+	ldi r24,lo8(.LC26)
+	ldi r25,hi8(.LC26)
 	call UART_SendString
-	ldi r24,lo8(.LC13)
-	ldi r25,hi8(.LC13)
+	ldi r24,lo8(.LC27)
+	ldi r25,hi8(.LC27)
 	call UART_SendString
-	ldi r24,lo8(.LC14)
-	ldi r25,hi8(.LC14)
+	ldi r24,lo8(.LC28)
+	ldi r25,hi8(.LC28)
 	call UART_SendString
-	ldi r24,lo8(.LC15)
-	ldi r25,hi8(.LC15)
+	ldi r24,lo8(.LC29)
+	ldi r25,hi8(.LC29)
 	call UART_SendString
-	ldi r24,lo8(.LC16)
-	ldi r25,hi8(.LC16)
+	ldi r24,lo8(.LC30)
+	ldi r25,hi8(.LC30)
 	call UART_SendString
-	ldi r24,lo8(.LC17)
-	ldi r25,hi8(.LC17)
+	ldi r24,lo8(.LC31)
+	ldi r25,hi8(.LC31)
 	jmp UART_SendString
 	.size	CON_SendHelp, .-CON_SendHelp
 	.section	.rodata.CON_SendFaults.str1.1,"aMS",@progbits,1
-.LC18:
+.LC32:
 	.string	"NO FAULTS\r\n"
 	.section	.text.CON_SendFaults,"ax",@progbits
 .global	CON_SendFaults
@@ -380,88 +459,90 @@ CON_SendFaults:
 	ldi r25,hi8(g_conFaultLog)
 	call FLG_GetCount
 	cpse r24,__zero_reg__
-	rjmp .L23
-	ldi r24,lo8(.LC18)
-	ldi r25,hi8(.LC18)
+	rjmp .L37
+	ldi r24,lo8(.LC32)
+	ldi r25,hi8(.LC32)
 	call UART_SendString
-.L24:
+.L38:
 	ldi r24,0
 	ldi r25,0
 /* epilogue start */
 	ret
-.L23:
+.L37:
 	ldi r22,lo8(gs(CON_WriteByte))
 	ldi r23,hi8(gs(CON_WriteByte))
 	ldi r24,lo8(g_conFaultLog)
 	ldi r25,hi8(g_conFaultLog)
 	call FLG_Dump
-	rjmp .L24
+	rjmp .L38
 	.size	CON_SendFaults, .-CON_SendFaults
 	.section	.rodata.CON_ProcessCommand.str1.1,"aMS",@progbits,1
-.LC19:
-	.string	"ERR CMD\r\n"
-.LC20:
-	.string	"HELP"
-.LC21:
-	.string	"STATUS"
-.LC22:
-	.string	"STATUS?"
-.LC23:
-	.string	"LEVEL?"
-.LC24:
-	.string	"LEVEL=%u%%\r\n"
-.LC25:
-	.string	"FLOW?"
-.LC26:
-	.string	"FLOW=%u.%u L/min\r\n"
-.LC27:
-	.string	"VOLUME?"
-.LC28:
-	.string	"VOLUME=%lu L\r\n"
-.LC29:
-	.string	"CURRENT?"
-.LC30:
-	.string	"CURRENT=%u mA\r\n"
-.LC31:
-	.string	"CFG?"
-.LC32:
-	.string	"CFG=30,90,60,8,0.5,1,10,15,120\r\n"
 .LC33:
-	.string	"ACK"
+	.string	"ERR CMD\r\n"
 .LC34:
-	.string	"OK\r\n"
+	.string	"HELP"
 .LC35:
-	.string	"ERR ACTIVE\r\n"
+	.string	"STATUS"
 .LC36:
-	.string	"FAULTS?"
+	.string	"STATUS?"
 .LC37:
-	.string	"CLRFAULTS"
+	.string	"LEVEL?"
 .LC38:
-	.string	"TRIP?"
+	.string	"LEVEL=%u%%\r\n"
 .LC39:
-	.string	"TRIP=%u\r\n"
+	.string	"FLOW?"
 .LC40:
-	.string	"MODE AUTO"
+	.string	"FLOW=%u.%u L/min\r\n"
 .LC41:
-	.string	"ERR MODE - USE MODE BUTTON\r\n"
+	.string	"VOLUME?"
 .LC42:
-	.string	"MODE MANUAL"
+	.string	"VOLUME=%lu L\r\n"
 .LC43:
-	.string	"PUMP ON"
+	.string	"CURRENT?"
 .LC44:
-	.string	"ERR MODE - USE FSM CONTROL\r\n"
+	.string	"CURRENT=%u mA\r\n"
 .LC45:
-	.string	"PUMP OFF"
+	.string	"CFG?"
 .LC46:
-	.string	"VALVE ON"
+	.string	"CFG=30,90,60,8,0.5,1,10,15,120\r\n"
 .LC47:
-	.string	"VALVE OFF"
+	.string	"ACK"
 .LC48:
-	.string	"SERVICE ON"
+	.string	"OK\r\n"
 .LC49:
-	.string	"ERR MODE - USE SERVICE CONTROL\r\n"
+	.string	"ERR ACTIVE\r\n"
 .LC50:
+	.string	"FAULTS?"
+.LC51:
+	.string	"CLRFAULTS"
+.LC52:
+	.string	"TRIP?"
+.LC53:
+	.string	"TRIP=%u\r\n"
+.LC54:
+	.string	"MODE AUTO"
+.LC55:
+	.string	"ERR MODE - USE MODE BUTTON\r\n"
+.LC56:
+	.string	"MODE MANUAL"
+.LC57:
+	.string	"PUMP ON"
+.LC58:
+	.string	"ERR MODE - USE FSM CONTROL\r\n"
+.LC59:
+	.string	"PUMP OFF"
+.LC60:
+	.string	"VALVE ON"
+.LC61:
+	.string	"VALVE OFF"
+.LC62:
+	.string	"SERVICE ON"
+.LC63:
+	.string	"SERVICE MODE ON\r\n"
+.LC64:
 	.string	"SERVICE OFF"
+.LC65:
+	.string	"SERVICE MODE OFF\r\n"
 	.section	.text.CON_ProcessCommand,"ax",@progbits
 .global	CON_ProcessCommand
 	.type	CON_ProcessCommand, @function
@@ -484,14 +565,14 @@ CON_ProcessCommand:
 .L__stack_usage = 36
 	movw r30,r24
 	or r24,r25
-	brne .L53
-.L26:
-	ldi r24,lo8(.LC19)
-	ldi r25,hi8(.LC19)
+	brne .L70
+.L40:
+	ldi r24,lo8(.LC33)
+	ldi r25,hi8(.LC33)
 	call UART_SendString
 	ldi r24,lo8(1)
 	ldi r25,0
-.L25:
+.L39:
 /* epilogue start */
 	adiw r28,32
 	in __tmp_reg__,__SREG__
@@ -504,57 +585,57 @@ CON_ProcessCommand:
 	pop r17
 	pop r16
 	ret
-.L53:
+.L70:
 	movw r16,r30
 	ld r24,Z+
 	cpi r24,lo8(32)
-	breq .L53
+	breq .L70
 	ldi r25,lo8(-9)
 	add r25,r24
 	cpi r25,lo8(2)
-	brlo .L53
+	brlo .L70
 	cpi r24,lo8(13)
-	breq .L53
-	ldi r22,lo8(.LC20)
-	ldi r23,hi8(.LC20)
+	breq .L70
+	ldi r22,lo8(.LC34)
+	ldi r23,hi8(.LC34)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L29
+	breq .L43
 	call CON_SendHelp
-.L30:
+.L46:
 	ldi r24,0
 	ldi r25,0
-	rjmp .L25
-.L29:
-	ldi r22,lo8(.LC21)
-	ldi r23,hi8(.LC21)
+	rjmp .L39
+.L43:
+	ldi r22,lo8(.LC35)
+	ldi r23,hi8(.LC35)
 	movw r24,r16
 	call CON_CompareNoCase
 	cpse r24,__zero_reg__
-	rjmp .L31
-	ldi r22,lo8(.LC22)
-	ldi r23,hi8(.LC22)
+	rjmp .L44
+	ldi r22,lo8(.LC36)
+	ldi r23,hi8(.LC36)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L32
-.L31:
+	breq .L45
+.L44:
 	call CON_SendStatus
-	rjmp .L30
-.L32:
-	ldi r22,lo8(.LC23)
-	ldi r23,hi8(.LC23)
+	rjmp .L46
+.L45:
+	ldi r22,lo8(.LC37)
+	ldi r23,hi8(.LC37)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L33
+	breq .L47
 	lds r24,Global_stTankData+6
 	push __zero_reg__
 	push r24
-	ldi r24,lo8(.LC24)
-	ldi r25,hi8(.LC24)
-.L58:
+	ldi r24,lo8(.LC38)
+	ldi r25,hi8(.LC38)
+.L76:
 	push r25
 	push r24
 	movw r16,r28
@@ -571,14 +652,14 @@ CON_ProcessCommand:
 	pop __tmp_reg__
 	pop __tmp_reg__
 	pop __tmp_reg__
-	rjmp .L30
-.L33:
-	ldi r22,lo8(.LC25)
-	ldi r23,hi8(.LC25)
+	rjmp .L46
+.L47:
+	ldi r22,lo8(.LC39)
+	ldi r23,hi8(.LC39)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L34
+	breq .L48
 	lds r24,Global_stTankData+10
 	lds r25,Global_stTankData+11
 	ldi r22,lo8(10)
@@ -588,9 +669,9 @@ CON_ProcessCommand:
 	push r24
 	push r23
 	push r22
-	ldi r24,lo8(.LC26)
-	ldi r25,hi8(.LC26)
-.L59:
+	ldi r24,lo8(.LC40)
+	ldi r25,hi8(.LC40)
+.L77:
 	push r25
 	push r24
 	movw r16,r28
@@ -606,14 +687,14 @@ CON_ProcessCommand:
 	out __SP_H__,r29
 	out __SREG__,__tmp_reg__
 	out __SP_L__,r28
-	rjmp .L30
-.L34:
-	ldi r22,lo8(.LC27)
-	ldi r23,hi8(.LC27)
+	rjmp .L46
+.L48:
+	ldi r22,lo8(.LC41)
+	ldi r23,hi8(.LC41)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L35
+	breq .L49
 	lds r24,Global_stTankData+15
 	push r24
 	lds r24,Global_stTankData+14
@@ -622,60 +703,60 @@ CON_ProcessCommand:
 	push r24
 	lds r24,Global_stTankData+12
 	push r24
-	ldi r24,lo8(.LC28)
-	ldi r25,hi8(.LC28)
-	rjmp .L59
-.L35:
-	ldi r22,lo8(.LC29)
-	ldi r23,hi8(.LC29)
+	ldi r24,lo8(.LC42)
+	ldi r25,hi8(.LC42)
+	rjmp .L77
+.L49:
+	ldi r22,lo8(.LC43)
+	ldi r23,hi8(.LC43)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L36
+	breq .L50
 	lds r24,Global_stTankData+9
 	push r24
 	lds r24,Global_stTankData+8
 	push r24
-	ldi r24,lo8(.LC30)
-	ldi r25,hi8(.LC30)
-	rjmp .L58
-.L36:
-	ldi r22,lo8(.LC31)
-	ldi r23,hi8(.LC31)
+	ldi r24,lo8(.LC44)
+	ldi r25,hi8(.LC44)
+	rjmp .L76
+.L50:
+	ldi r22,lo8(.LC45)
+	ldi r23,hi8(.LC45)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L37
-	ldi r24,lo8(.LC32)
-	ldi r25,hi8(.LC32)
-.L57:
+	breq .L51
+	ldi r24,lo8(.LC46)
+	ldi r25,hi8(.LC46)
+.L75:
 	call UART_SendString
-	rjmp .L30
-.L37:
-	ldi r22,lo8(.LC33)
-	ldi r23,hi8(.LC33)
+	rjmp .L46
+.L51:
+	ldi r22,lo8(.LC47)
+	ldi r23,hi8(.LC47)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L38
+	breq .L52
 	call FSM_Ack
 	or r24,r25
-	brne .L39
-.L60:
-	ldi r24,lo8(.LC34)
-	ldi r25,hi8(.LC34)
-	rjmp .L57
-.L39:
-	ldi r24,lo8(.LC35)
-	ldi r25,hi8(.LC35)
-	rjmp .L57
-.L38:
-	ldi r22,lo8(.LC36)
-	ldi r23,hi8(.LC36)
+	brne .L53
+.L78:
+	ldi r24,lo8(.LC48)
+	ldi r25,hi8(.LC48)
+	rjmp .L75
+.L53:
+	ldi r24,lo8(.LC49)
+	ldi r25,hi8(.LC49)
+	rjmp .L75
+.L52:
+	ldi r22,lo8(.LC50)
+	ldi r23,hi8(.LC50)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L40
+	breq .L54
 /* epilogue start */
 	adiw r28,32
 	in __tmp_reg__,__SREG__
@@ -688,98 +769,110 @@ CON_ProcessCommand:
 	pop r17
 	pop r16
 	jmp CON_SendFaults
-.L40:
-	ldi r22,lo8(.LC37)
-	ldi r23,hi8(.LC37)
+.L54:
+	ldi r22,lo8(.LC51)
+	ldi r23,hi8(.LC51)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L41
+	breq .L55
 	ldi r24,lo8(g_conFaultLog)
 	ldi r25,hi8(g_conFaultLog)
 	call FLG_Clear
-	rjmp .L60
-.L41:
-	ldi r22,lo8(.LC38)
-	ldi r23,hi8(.LC38)
+	rjmp .L78
+.L55:
+	ldi r22,lo8(.LC52)
+	ldi r23,hi8(.LC52)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L42
+	breq .L56
 	lds r24,Global_stTankData+19
 	push __zero_reg__
 	push r24
-	ldi r24,lo8(.LC39)
-	ldi r25,hi8(.LC39)
+	ldi r24,lo8(.LC53)
+	ldi r25,hi8(.LC53)
+	rjmp .L76
+.L56:
+	ldi r22,lo8(.LC54)
+	ldi r23,hi8(.LC54)
+	movw r24,r16
+	call CON_CompareNoCase
+	cp r24, __zero_reg__
+	breq .L57
+.L58:
+	ldi r24,lo8(.LC55)
+	ldi r25,hi8(.LC55)
+	rjmp .L75
+.L57:
+	ldi r22,lo8(.LC56)
+	ldi r23,hi8(.LC56)
+	movw r24,r16
+	call CON_CompareNoCase
+	cpse r24,__zero_reg__
 	rjmp .L58
-.L42:
-	ldi r22,lo8(.LC40)
-	ldi r23,hi8(.LC40)
+	ldi r22,lo8(.LC57)
+	ldi r23,hi8(.LC57)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L43
-.L44:
-	ldi r24,lo8(.LC41)
-	ldi r25,hi8(.LC41)
-	rjmp .L57
-.L43:
-	ldi r22,lo8(.LC42)
-	ldi r23,hi8(.LC42)
+	breq .L59
+.L60:
+	ldi r24,lo8(.LC58)
+	ldi r25,hi8(.LC58)
+	rjmp .L75
+.L59:
+	ldi r22,lo8(.LC59)
+	ldi r23,hi8(.LC59)
 	movw r24,r16
 	call CON_CompareNoCase
 	cpse r24,__zero_reg__
-	rjmp .L44
-	ldi r22,lo8(.LC43)
-	ldi r23,hi8(.LC43)
+	rjmp .L60
+	ldi r22,lo8(.LC60)
+	ldi r23,hi8(.LC60)
+	movw r24,r16
+	call CON_CompareNoCase
+	cpse r24,__zero_reg__
+	rjmp .L60
+	ldi r22,lo8(.LC61)
+	ldi r23,hi8(.LC61)
+	movw r24,r16
+	call CON_CompareNoCase
+	cpse r24,__zero_reg__
+	rjmp .L60
+	ldi r22,lo8(.LC62)
+	ldi r23,hi8(.LC62)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L45
-.L46:
-	ldi r24,lo8(.LC44)
-	ldi r25,hi8(.LC44)
-	rjmp .L57
-.L45:
-	ldi r22,lo8(.LC45)
-	ldi r23,hi8(.LC45)
-	movw r24,r16
-	call CON_CompareNoCase
-	cpse r24,__zero_reg__
+	breq .L61
+	ldi r24,lo8(1)
+	call FSM_SetServiceMode
+	or r24,r25
+	breq .+2
 	rjmp .L46
-	ldi r22,lo8(.LC46)
-	ldi r23,hi8(.LC46)
-	movw r24,r16
-	call CON_CompareNoCase
-	cpse r24,__zero_reg__
-	rjmp .L46
-	ldi r22,lo8(.LC47)
-	ldi r23,hi8(.LC47)
-	movw r24,r16
-	call CON_CompareNoCase
-	cpse r24,__zero_reg__
-	rjmp .L46
-	ldi r22,lo8(.LC48)
-	ldi r23,hi8(.LC48)
+	ldi r24,lo8(.LC63)
+	ldi r25,hi8(.LC63)
+	rjmp .L75
+.L61:
+	ldi r22,lo8(.LC64)
+	ldi r23,hi8(.LC64)
 	movw r24,r16
 	call CON_CompareNoCase
 	cp r24, __zero_reg__
-	breq .L47
-.L48:
-	ldi r24,lo8(.LC49)
-	ldi r25,hi8(.LC49)
-	rjmp .L57
-.L47:
-	ldi r22,lo8(.LC50)
-	ldi r23,hi8(.LC50)
-	movw r24,r16
-	call CON_CompareNoCase
-	cpse r24,__zero_reg__
-	rjmp .L48
-	rjmp .L26
+	brne .+2
+	rjmp .L40
+	ldi r24,0
+	call FSM_SetServiceMode
+	or r24,r25
+	breq .+2
+	rjmp .L46
+	ldi r24,lo8(.LC65)
+	ldi r25,hi8(.LC65)
+	rjmp .L75
 	.size	CON_ProcessCommand, .-CON_ProcessCommand
 	.section	.rodata.CON_Run.str1.1,"aMS",@progbits,1
-.LC51:
+.LC66:
 	.string	"ERR LONG\r\n"
 	.section	.text.CON_Run,"ax",@progbits
 .global	CON_Run
@@ -800,13 +893,13 @@ CON_Run:
 	movw r16,r28
 	subi r16,-1
 	sbci r17,-1
-.L62:
+.L80:
 	ldi r24,lo8(g_conRxBuffer)
 	ldi r25,hi8(g_conRxBuffer)
 	call RB_IsEmpty
 	cp r24, __zero_reg__
-	breq .L72
-.L61:
+	breq .L90
+.L79:
 /* epilogue start */
 	pop __tmp_reg__
 	pop __tmp_reg__
@@ -816,7 +909,7 @@ CON_Run:
 	pop r17
 	pop r16
 	ret
-.L72:
+.L90:
 	movw r22,r16
 	ldi r24,lo8(g_conRxBuffer)
 	ldi r25,hi8(g_conRxBuffer)
@@ -824,16 +917,16 @@ CON_Run:
 	std Y+2,r16
 	std Y+3,r17
 	or r24,r25
-	brne .L61
+	brne .L79
 	ldd r24,Y+1
 	lds r30,g_conLineLen
 	cpi r24,lo8(13)
-	breq .L64
+	breq .L82
 	cpi r24,lo8(10)
-	brne .L65
-.L64:
+	brne .L83
+.L82:
 	cp r30, __zero_reg__
-	breq .L62
+	breq .L80
 	ldi r31,0
 	subi r30,lo8(-(g_conLine))
 	sbci r31,hi8(-(g_conLine))
@@ -841,12 +934,12 @@ CON_Run:
 	ldi r24,lo8(g_conLine)
 	ldi r25,hi8(g_conLine)
 	call CON_ProcessCommand
-.L70:
+.L88:
 	sts g_conLineLen,__zero_reg__
-	rjmp .L62
-.L65:
+	rjmp .L80
+.L83:
 	cpi r30,lo8(40)
-	brsh .L67
+	brsh .L85
 	mov r26,r30
 	ldi r27,0
 	subi r26,lo8(-(g_conLine))
@@ -854,60 +947,31 @@ CON_Run:
 	st X,r24
 	subi r30,lo8(-(1))
 	sts g_conLineLen,r30
-	rjmp .L62
-.L67:
-	ldi r24,lo8(.LC51)
-	ldi r25,hi8(.LC51)
+	rjmp .L80
+.L85:
+	ldi r24,lo8(.LC66)
+	ldi r25,hi8(.LC66)
 	call UART_SendString
-.L68:
+.L86:
 	ldi r24,lo8(g_conRxBuffer)
 	ldi r25,hi8(g_conRxBuffer)
 	call RB_IsEmpty
 	cpse r24,__zero_reg__
-	rjmp .L70
+	rjmp .L88
 	ldd r22,Y+2
 	ldd r23,Y+3
 	ldi r24,lo8(g_conRxBuffer)
 	ldi r25,hi8(g_conRxBuffer)
 	call RB_Get
 	or r24,r25
-	brne .L70
+	brne .L88
 	ldd r24,Y+1
 	cpi r24,lo8(13)
-	breq .L70
+	breq .L88
 	cpi r24,lo8(10)
-	brne .L68
-	rjmp .L70
+	brne .L86
+	rjmp .L88
 	.size	CON_Run, .-CON_Run
-	.section	.rodata.str1.1,"aMS",@progbits,1
-.LC52:
-	.string	"INIT"
-.LC53:
-	.string	"IDLE"
-.LC54:
-	.string	"FILLING"
-.LC55:
-	.string	"SETTLING"
-.LC56:
-	.string	"RES_WAIT"
-.LC57:
-	.string	"TRIPPED"
-.LC58:
-	.string	"MANUAL"
-.LC59:
-	.string	"SERVICE"
-	.section	.rodata.CSWTCH.41,"a"
-	.type	CSWTCH.41, @object
-	.size	CSWTCH.41, 16
-CSWTCH.41:
-	.word	.LC52
-	.word	.LC53
-	.word	.LC54
-	.word	.LC55
-	.word	.LC56
-	.word	.LC57
-	.word	.LC58
-	.word	.LC59
 	.section	.bss.g_conLineLen,"aw",@nobits
 	.type	g_conLineLen, @object
 	.size	g_conLineLen, 1

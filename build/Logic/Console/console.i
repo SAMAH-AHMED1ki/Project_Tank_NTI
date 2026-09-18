@@ -718,6 +718,11 @@ STD_ReturnType FSM_Ack(void);
 
 
 uint8 FSM_IsBuzzerEnabled(void);
+
+
+Trip_t FSM_GetActiveTrip(void);
+
+STD_ReturnType FSM_SetServiceMode(uint8 Copy_u8Enable);
 # 13 "Logic/Console/console.c" 2
 
 extern TankData_t Global_stTankData;
@@ -1154,26 +1159,25 @@ STD_ReturnType CON_ProcessCommand(
         hasMatch = 1U;
     }
 
-    else if (CON_CompareNoCase(
-                 pCommandLine,
-                 "SERVICE ON"))
+    else if (CON_CompareNoCase(pCommandLine, "SERVICE ON"))
     {
-        CON_WriteString(
-            "ERR MODE - USE SERVICE CONTROL\r\n");
+        if (FSM_SetServiceMode(1u) == E_OK)
+        {
+            CON_WriteString("SERVICE MODE ON\r\n");
+        }
 
-        hasMatch = 1U;
+        hasMatch = 1u;
     }
 
-    else if (CON_CompareNoCase(
-                 pCommandLine,
-                 "SERVICE OFF"))
+    else if (CON_CompareNoCase(pCommandLine, "SERVICE OFF"))
     {
-        CON_WriteString(
-            "ERR MODE - USE SERVICE CONTROL\r\n");
+        if (FSM_SetServiceMode(0u) == E_OK)
+        {
+            CON_WriteString("SERVICE MODE OFF\r\n");
+        }
 
-        hasMatch = 1U;
+        hasMatch = 1u;
     }
-
 
 
 
@@ -1192,113 +1196,62 @@ STD_ReturnType CON_ProcessCommand(
 
 void CON_SendStatus(void)
 {
-    char buffer[96];
-
-
-
-
-    const char *stateText;
-
-    switch (FSM_GetState())
+    uint8 Local_u8Trip;
+    uint8 Local_u8State;
+    Local_u8Trip = (uint8)FSM_GetActiveTrip();
+    Local_u8State = (uint8)FSM_GetState();
+    UART_SendString("\r\nLEVEL=");
+    UART_SendByte((uint8)('0' + ((Global_stTankData.levelPct / 10U) % 10U)));
+    UART_SendByte((uint8)('0' + (Global_stTankData.levelPct % 10U)));
+    UART_SendString("%");
+    UART_SendString(" R=");
+    UART_SendByte((uint8)('0' + ((Global_stTankData.reservoirPct / 10U) % 10U)));
+    UART_SendByte((uint8)('0' + (Global_stTankData.reservoirPct % 10U)));
+    UART_SendString("%");
+    UART_SendString(" I=");
+    UART_SendByte((uint8)('0' + ((Global_stTankData.currentmA / 1000U) % 10U)));
+    UART_SendByte((uint8)('0' + ((Global_stTankData.currentmA / 100U) % 10U)));
+    UART_SendByte((uint8)('0' + ((Global_stTankData.currentmA / 10U) % 10U)));
+    UART_SendByte((uint8)('0' + (Global_stTankData.currentmA % 10U)));
+    UART_SendString("mA\r\n");
+    UART_SendString("PUMP=");
+    UART_SendByte((uint8)('0' + (Global_stTankData.pumpOn ? 1U : 0U)));
+    UART_SendString(" VALVE=");
+    UART_SendByte((uint8)('0' + (Global_stTankData.valveOn ? 1U : 0U)));
+    UART_SendString(" HIGH=");
+    UART_SendByte((uint8)('0' + (Global_stTankData.highFloat ? 1U : 0U)));
+    UART_SendString(" LOW=");
+    UART_SendByte((uint8)('0' + (Global_stTankData.lowFloat ? 1U : 0U)));
+    UART_SendString("\r\n");
+    UART_SendString("TRIP=");
+    UART_SendByte((uint8)('0' + ((Local_u8Trip / 10U) % 10U)));
+    UART_SendByte((uint8)('0' + (Local_u8Trip % 10U)));
+    UART_SendString(" STATE=");
+    switch (Local_u8State)
     {
     case ST_INIT:
-        stateText = "INIT";
+        UART_SendString("INIT");
         break;
-
     case ST_IDLE:
-        stateText = "IDLE";
+        UART_SendString("IDLE");
         break;
-
     case ST_FILLING:
-        stateText = "FILLING";
+        UART_SendString("FILLING");
         break;
-
-    case ST_SETTLING:
-        stateText = "SETTLING";
-        break;
-
-    case ST_RESERVOIR_WAIT:
-        stateText = "RES_WAIT";
-        break;
-
     case ST_TRIPPED:
-        stateText = "TRIPPED";
+        UART_SendString("TRIPPED");
         break;
-
     case ST_MANUAL:
-        stateText = "MANUAL";
+        UART_SendString("MANUAL");
         break;
-
     case ST_SERVICE:
-        stateText = "SERVICE";
+        UART_SendString("SERVICE");
         break;
-
     default:
-        stateText = "UNKNOWN";
+        UART_SendString("UNKNOWN");
         break;
     }
-
-
-
-
-    sprintf(
-        buffer,
-        "LEVEL=%u%% R=%u%% I=%umA\r\n",
-        (unsigned int)
-            Global_stTankData.levelPct,
-
-        (unsigned int)
-            Global_stTankData.reservoirPct,
-
-        (unsigned int)
-            Global_stTankData.currentmA);
-
-    CON_WriteString(buffer);
-
-    sprintf(
-        buffer,
-        "FLOW=%u.%uL/min VOL=%luL\r\n",
-        (unsigned int)(Global_stTankData.flowLpmX10 / 10U),
-
-        (unsigned int)(Global_stTankData.flowLpmX10 % 10U),
-
-        (unsigned long)
-            Global_stTankData.totalLitres);
-
-    CON_WriteString(buffer);
-
-    sprintf(
-        buffer,
-        "PUMP=%u VALVE=%u HIGH=%u LOW=%u\r\n",
-        (unsigned int)
-            Global_stTankData.pumpOn,
-
-        (unsigned int)
-            Global_stTankData.valveOn,
-
-        (unsigned int)
-            Global_stTankData.highFloat,
-
-        (unsigned int)
-            Global_stTankData.lowFloat);
-
-    CON_WriteString(buffer);
-
-    sprintf(
-        buffer,
-        "STATE=%s TRIP=%u RUN=%u UP=%lu\r\n",
-        stateText,
-
-        (unsigned int)
-            Global_stTankData.activeTrip,
-
-        (unsigned int)
-            Global_stTankData.pumpRunSec,
-
-        (unsigned long)
-            Global_stTankData.upTimeSec);
-
-    CON_WriteString(buffer);
+    UART_SendString("\r\n");
 }
 
 

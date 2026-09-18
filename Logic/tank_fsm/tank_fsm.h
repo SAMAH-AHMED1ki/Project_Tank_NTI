@@ -26,3 +26,5 @@ uint8 FSM_IsBuzzerEnabled(void);
 #endif /* TANK_FSM_H_ */
 
 Trip_t FSM_GetActiveTrip(void);
+
+STD_ReturnType FSM_SetServiceMode(uint8 Copy_u8Enable);

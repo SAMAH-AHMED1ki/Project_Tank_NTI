@@ -272,6 +272,8 @@ uint8 FSM_IsBuzzerEnabled(void);
 
 
 Trip_t FSM_GetActiveTrip(void);
+
+STD_ReturnType FSM_SetServiceMode(uint8 Copy_u8Enable);
 # 14 "Logic/tank_fsm/tank_fsm.c" 2
 
 
@@ -650,6 +652,22 @@ STD_ReturnType FSM_Run(const TankData_t *Copy_pstData)
 TankState_t FSM_GetState(void)
 {
     return Global_eCurrentState;
+}
+
+STD_ReturnType FSM_SetServiceMode(uint8 enable)
+{
+    if (enable != 0u)
+    {
+        FSM_StopOutputs();
+        Global_eCurrentState = ST_SERVICE;
+    }
+    else
+    {
+        FSM_StopOutputs();
+        Global_eCurrentState = ST_IDLE;
+    }
+
+    return E_OK;
 }
 
 
