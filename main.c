@@ -1,0 +1,841 @@
+#define F_CPU 8000000UL
+#include <avr/io.h>
+#include "STD_TYPES.h"
+
+/* ========================= MCAL ========================= */
+#include "GPIO_interface.h"
+#include "ADC_interface.h"
+#include "TIMER_interface.h"
+#include "INTERRUPT_interface.h"
+#include "SPI_interface.h"
+#include "I2C_interface.h"
+#include "Scheduler_interface.h"
+#include "UART_interface.h"
+/* ========================== HAL ========================== */
+#include "LCD_I2C_interface.h"
+#include "Flowmeter_interface.h"
+#include "Shiftreg_interface.h"
+#include "bargraph_interface.h"
+#include "buttons_interface.h"
+/* ========================== APP ========================== */
+#include "tank_types.h"
+#include "level_interface.h"
+#include "current.h"
+#include "floats.h"
+#include "Pump_interface.h"
+#include "Valve_interface.h"
+#include "demand.h"
+#include "interlocks.h"
+#include "tank_fsm.h"
+#include "faultlog.h"
+#include "console.h"
+/* =========================================================
+ * Global application data
+ * ========================================================= */
+
+TankData_t Global_stTankData;
+
+static FLG_Buffer_t Global_stFaultLog;
+static void APP_UpdateBuzzer(void);
+static TankState_t Global_eLastFSMState = ST_INIT;
+static uint8 Global_u8ModeDisplayTicks = 0u;
+static uint8 Global_u8TripDisplayToggle = 0u;
+static uint8 Global_u8TripDisplayTicks = 0u;
+/* =========================================================
+ * INT0 Callback
+ *
+ * High-float emergency hardware guard.
+ * Immediately switches OFF:
+ *      Pump
+ *      Inlet valve
+ * ========================================================= */
+
+static void APP_HighFloatISR(void)
+{
+    PMP_Set(0u);
+    Valve_Set(0u);
+}
+
+/* =========================================================
+ * Read / Update Application Data
+ * ========================================================= */
+
+static void APP_UpdateData(void)
+{
+    uint16 Local_u16Raw;
+    uint8 Local_u8Value;
+    uint8 Local_u8Pump;
+    uint8 Local_u8Valve;
+    uint32 Local_u32Value;
+    uint32 Local_u32VolumeMl;
+
+    /* -----------------------------------------------------
+     * Roof Tank Raw Level
+     * ----------------------------------------------------- */
+
+    if (ADC_ReadChannel(
+            ADC_CHANNEL_0,
+            &Local_u16Raw) == E_OK)
+    {
+        Global_stTankData.levelRaw = Local_u16Raw;
+    }
+
+    /* -----------------------------------------------------
+     * Reservoir Raw Level
+     * ----------------------------------------------------- */
+
+    if (ADC_ReadChannel(
+            ADC_CHANNEL_1,
+            &Local_u16Raw) == E_OK)
+    {
+        Global_stTankData.reservoirRaw = Local_u16Raw;
+    }
+
+    /* -----------------------------------------------------
+     * Roof Tank Level Percentage
+     * ----------------------------------------------------- */
+
+    if (LEVEL_ReadPercentage(
+            ADC_CHANNEL_0,
+            &Local_u8Value) == E_OK)
+    {
+        Global_stTankData.levelPct = Local_u8Value;
+    }
+
+    /* -----------------------------------------------------
+     * Reservoir Level Percentage
+     * ----------------------------------------------------- */
+
+    if (LEVEL_ReadPercentage(
+            ADC_CHANNEL_1,
+            &Local_u8Value) == E_OK)
+    {
+        Global_stTankData.reservoirPct = Local_u8Value;
+    }
+
+    /* -----------------------------------------------------
+     * Current
+     * ----------------------------------------------------- */
+
+    if (CUR_GetmA(
+            &Global_stTankData.currentmA) != E_OK)
+    {
+        Global_stTankData.currentmA = 0u;
+    }
+
+    /* -----------------------------------------------------
+     * Flow
+     * ----------------------------------------------------- */
+
+    Global_stTankData.flowLpmX10 =
+        FLOWMETER_GetFlowLpmX10();
+
+    /* -----------------------------------------------------
+     * Total Volume
+     * ----------------------------------------------------- */
+
+    Local_u32VolumeMl =
+        FLOWMETER_GetTotalMilliliters();
+
+    Global_stTankData.totalLitres =
+        Local_u32VolumeMl / 1000UL;
+
+    /* -----------------------------------------------------
+     * Float Switches
+     * ----------------------------------------------------- */
+
+    Global_stTankData.highFloat =
+        FLT_IsHighActive();
+
+    Global_stTankData.lowFloat =
+        FLT_IsLowActive();
+
+    /* -----------------------------------------------------
+     * Pump State
+     * ----------------------------------------------------- */
+    if (PMP_GetState(&Local_u8Pump) == E_OK)
+    {
+        Global_stTankData.pumpOn =
+            Local_u8Pump;
+    }
+    else
+    {
+        Global_stTankData.pumpOn = 0u;
+    }
+    /* -----------------------------------------------------
+     * Valve State
+     * ----------------------------------------------------- */
+
+    if (Valve_GetState(&Local_u8Valve) == E_OK)
+    {
+        Global_stTankData.valveOn =
+            Local_u8Valve;
+    }
+    else
+    {
+        Global_stTankData.valveOn = 0u;
+    }
+
+    /* -----------------------------------------------------
+     * Pump Current Run Time
+     * ----------------------------------------------------- */
+
+    if (PMP_RunSeconds(&Local_u32Value) == E_OK)
+    {
+        Global_stTankData.pumpRunSec =
+            (uint16)Local_u32Value;
+    }
+    else
+    {
+        Global_stTankData.pumpRunSec = 0u;
+    }
+
+    /* -----------------------------------------------------
+     * Pump Total Run Time
+     * ----------------------------------------------------- */
+
+    if (PMP_TotalSeconds(
+            &Global_stTankData.pumpTotalSec) != E_OK)
+    {
+        Global_stTankData.pumpTotalSec = 0UL;
+    }
+
+    /* -----------------------------------------------------
+     * Pump Cycles
+     * ----------------------------------------------------- */
+
+    if (PMP_Cycles(&Local_u32Value) == E_OK)
+    {
+        Global_stTankData.pumpCycles =
+            (uint16)Local_u32Value;
+    }
+    else
+    {
+        Global_stTankData.pumpCycles = 0u;
+    }
+
+    /* -----------------------------------------------------
+     * FSM State
+     * ----------------------------------------------------- */
+
+    Global_stTankData.state =
+        (uint8)FSM_GetState();
+}
+
+/* =========================================================
+ * 10 ms Application Task
+ *
+ * Order:
+ *
+ * 1. Update input drivers
+ * 2. Read application data
+ * 3. Update demand
+ * 4. Run FSM
+ *
+ * IMPORTANT:
+ * FSM_Run() already calls ILK_Evaluate().
+ * Therefore ILK_Evaluate() is NOT called here again.
+ * ========================================================= */
+
+static void APP_Task10ms(void)
+{
+    /* Update buttons */
+    BTN_Update10ms(GPIO_PORTD);
+
+    /* Update float switches */
+    FLT_Update();
+
+    /* Update current sensor */
+    CUR_Update();
+
+    /* Read all current data */
+    APP_UpdateData();
+
+    /* Update automatic demand */
+    DEM_Update(&Global_stTankData);
+
+    /*
+     * FSM handles:
+     * - Interlocks
+     * - Trips
+     * - Automatic mode
+     * - Manual mode
+     * - Service mode
+     * - Pump / valve control
+     */
+    FSM_Run(&Global_stTankData);
+
+    /* Refresh state after FSM */
+    Global_stTankData.state =
+        (uint8)FSM_GetState();
+    Global_stTankData.activeTrip = (uint8)FSM_GetActiveTrip();
+
+    APP_UpdateBuzzer();
+
+    if (Global_stTankData.pumpOn == GPIO_HIGH)
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN6, GPIO_HIGH);
+    }
+    else
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN6, GPIO_LOW);
+    }
+
+    /* FAULT LED */
+    if (FSM_GetState() == ST_TRIPPED)
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN7, GPIO_HIGH);
+    }
+    else
+    {
+        GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN7, GPIO_LOW);
+    }
+}
+/* =========================================================
+ * Display current trip on LCD
+ * ========================================================= */
+
+static void APP_DisplayTrip(uint8 Copy_u8Trip)
+{
+    switch (Copy_u8Trip)
+    {
+    case TRIP_OVERFLOW:
+        LCD_I2C_SendString("!TRIP: OVERFLOW");
+        break;
+
+    case TRIP_OVERCURRENT:
+        LCD_I2C_SendString("!TRIP: OVERCURRENT");
+        break;
+
+    case TRIP_DRY_RESERVOIR:
+        LCD_I2C_SendString("!TRIP: DRY RESERVOIR");
+        break;
+
+    case TRIP_DRY_RUN:
+        LCD_I2C_SendString("!TRIP: DRY RUN");
+        break;
+
+    case TRIP_NO_CURRENT:
+        LCD_I2C_SendString("!TRIP: NO CURRENT");
+        break;
+
+    case TRIP_MAX_RUNTIME:
+        LCD_I2C_SendString("!TRIP: MAX RUNTIME");
+        break;
+
+    case TRIP_LEVEL_SENSOR:
+        LCD_I2C_SendString("!TRIP: LEVEL SENSOR");
+        break;
+
+    case TRIP_LEAK:
+        LCD_I2C_SendString("!TRIP: LEAK");
+        break;
+
+    case TRIP_NO_RISE:
+        LCD_I2C_SendString("!TRIP: NO RISE");
+        break;
+    }
+}
+/* =========================================================
+ * 500 ms Application Task
+ *
+ * LCD update
+ * ========================================================= */
+
+static void APP_Task500ms(void)
+{
+    uint16 Local_u16FlowInteger;
+    uint8 Local_u8FlowDecimal;
+
+    uint16 Local_u16CurrentInteger;
+    uint8 Local_u8CurrentDecimal;
+
+    TankState_t Local_eCurrentState;
+
+    Local_u16FlowInteger =
+        Global_stTankData.flowLpmX10 / 10u;
+
+    Local_u8FlowDecimal =
+        Global_stTankData.flowLpmX10 % 10u;
+
+    Local_eCurrentState =
+        FSM_GetState();
+
+    /* Current is stored in mA */
+    Local_u16CurrentInteger =
+        Global_stTankData.currentmA / 1000u;
+
+    Local_u8CurrentDecimal =
+        (Global_stTankData.currentmA % 1000u) / 100u;
+
+    /* =====================================================
+     * Detect mode change
+     * ===================================================== */
+
+    if ((Local_eCurrentState == ST_MANUAL) &&
+        (Global_eLastFSMState != ST_MANUAL))
+    {
+        /* MANUAL mode selected */
+        Global_u8ModeDisplayTicks = 2u;
+    }
+    else if ((Local_eCurrentState != ST_MANUAL) &&
+             (Global_eLastFSMState == ST_MANUAL))
+    {
+        /* AUTO mode selected */
+        Global_u8ModeDisplayTicks = 2u;
+    }
+
+    Global_eLastFSMState = Local_eCurrentState;
+
+    /* =====================================================
+     * LCD
+     * ===================================================== */
+
+    LCD_I2C_Clear();
+
+    /* -----------------------------------------------------
+     * Show mode for 1 second
+     * ----------------------------------------------------- */
+
+    if (Global_u8ModeDisplayTicks > 0u)
+    {
+        LCD_I2C_SetCursor(
+            LCD_ROW_1,
+            LCD_COL_1);
+
+        if (Local_eCurrentState == ST_MANUAL)
+        {
+            LCD_I2C_SendString("MODE: MANUAL");
+        }
+        else
+        {
+            LCD_I2C_SendString("MODE: AUTO");
+        }
+
+        Global_u8ModeDisplayTicks--;
+
+        return;
+    }
+
+    /* =====================================================
+     * Normal LCD data
+     * ===================================================== */
+
+    /* -----------------------------------------------------
+     * LCD Line 1
+     * ----------------------------------------------------- */
+
+    LCD_I2C_SetCursor(
+        LCD_ROW_1,
+        LCD_COL_1);
+
+    LCD_I2C_SendString("L:");
+
+    LCD_I2C_SendNumber(
+        Global_stTankData.levelPct);
+
+    LCD_I2C_SendString("% R:");
+
+    LCD_I2C_SendNumber(
+        Global_stTankData.reservoirPct);
+
+    LCD_I2C_SendString("% ");
+
+    LCD_I2C_SendNumber(Local_u16CurrentInteger);
+    LCD_I2C_SendString(".");
+    LCD_I2C_SendNumber(Local_u8CurrentDecimal);
+    LCD_I2C_SendString("A");
+
+    /* -----------------------------------------------------
+     * LCD Line 2
+     * ----------------------------------------------------- */
+
+    LCD_I2C_SetCursor(
+        LCD_ROW_2,
+        LCD_COL_1);
+
+    /*
+     * TRIPPED STATE
+     */
+    if (FSM_GetState() == ST_TRIPPED)
+    {
+        /*
+         * Toggle every 1.5 seconds
+         */
+        if (Global_u8TripDisplayTicks < 3u)
+        {
+            Global_u8TripDisplayTicks++;
+        }
+        else
+        {
+            Global_u8TripDisplayTicks = 0u;
+            Global_u8TripDisplayToggle ^= 1u;
+        }
+
+        if (Global_u8TripDisplayToggle == 0u)
+        {
+            APP_DisplayTrip(Global_stTankData.activeTrip);
+        }
+        else
+        {
+            /*
+             * Normal data
+             */
+            if (Global_stTankData.pumpOn == GPIO_HIGH)
+                LCD_I2C_SendString("FILL ");
+            else
+                LCD_I2C_SendString("IDLE ");
+
+            LCD_I2C_SendString("Q:");
+
+            LCD_I2C_SendNumber(Local_u16FlowInteger);
+
+            LCD_I2C_SendString(".");
+
+            LCD_I2C_SendNumber(Local_u8FlowDecimal);
+
+            LCD_I2C_SendString(" ");
+
+            LCD_I2C_SendNumber(Global_stTankData.totalLitres);
+
+            LCD_I2C_SendString("L");
+        }
+    }
+
+    /*
+     * NORMAL STATE
+     */
+    else
+    {
+        /* Reset trip display timer */
+        Global_u8TripDisplayTicks = 0u;
+        Global_u8TripDisplayToggle = 0u;
+
+        if (Global_stTankData.pumpOn == GPIO_HIGH)
+            LCD_I2C_SendString("FILL ");
+        else
+            LCD_I2C_SendString("IDLE ");
+
+        LCD_I2C_SendString("Q:");
+
+        LCD_I2C_SendNumber(Local_u16FlowInteger);
+
+        LCD_I2C_SendString(".");
+
+        LCD_I2C_SendNumber(Local_u8FlowDecimal);
+
+        LCD_I2C_SendString(" ");
+
+        LCD_I2C_SendNumber(Global_stTankData.totalLitres);
+
+        LCD_I2C_SendString("L");
+    }
+}
+/* =========================================================
+ * 1 Second Application Task
+ * ========================================================= */
+
+static void APP_Task1s(void)
+{
+    /* Update pump run-time counters */
+    PMP_Update1s();
+
+    /* Calculate flow once per second */
+    FLOWMETER_Update1Hz();
+
+    /* System uptime */
+    Global_stTankData.upTimeSec++;
+
+    /* Refresh application data */
+    APP_UpdateData();
+}
+
+/* =========================================================
+ * Shift Register Status
+ *
+ * 74HC595 status byte:
+ *
+ * bit 0 -> Pump
+ * bit 1 -> Valve
+ * bit 2 -> High Float
+ * bit 3 -> Low Float
+ * bit 4 -> System Tripped
+ * bit 5 -> Manual Mode
+ * bit 6 -> Service Mode
+ * bit 7 -> Reserved
+ * ========================================================= */
+
+static void APP_UpdateShiftRegister(void)
+{
+    uint8 Local_u8Status = 0u;
+
+    TankState_t Local_enState;
+
+    Local_enState =
+        FSM_GetState();
+
+    /* Pump */
+    if (Global_stTankData.pumpOn)
+    {
+        Local_u8Status |= (1u << 0);
+    }
+
+    /* Valve */
+    if (Global_stTankData.valveOn)
+    {
+        Local_u8Status |= (1u << 1);
+    }
+
+    /* High Float */
+    if (Global_stTankData.highFloat)
+    {
+        Local_u8Status |= (1u << 2);
+    }
+
+    /* Low Float */
+    if (Global_stTankData.lowFloat)
+    {
+        Local_u8Status |= (1u << 3);
+    }
+
+    /* System Tripped */
+    if (Local_enState == ST_TRIPPED)
+    {
+        Local_u8Status |= (1u << 4);
+    }
+
+    /* Manual Mode */
+    if (Local_enState == ST_MANUAL)
+    {
+        Local_u8Status |= (1u << 5);
+    }
+
+    /* Service Mode */
+    if (Local_enState == ST_SERVICE)
+    {
+        Local_u8Status |= (1u << 6);
+    }
+
+    /* Send status byte */
+    SHIFTREG_SendByte(Local_u8Status);
+}
+
+static void APP_UpdateBuzzer(void)
+{
+    static uint16 Local_u16BuzzerTicks = 0u;
+
+    if (FSM_IsBuzzerEnabled() != GPIO_LOW)
+    {
+        Local_u16BuzzerTicks++;
+
+        if (Local_u16BuzzerTicks < 20u)
+        {
+            GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_HIGH);
+        }
+        else if (Local_u16BuzzerTicks < 100u)
+        {
+            GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_LOW);
+        }
+        else
+        {
+            Local_u16BuzzerTicks = 0u;
+        }
+    }
+    else
+    {
+        Local_u16BuzzerTicks = 0u;
+        GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_LOW);
+    }
+}
+
+/* =========================================================
+ * MAIN
+ * ========================================================= */
+
+int main(void)
+{
+    /* =====================================================
+     * Initialize Application Data
+     * ===================================================== */
+
+    Global_stTankData.levelRaw = 0u;
+    Global_stTankData.reservoirRaw = 0u;
+    Global_stTankData.currentRaw = 0u;
+
+    Global_stTankData.levelPct = 0u;
+    Global_stTankData.reservoirPct = 0u;
+
+    Global_stTankData.currentmA = 0u;
+    Global_stTankData.flowLpmX10 = 0u;
+
+    Global_stTankData.totalLitres = 0UL;
+    Global_stTankData.levelRatePctMin = 0;
+
+    Global_stTankData.pumpOn = 0u;
+    Global_stTankData.valveOn = 0u;
+
+    Global_stTankData.highFloat = 0u;
+    Global_stTankData.lowFloat = 0u;
+
+    Global_stTankData.state =
+        (uint8)ST_INIT;
+
+    Global_stTankData.activeTrip =
+        (uint8)TRIP_NONE;
+
+    Global_stTankData.pumpRunSec = 0u;
+    Global_stTankData.pumpTotalSec = 0UL;
+    Global_stTankData.pumpCycles = 0u;
+
+    Global_stTankData.upTimeSec = 0UL;
+
+    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN6, GPIO_OUTPUT);
+    GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN6, GPIO_LOW);
+
+    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN7, GPIO_OUTPUT);
+    GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN7, GPIO_LOW);
+    /* =====================================================
+     * MCAL Initialization
+     * ===================================================== */
+
+    /* Timer0: used by scheduler delay */
+    TIMER0_Init();
+
+    /* ADC + Level */
+    LEVEL_Init(ADC_CHANNEL_0);
+
+    /*
+     * SPI:
+     * ATmega32 @ 8 MHz
+     * Prescaler = 16
+     * SPI clock = 500 kHz
+     */
+    SPI_InitMaster(SPI_PRESC_16);
+
+    /* 74HC595 */
+    SHIFTREG_Init();
+
+    /* =====================================================
+     * HAL / Driver Initialization
+     * ===================================================== */
+
+    PMP_Init();
+    Valve_Init();
+
+    GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN3, GPIO_OUTPUT);
+    GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN3, GPIO_LOW);
+
+    FLT_Init();
+    CUR_Init();
+    BTN_Init(GPIO_PORTD);
+    BARGRAPH_Init(GPIO_PORTC);
+
+    /*
+     * Flowmeter initialization.
+     * Flowmeter driver owns Timer1 external counter.
+     */
+    FLOWMETER_Init();
+
+    I2C_InitMaster(100000UL);
+
+    /* LCD through I2C */
+    LCD_I2C_Init();
+    /* =====================================================
+     * Application Initialization
+     * ===================================================== */
+
+    DEM_Init();
+
+    INT_Init();
+
+    FSM_Init();
+
+    /* Fault log */
+    FLG_Init(&Global_stFaultLog);
+
+    /* UART console */
+    CON_Init();
+
+    /* =====================================================
+     * INT0 High Float Emergency Protection
+     * ===================================================== */
+
+    EXTI_SetCallback(
+        EXTI_INT0,
+        APP_HighFloatISR);
+
+    EXTI_SetSense(
+        EXTI_INT0,
+        EXTI_FALLING_EDGE);
+
+    EXTI_ClearFlag(
+        EXTI_INT0);
+
+    EXTI_Enable(
+        EXTI_INT0);
+
+    /* Enable global interrupts */
+    INTERRUPT_EnableGlobal();
+
+    /* =====================================================
+     * Scheduler Initialization
+     * ===================================================== */
+
+    SCHEDULER_Init();
+    /*
+     * Main control task:
+     * 10 ms
+     */
+    SCHEDULER_AddTask(
+        APP_Task10ms,
+        10u);
+    /*
+     * LCD:
+     * 500 ms
+     */
+    SCHEDULER_AddTask(
+        APP_Task500ms,
+        500u);
+
+    /*
+     * Pump / flow / uptime:
+     * 1 second
+     */
+    SCHEDULER_AddTask(
+        APP_Task1s,
+        1000u);
+    /* =====================================================
+     * First Data Update
+     * ===================================================== */
+
+    APP_UpdateData();
+
+    Global_stTankData.state =
+        (uint8)FSM_GetState();
+
+    /* =====================================================
+     * Main Loop
+     * ===================================================== */
+
+    while (1)
+    {
+        /*
+         * Generate the 10 ms scheduler tick.
+         *
+         * This follows the same software-tick mechanism
+         * used in the provided scheduler test.
+         */
+        TIMER0_DelayMS(10u);
+        /* Update scheduler timing */
+        SCHEDULER_Tick();
+        /* Execute ready tasks */
+        SCHEDULER_Run();
+        /* Process UART console commands */
+        CON_Run();
+
+        /* Update 74HC595 status */
+        APP_UpdateShiftRegister();
+        BARGRAPH_SetLevel(GPIO_PORTC, Global_stTankData.levelPct);
+    }
+    return 0;
+}
